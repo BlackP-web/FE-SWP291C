@@ -1,0 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}
+
+/* Tesla Button Styles */
+.btn-tesla {
+  @apply bg-tesla-black text-tesla-white px-8 py-4 rounded-full font-medium transition-all duration-300 hover:bg-tesla-dark-gray hover:shadow-lg hover:-translate-y-1;
+}
+
+.btn-tesla-outline {
+  @apply border-2 border-tesla-black text-tesla-black px-8 py-4 rounded-full font-medium transition-all duration-300 hover:bg-tesla-black hover:text-tesla-white hover:shadow-lg hover:-translate-y-1;
+}
+
+.btn-tesla-secondary {
+  @apply bg-tesla-gray text-tesla-black px-6 py-3 rounded-full font-medium transition-all duration-300 hover:bg-tesla-dark-gray hover:text-tesla-white hover:shadow-md hover:-translate-y-1;
+}
+
+.btn-tesla-small {
+  @apply bg-tesla-black text-tesla-white px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:bg-tesla-dark-gray hover:shadow-md hover:-translate-y-1;
+}
+
+/* Tesla Text Styles */
+.text-tesla-title {
+  @apply text-4xl md:text-5xl lg:text-6xl font-light leading-tight;
+}
+
+.text-tesla-body {
+  @apply text-lg md:text-xl font-light leading-relaxed;
+}
+
+/* Tesla Container */
+.container-tesla {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Tesla Hover Effects */
+.hover-tesla-3d {
+  @apply transition-all duration-300 hover:transform hover:scale-105 hover:shadow-2xl;
+}
+
+.hover-tesla-glow-intense {
+  @apply transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,0,0,0.3)];
+}
+
+.hover-tesla-bounce {
+  @apply transition-all duration-300 hover:-translate-y-2 hover:shadow-xl;
+}
+
+/* Tesla Gradient Backgrounds */
+.bg-tesla-gradient {
+  @apply bg-gradient-to-br from-tesla-black via-tesla-dark-gray to-tesla-black;
+}
+
+.bg-tesla-gradient-light {
+  @apply bg-gradient-to-br from-tesla-white via-tesla-light-gray to-tesla-white;
+}
+
+/* Tesla Shadow Utilities */
+.shadow-3xl {
+  box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
+}
+
+.shadow-tesla {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.shadow-tesla-lg {
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Tesla Animation Utilities */
+.animate-float-slow {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Tesla Glass Morphism */
+.glass-morphism {
+  @apply bg-white/10 backdrop-blur-md border border-white/20;
+}
+
+.glass-morphism-dark {
+  @apply bg-black/10 backdrop-blur-md border border-black/20;
+}
+
+/* Tesla Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Tesla Selection */
+::selection {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: inherit;
+}
+
+/* Tesla Focus */
+.focus-tesla {
+  @apply focus:outline-none focus:ring-2 focus:ring-tesla-black focus:ring-offset-2;
+}
+
+/* Tesla Loading Animation */
+@keyframes tesla-loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.tesla-loading {
+  animation: tesla-loading 1s linear infinite;
+}
+
+/* Tesla Shimmer Effect */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.tesla-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
