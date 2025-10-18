@@ -18,7 +18,6 @@ export default function OwnerLayout({ children }: OwnerLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [selectedKey, setSelectedKey] = useState<string>("/owner");
-
   const menuItems = [
     { key: "/owner", icon: <FiFileText />, label: "Dashboard", path: "/owner" },
     {
@@ -65,7 +64,15 @@ export default function OwnerLayout({ children }: OwnerLayoutProps) {
         label: "Thông tin cá nhân",
         onClick: () => router.push("/profile"),
       },
-      { key: "logout", label: "Đăng xuất", danger: true, onClick: logout },
+      {
+        key: "logout",
+        label: "Đăng xuất",
+        danger: true,
+        onClick: () => {
+          logout?.();
+          router.push("/");
+        },
+      },
     ],
   };
 

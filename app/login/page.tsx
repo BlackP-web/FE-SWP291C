@@ -38,6 +38,8 @@ export default function LoginPage() {
       localStorage.setItem("user", JSON.stringify(user));
       if (user.role === "owner") {
         router.push("/owner");
+      } else if (user.role === "admin") {
+        router.push("/admin");
       } else {
         router.push("/");
       }

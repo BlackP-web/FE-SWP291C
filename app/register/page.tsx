@@ -71,7 +71,6 @@ export default function RegisterPage() {
       setLoading(false);
     }
   }
-  if (loading) return <Spin></Spin>;
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-gray-50 px-4">
       <div className="w-full max-w-md bg-white border border-gray-100 rounded-3xl shadow-2xl p-6">
