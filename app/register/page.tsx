@@ -50,7 +50,7 @@ export default function RegisterPage() {
 
     try {
       setLoading(true);
-      const res = await AuthService.register({
+      await AuthService.register({
         name: formData.name,
         email: formData.email,
         phone: formData.phone,

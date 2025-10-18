@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { api } from "@/lib/api";
-import { Phone, Mail } from "lucide-react";
+
+import { Phone } from "lucide-react";
 import Link from "next/link";
+import { AuthService } from "@/service/auth.service";
+import { message } from "antd";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,27 +27,18 @@ export default function LoginPage() {
     try {
       setLoading(true);
 
-      // Clear any existing tokens before login
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-
-      console.log("Attempting login with:", { email });
-      console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
-
-      const res = await api.post("/auth/login", { email, password });
-      console.log("Login response:", res.data);
+      const res = await AuthService.login({
+        email,
+        password,
+      });
 
       const { token, user } = res.data;
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
-
       router.push("/");
+      message.success("Đăng nhập thành công!");
     } catch (err: any) {
-      console.error("Login error:", err);
-      console.error("Error response:", err.response?.data);
-      console.error("Error status:", err.response?.status);
-
       const msg =
         err?.response?.data?.message ||
         (err?.code === "ECONNABORTED"
