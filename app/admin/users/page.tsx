@@ -98,9 +98,18 @@ export default function AdminUsersPage() {
       render: (role: string) => {
         const color =
           role === "admin" ? "red" : role === "owner" ? "blue" : "green";
-        return <Tag color={color}>{role.toUpperCase()}</Tag>;
+
+        const displayText =
+          role === "admin"
+            ? "Quản trị viên"
+            : role === "owner"
+            ? "Người bán"
+            : "Người mua";
+
+        return <Tag color={color}>{displayText}</Tag>;
       },
     },
+
     {
       title: "Trạng thái",
       dataIndex: "blocked",
