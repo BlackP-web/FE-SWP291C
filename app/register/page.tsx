@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { api } from "@/lib/api";
 import { Phone, Mail } from "lucide-react";
 import Link from "next/link";
 import { AuthService } from "@/service/auth.service";
@@ -16,11 +15,13 @@ export default function RegisterPage() {
     phone: "",
     password: "",
     confirmPassword: "",
+    role: "seeker",
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -55,6 +56,7 @@ export default function RegisterPage() {
         email: formData.email,
         phone: formData.phone,
         password: formData.password,
+        role: formData.role,
       });
       message.success("Đăng ký thành công! Vui lòng đăng nhập.");
       router.push("/login");
@@ -141,6 +143,17 @@ export default function RegisterPage() {
               className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-tesla-black/20 focus:border-tesla-black transition-all duration-300"
               required
             />
+          </div>
+          <div>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleInputChange}
+              className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-tesla-black/20 focus:border-tesla-black transition-all duration-300"
+            >
+              <option value="owner">Chủ xe / Người cho thuê</option>
+              <option value="seeker">Người thuê xe</option>
+            </select>
           </div>
 
           <button

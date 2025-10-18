@@ -36,7 +36,11 @@ export default function LoginPage() {
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
-      router.push("/");
+      if (user.role === "owner") {
+        router.push("/owner");
+      } else {
+        router.push("/");
+      }
       message.success("Đăng nhập thành công!");
     } catch (err: any) {
       const msg =
