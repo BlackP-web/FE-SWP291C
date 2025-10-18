@@ -30,6 +30,8 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<any | null>(null);
+  const [search, setSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState<string | undefined>(undefined);
   const [form] = Form.useForm();
 
   const currentUserRole = "admin"; // mock tạm, có thể lấy từ auth context
@@ -48,6 +50,15 @@ export default function AdminUsersPage() {
   useEffect(() => {
     loadUsers();
   }, []);
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
+      user.name?.toLowerCase().includes(search.toLowerCase()) ||
+      user.email?.toLowerCase().includes(search.toLowerCase());
+
+    const matchesRole = roleFilter ? user.role === roleFilter : true;
+
+    return matchesSearch && matchesRole;
+  });
 
   const openAddModal = () => {
     setEditingUser(null);
@@ -157,16 +168,37 @@ export default function AdminUsersPage() {
     <AdminLayout>
       <div className="p-4 bg-white rounded shadow">
         <div className="flex justify-between mb-4">
-          <h2 className="text-xl font-bold">Quản lý người dùng</h2>
           <Button type="primary" icon={<PlusOutlined />} onClick={openAddModal}>
             Thêm mới
           </Button>
+        </div>
+        <div className="flex justify-between mb-4">
+          <h2 className="text-xl font-bold">Quản lý người dùng</h2>
+          <Space>
+            <Select
+              placeholder="Lọc theo vai trò"
+              allowClear
+              style={{ width: 150 }}
+              onChange={(value) => setRoleFilter(value)}
+            >
+              <Option value="admin">Quản trị viên</Option>
+              <Option value="owner">Người bán</Option>
+              <Option value="seeker">Người mua</Option>
+            </Select>
+
+            <Input.Search
+              placeholder="Tìm theo tên hoặc email"
+              allowClear
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ width: 250 }}
+            />
+          </Space>
         </div>
 
         <Table
           rowKey="_id"
           columns={columns}
-          dataSource={users}
+          dataSource={filteredUsers}
           loading={loading}
         />
 

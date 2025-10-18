@@ -1,6 +1,10 @@
 import { api } from "@/lib/api";
 
 export const ListingService = {
+  getAllListings: async () => {
+    const response = await api.get(`/api/listings`);
+    return response.data;
+  },
   getListingsBySeller: async () => {
     const userString = localStorage.getItem("user");
     if (!userString) {
