@@ -21,6 +21,7 @@ import {
   EditOutlined,
   DeleteOutlined,
   UploadOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import OwnerLayout from "../OwnerLayout";
 import { ListingService } from "@/service/listing.service";
@@ -29,6 +30,7 @@ import { api } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
 
 const { Option } = Select;
+const { confirm } = Modal;
 
 interface Listing {
   _id: string;
@@ -44,7 +46,6 @@ interface Listing {
   images: string[];
   status: "active" | "sold" | "pending";
 }
-
 export default function OwnerListingsPage() {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(false);
@@ -82,7 +83,7 @@ export default function OwnerListingsPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      await api.delete(`/api/listings/${id}`);
+      await ListingService.deleteListing(id);
       message.success("Xóa thành công");
       fetchListings();
     } catch {
@@ -206,7 +207,19 @@ export default function OwnerListingsPage() {
             <Button
               icon={<DeleteOutlined />}
               danger
-              onClick={() => handleDelete(record._id)}
+              onClick={() =>
+                confirm({
+                  title: "Xác nhận xóa",
+                  icon: <ExclamationCircleOutlined />,
+                  content: "Bạn có chắc chắn muốn xóa bài đăng này không?",
+                  okText: "Xóa",
+                  okType: "danger",
+                  cancelText: "Hủy",
+                  onOk() {
+                    handleDelete(record._id);
+                  },
+                })
+              }
             />
           )}
         </Space>

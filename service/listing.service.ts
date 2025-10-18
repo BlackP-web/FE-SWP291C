@@ -25,4 +25,8 @@ export const ListingService = {
     const response = await api.patch(`/api/listings/${listingId}`, payload);
     return response.data;
   },
+  deleteListing: async (listingId: string) => {
+    const response = await api.delete(`/api/listings/${listingId}`);
+    return response.data;
+  },
 };
