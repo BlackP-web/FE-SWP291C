@@ -123,7 +123,7 @@ export default function OwnerListingsPage() {
         images: fileList.map((f) => f.url || f.name),
       };
       if (editingListing) {
-        await api.patch(`/api/listings/${editingListing._id}`, payload);
+        await ListingService.updateListing(editingListing._id, payload);
         message.success("Cập nhật thành công");
       } else {
         await ListingService.createListing(payload);
@@ -154,7 +154,20 @@ export default function OwnerListingsPage() {
       key: "brandModel",
       render: (_, record: Listing) => <>{record.brand?.name || record.brand}</>,
     },
-    { title: "Loại", dataIndex: "type", key: "type" },
+    {
+      title: "Loại",
+      dataIndex: "type",
+      key: "type",
+      render: (type: string) => {
+        let label =
+          type === "car"
+            ? "Xe điện"
+            : type === "battery"
+            ? "Pin xe điện"
+            : type;
+        return label;
+      },
+    },
     {
       title: "Giá",
       dataIndex: "price",
@@ -172,7 +185,15 @@ export default function OwnerListingsPage() {
             : status === "pending"
             ? "orange"
             : "red";
-        return <Tag color={color}>{status.toUpperCase()}</Tag>;
+
+        let label =
+          status === "active"
+            ? "Đăng bán"
+            : status === "pending"
+            ? "Lưu trữ"
+            : "Đã bán";
+
+        return <Tag color={color}>{label}</Tag>;
       },
     },
     {
@@ -181,11 +202,13 @@ export default function OwnerListingsPage() {
       render: (_: any, record: Listing) => (
         <Space>
           <Button icon={<EditOutlined />} onClick={() => handleEdit(record)} />
-          <Button
-            icon={<DeleteOutlined />}
-            danger
-            onClick={() => handleDelete(record._id)}
-          />
+          {record.status !== "sold" && (
+            <Button
+              icon={<DeleteOutlined />}
+              danger
+              onClick={() => handleDelete(record._id)}
+            />
+          )}
         </Space>
       ),
     },

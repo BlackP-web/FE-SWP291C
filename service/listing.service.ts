@@ -21,4 +21,8 @@ export const ListingService = {
     const response = await api.post("/api/listings", payload);
     return response.data;
   },
+  updateListing: async (listingId: string, payload: any) => {
+    const response = await api.patch(`/api/listings/${listingId}`, payload);
+    return response.data;
+  },
 };
