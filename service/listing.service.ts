@@ -5,6 +5,22 @@ export const ListingService = {
     const response = await api.get(`/api/listings`);
     return response.data;
   },
+  getById: async (listingId: string) => {
+    const response = await api.get(`/api/listings/${listingId}`);
+    return response.data;
+  },
+  approve: async (listingId: string) => {
+    const response = await api.patch(`/api/listings/${listingId}/status`, {
+      status: "approved",
+    });
+    return response.data;
+  },
+  reject: async (listingId: string) => {
+    const response = await api.patch(`/api/listings/${listingId}/status`, {
+      status: "rejected",
+    });
+    return response.data;
+  },
   getListingsBySeller: async () => {
     const userString = localStorage.getItem("user");
     if (!userString) {
