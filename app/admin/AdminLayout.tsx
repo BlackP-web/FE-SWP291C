@@ -40,6 +40,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       path: "/admin/listings",
     },
     {
+      key: "/admin/brands",
+      icon: <FiFileText />,
+      label: "Quản lý nhãn hiệu",
+      path: "/admin/brands",
+    },
+    {
       key: "/admin/orders",
       icon: <FiShoppingCart />,
       label: "Quản lý giao dịch",

@@ -51,7 +51,6 @@ export default function AdminListingsPage() {
   const [currentListing, setCurrentListing] = useState<Listing | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
 
-  // Load all listings
   const loadListings = async () => {
     setLoading(true);
     try {
@@ -71,12 +70,9 @@ export default function AdminListingsPage() {
     loadListings();
   }, []);
 
-  // Filtered + searched list
   const filtered = useMemo(() => {
     return listings.filter((l) => {
-      // status filter
       if (filterStatus && l.status !== filterStatus) return false;
-      // search in title
       if (searchText) {
         return l.title?.toLowerCase().includes(searchText.toLowerCase());
       }
@@ -84,12 +80,11 @@ export default function AdminListingsPage() {
     });
   }, [listings, filterStatus, searchText]);
 
-  // open detail modal (fetch fresh detail)
   const openDetail = async (id: string) => {
     setDetailLoading(true);
     try {
       const data = await ListingService.getById(id);
-      const detail = data?.listing ?? data; // adapt if API returns { listing }
+      const detail = data?.listing ?? data;
       setCurrentListing(detail);
       setDetailModalOpen(true);
     } catch (err) {
