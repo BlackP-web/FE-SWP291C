@@ -1,105 +1,206 @@
 "use client";
-import React, { useState } from "react";
-import { Table, Tag, Select, Button, message } from "antd";
+
+import { useEffect, useState } from "react";
+import {
+  Table,
+  Button,
+  Tag,
+  Modal,
+  Form,
+  Input,
+  Select,
+  Space,
+  Popconfirm,
+  message,
+} from "antd";
+import {
+  EditOutlined,
+  StopOutlined,
+  CheckCircleOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
+import { UserService } from "@/service/user.service";
+import { AuthService } from "@/service/auth.service";
 import AdminLayout from "../AdminLayout";
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: "ADMIN" | "USER";
-}
-
-const mockUsers: User[] = [
-  { id: 1, name: "Super Admin", email: "admin1@gmail.com", role: "ADMIN" },
-  { id: 2, name: "John Doe", email: "user1@gmail.com", role: "USER" },
-  { id: 3, name: "Jane Doe", email: "user2@gmail.com", role: "USER" },
-  { id: 4, name: "Another Admin", email: "admin2@gmail.com", role: "ADMIN" },
-];
-
-const currentUserId = 1; // Ví dụ: Admin đang đăng nhập có id = 1
+const { Option } = Select;
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<User[]>(mockUsers);
-  const [selectedRoles, setSelectedRoles] = useState<{
-    [key: number]: "ADMIN" | "USER";
-  }>({});
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<any | null>(null);
+  const [form] = Form.useForm();
 
-  const updateUserRole = async (userId: number, newRole: "ADMIN" | "USER") => {
-    // TODO: Gọi API thật ở đây
-    setUsers((prev) =>
-      prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
-    );
-    message.success("Updated role successfully!");
+  const currentUserRole = "admin"; // mock tạm, có thể lấy từ auth context
+
+  const loadUsers = async () => {
+    setLoading(true);
+    try {
+      const data = await UserService.getAll();
+      setUsers(data);
+    } catch (err) {
+      message.error("Không thể tải danh sách người dùng");
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  const openAddModal = () => {
+    setEditingUser(null);
+    form.resetFields();
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (user: any) => {
+    setEditingUser(user);
+    form.setFieldsValue(user);
+    setIsModalOpen(true);
+  };
+
+  const handleSave = async () => {
+    try {
+      const values = await form.validateFields();
+      if (editingUser) {
+        await UserService.update(editingUser._id, values);
+        message.success("Cập nhật người dùng thành công");
+      } else {
+        await AuthService.register(values);
+        message.success("Thêm người dùng thành công");
+      }
+      setIsModalOpen(false);
+      loadUsers();
+    } catch (err) {
+      message.error("Có lỗi xảy ra");
+    }
+  };
+
+  const handleBanToggle = async (id: string, blocked: boolean) => {
+    try {
+      await UserService.banToggle(id, {});
+      message.success(blocked ? "Đã bỏ chặn" : "Đã chặn người dùng");
+      loadUsers();
+    } catch {
+      message.error("Thao tác thất bại");
+    }
   };
 
   const columns = [
+    { title: "Tên", dataIndex: "name", key: "name" },
+    { title: "Email", dataIndex: "email", key: "email" },
     {
-      title: "Name",
-      dataIndex: "name",
-    },
-    {
-      title: "Email",
-      dataIndex: "email",
-    },
-    {
-      title: "Role",
+      title: "Vai trò",
       dataIndex: "role",
-      render: (role: string) => (
-        <Tag color={role === "ADMIN" ? "red" : "green"}>{role}</Tag>
+      key: "role",
+      render: (role: string) => {
+        const color =
+          role === "admin" ? "red" : role === "owner" ? "blue" : "green";
+        return <Tag color={color}>{role.toUpperCase()}</Tag>;
+      },
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "blocked",
+      key: "blocked",
+      render: (blocked: boolean) => (
+        <Tag color={blocked ? "red" : "green"}>
+          {blocked ? "Bị chặn" : "Hoạt động"}
+        </Tag>
       ),
     },
     {
-      title: "Change Role",
-      render: (_: any, record: User) => {
-        const isOtherAdmin =
-          record.role === "ADMIN" && record.id !== currentUserId;
-
-        return (
-          <Select
-            disabled={isOtherAdmin}
-            value={selectedRoles[record.id] || record.role}
-            onChange={(value: "ADMIN" | "USER") =>
-              setSelectedRoles((prev) => ({ ...prev, [record.id]: value }))
-            }
-          >
-            <Select.Option value="ADMIN">ADMIN</Select.Option>
-            <Select.Option value="USER">USER</Select.Option>
-          </Select>
-        );
-      },
-    },
-    {
-      title: "Confirm",
-      render: (_: any, record: User) => {
-        const isOtherAdmin =
-          record.role === "ADMIN" && record.id !== currentUserId;
-
-        return (
-          <Button
-            type="primary"
-            disabled={isOtherAdmin || selectedRoles[record.id] === record.role}
-            onClick={() =>
-              updateUserRole(record.id, selectedRoles[record.id] || record.role)
-            }
-          >
-            Confirm
-          </Button>
-        );
-      },
+      title: "Hành động",
+      key: "actions",
+      render: (_: any, record: any) => (
+        <Space>
+          {record.role !== "admin" && (
+            <Button
+              icon={<EditOutlined />}
+              onClick={() => openEditModal(record)}
+            />
+          )}
+          {record.role !== "admin" && (
+            <Popconfirm
+              title={
+                record.blocked ? "Mở chặn người dùng?" : "Chặn người dùng?"
+              }
+              onConfirm={() => handleBanToggle(record._id, record.blocked)}
+              okText="Có"
+              cancelText="Không"
+            >
+              <Button
+                icon={
+                  record.blocked ? <CheckCircleOutlined /> : <StopOutlined />
+                }
+                danger={!record.blocked}
+              />
+            </Popconfirm>
+          )}
+        </Space>
+      ),
     },
   ];
 
   return (
     <AdminLayout>
-      <div style={{ padding: 24 }}>
-        <h2>Quản lý người dùng</h2>
+      <div className="p-4 bg-white rounded shadow">
+        <div className="flex justify-between mb-4">
+          <h2 className="text-xl font-bold">Quản lý người dùng</h2>
+          <Button type="primary" icon={<PlusOutlined />} onClick={openAddModal}>
+            Thêm mới
+          </Button>
+        </div>
+
         <Table
-          rowKey="id"
+          rowKey="_id"
           columns={columns}
           dataSource={users}
-          pagination={false}
+          loading={loading}
         />
+
+        <Modal
+          title={editingUser ? "Chỉnh sửa người dùng" : "Thêm người dùng"}
+          open={isModalOpen}
+          onCancel={() => setIsModalOpen(false)}
+          onOk={handleSave}
+          okText="Lưu"
+          cancelText="Hủy"
+        >
+          <Form form={form} layout="vertical">
+            <Form.Item name="name" label="Tên" rules={[{ required: true }]}>
+              <Input />
+            </Form.Item>
+
+            <Form.Item name="email" label="Email" rules={[{ required: true }]}>
+              <Input disabled={!!editingUser} />
+            </Form.Item>
+
+            {!editingUser && (
+              <Form.Item
+                name="password"
+                label="Mật khẩu"
+                rules={[{ required: true }]}
+              >
+                <Input.Password />
+              </Form.Item>
+            )}
+
+            <Form.Item name="phone" label="Số điện thoại">
+              <Input />
+            </Form.Item>
+
+            <Form.Item name="role" label="Vai trò" rules={[{ required: true }]}>
+              <Select disabled={editingUser?.role === "admin"}>
+                <Option value="admin">Admin</Option>
+                <Option value="owner">Owner</Option>
+                <Option value="seeker">Seeker</Option>
+              </Select>
+            </Form.Item>
+          </Form>
+        </Modal>
       </div>
     </AdminLayout>
   );
