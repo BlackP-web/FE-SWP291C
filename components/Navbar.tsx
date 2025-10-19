@@ -107,6 +107,7 @@ const Navbar = () => {
                     ? "text-tesla-black hover:text-tesla-dark-gray"
                     : "text-tesla-white hover:text-tesla-white/80 drop-shadow-lg"
                 }`}
+                onClick={() => router.push("/cart")}
               >
                 <ShoppingCart className="w-5 h-5" />
               </motion.button>
