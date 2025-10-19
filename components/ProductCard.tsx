@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Heart, Eye, Calendar, Gauge, Battery } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface ProductCardProps {
   id: string;
@@ -36,7 +37,7 @@ const ProductCard = ({
 }: ProductCardProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
-
+  const router = useRouter();
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -191,6 +192,7 @@ const ProductCard = ({
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             className="flex-1 btn-tesla-small"
+            onClick={() => router.push(`/vehicles/${id}`)}
           >
             Xem chi tiết
           </motion.button>
