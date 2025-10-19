@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import { ListingService } from "@/service/listing.service";
 import { useRouter } from "next/navigation";
 import RelatedVehicles from "@/components/RelatedVehicles";
+import Reviews from "@/components/Reviews";
 
 interface Seller {
   _id: string;
@@ -191,7 +192,7 @@ export default function VehicleDetailPage({
         </div>
       </section>
       <RelatedVehicles currentType={listing.type} currentId={listing._id} />
-
+      <Reviews listingId={listing._id} />
       <Footer />
     </main>
   );
