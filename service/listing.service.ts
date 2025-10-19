@@ -5,6 +5,10 @@ export const ListingService = {
     const response = await api.get(`/api/listings`);
     return response.data;
   },
+  getListingByType: async (type: string) => {
+    const response = await api.get(`/api/listings?type=${type}`);
+    return response.data;
+  },
   getById: async (listingId: string) => {
     const response = await api.get(`/api/listings/${listingId}`);
     return response.data;

@@ -230,7 +230,9 @@ export default function AdminListingsPage() {
       width: 260,
       render: (_: any, record: Listing) => {
         const canApprove =
-          record.status === "pending" || record.status === "rejected";
+          record.status === "pending" ||
+          record.status === "rejected" ||
+          record.status === "active";
         const canReject =
           record.status === "pending" || record.status === "approved";
         const cannotChange = record.status === "sold";
