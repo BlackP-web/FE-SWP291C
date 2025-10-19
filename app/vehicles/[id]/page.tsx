@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { ListingService } from "@/service/listing.service";
 import { useRouter } from "next/navigation";
+import RelatedVehicles from "@/components/RelatedVehicles";
 
 interface Seller {
   _id: string;
@@ -181,14 +182,15 @@ export default function VehicleDetailPage({
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex-1 px-6 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all duration-300"
+                className="flex-1 px-6 py-3 bg-green-500 text-white font-medium rounded-xl shadow-lg hover:bg-green-600 transition-all duration-300"
               >
-                Thêm vào yêu thích
+                Mua ngay
               </motion.button>
             </div>
           </div>
         </div>
       </section>
+      <RelatedVehicles currentType={listing.type} currentId={listing._id} />
 
       <Footer />
     </main>
