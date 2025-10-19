@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Button, Table, Popconfirm, Typography, Space } from "antd";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ProductCard from "@/components/ProductCard";
 import { ListingService } from "@/service/listing.service";
 
 interface Seller {
@@ -35,15 +35,14 @@ interface Listing {
 }
 
 export default function CartPage() {
-  // Fake cart data tạm thời
   const [cart, setCart] = useState<Listing[]>([]);
 
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        // Tạm thời lấy 3 listing đầu từ API để giả lập giỏ hàng
         const res = await ListingService.getListingByType("car");
-        setCart(res.listings.slice(0, 3));
+        // Tạm thời lấy 5 item làm demo
+        setCart(res.listings.slice(0, 5));
       } catch (err) {
         console.error(err);
       }
@@ -55,12 +54,6 @@ export default function CartPage() {
     setCart((prev) => prev.filter((item) => item._id !== id));
   };
 
-  const clearCart = () => {
-    setCart([]);
-  };
-
-  const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
-
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -68,69 +61,120 @@ export default function CartPage() {
       minimumFractionDigits: 0,
     }).format(price);
 
+  const handleBuyNow = (item: Listing) => {
+    alert(`Mua ngay: ${item.title} - ${formatPrice(item.price)}`);
+  };
+
+  const columns = [
+    {
+      title: "Hình ảnh",
+      dataIndex: "images",
+      key: "image",
+      render: (images: string[]) => (
+        <img
+          src={images?.[0] || "https://via.placeholder.com/80"}
+          alt="listing"
+          className="w-20 h-12 object-cover rounded-lg"
+        />
+      ),
+    },
+    {
+      title: "Tên xe",
+      dataIndex: "title",
+      key: "title",
+      render: (text: string, record: Listing) => (
+        <div>
+          <Typography.Text strong>{text}</Typography.Text>
+          <div className="text-gray-500 text-sm">
+            {record.brand.name} • {record.year}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Số km",
+      dataIndex: "kmDriven",
+      key: "km",
+      render: (km: number) => <span>{km.toLocaleString()} km</span>,
+    },
+    {
+      title: "Pin",
+      dataIndex: "batteryCapacity",
+      key: "battery",
+      render: (battery: number) => <span>{battery}%</span>,
+    },
+    {
+      title: "Giá",
+      dataIndex: "price",
+      key: "price",
+      render: (price: number) => <span>{formatPrice(price)}</span>,
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (status: string) => (
+        <span
+          className={status === "approved" ? "text-green-600" : "text-red-600"}
+        >
+          {status}
+        </span>
+      ),
+    },
+    {
+      title: "Hành động",
+      key: "action",
+      render: (_: any, record: Listing) => (
+        <Space>
+          <Button type="primary" onClick={() => handleBuyNow(record)}>
+            Mua ngay
+          </Button>
+          <Popconfirm
+            title="Bạn có chắc chắn muốn xóa?"
+            onConfirm={() => removeFromCart(record._id)}
+          >
+            <Button danger>Xóa</Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
+
+  const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
+
   return (
     <main className="min-h-screen bg-tesla-white">
       <Navbar />
-
-      <section className="pt-24 pb-12">
-        <div className="container-tesla">
-          <h1 className="text-3xl font-semibold text-tesla-black mb-8">
-            Giỏ hàng của bạn
-          </h1>
-
-          {cart.length === 0 ? (
-            <div className="text-center text-gray-500 py-20">
-              Giỏ hàng của bạn đang trống.
+      <section className="pt-24 pb-12 container-tesla">
+        <h1 className="text-3xl font-semibold text-tesla-black mb-6">
+          Giỏ hàng
+        </h1>
+        {cart.length === 0 ? (
+          <div className="text-center text-gray-500 py-20">Giỏ hàng trống</div>
+        ) : (
+          <>
+            <Table
+              dataSource={cart}
+              columns={columns}
+              rowKey="_id"
+              pagination={false}
+            />
+            <div className="flex justify-between items-center mt-6 bg-gray-50 p-4 rounded-xl shadow-sm">
+              <span className="text-xl font-medium">
+                Tổng tiền: {formatPrice(totalPrice)}
+              </span>
+              <Button
+                type="primary"
+                onClick={() =>
+                  alert(`Thanh toán toàn bộ: ${formatPrice(totalPrice)}`)
+                }
+              >
+                Thanh toán toàn bộ
+              </Button>
             </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-                {cart.map((item) => (
-                  <div key={item._id} className="relative">
-                    <ProductCard
-                      id={item._id}
-                      title={item.title}
-                      brand={item.brand.name}
-                      model={item.type}
-                      year={item.year}
-                      mileage={item.kmDriven}
-                      price={item.price}
-                      image={
-                        item.images?.[0] ||
-                        "https://via.placeholder.com/400x300"
-                      }
-                      batteryHealth={item.batteryCapacity}
-                      condition="good"
-                      type={item.type as "vehicle" | "battery"}
-                      isVerified={true}
-                    />
-                    <button
-                      onClick={() => removeFromCart(item._id)}
-                      className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full shadow-lg hover:bg-red-600 transition-colors duration-300"
-                    >
-                      Xóa
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              {/* Tổng giá & Clear Cart */}
-              <div className="flex flex-col md:flex-row items-center justify-between bg-gray-50 p-6 rounded-xl shadow-sm">
-                <div className="text-xl font-medium text-tesla-black mb-4 md:mb-0">
-                  Tổng tiền: {formatPrice(totalPrice)}
-                </div>
-                <button
-                  onClick={clearCart}
-                  className="px-6 py-3 bg-red-500 text-white rounded-xl shadow-lg hover:bg-red-600 transition-colors duration-300"
-                >
-                  Xóa tất cả
-                </button>
-              </div>
-            </>
-          )}
-        </div>
+          </>
+        )}
       </section>
-
       <Footer />
     </main>
   );
