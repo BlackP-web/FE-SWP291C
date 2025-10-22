@@ -68,7 +68,7 @@ export default function CheckoutPage() {
     const payload = {
       buyer: user?._id,
       seller: listing.seller._id,
-      listingId: listing._id,
+      listing: listing._id,
       price: listing.price,
       paymentMethod,
     };
