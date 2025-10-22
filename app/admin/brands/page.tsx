@@ -1,10 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Table, Button, Modal, Form, Input, Space, Tag, message } from "antd";
-import { EditOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  Table,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Space,
+  Tag,
+  message,
+  Upload,
+} from "antd";
+import { EditOutlined, PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import AdminLayout from "../AdminLayout";
 import { BrandService } from "@/service/brand.service";
+import { UploadService } from "@/service/upload.service";
 
 export default function AdminBrandsPage() {
   const [brands, setBrands] = useState<any[]>([]);
@@ -12,6 +23,7 @@ export default function AdminBrandsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBrand, setEditingBrand] = useState<any | null>(null);
   const [form] = Form.useForm();
+  const [fileList, setFileList] = useState<any[]>([]);
 
   const loadBrands = async () => {
     setLoading(true);
@@ -31,7 +43,26 @@ export default function AdminBrandsPage() {
   const openModal = (brand: any | null = null) => {
     setEditingBrand(brand);
     form.setFieldsValue(brand || { name: "", country: "", logo: "" });
+    setFileList(
+      brand?.logo ? [{ url: brand.logo, name: "logo", status: "done" }] : []
+    );
     setIsModalOpen(true);
+  };
+
+  const handleUpload = async ({ file }: any) => {
+    try {
+      const res = await UploadService.uploadSingleImage(file);
+      const imageUrl = res?.data?.url;
+
+      if (!imageUrl) throw new Error("Không tìm thấy URL ảnh");
+
+      form.setFieldValue("logo", imageUrl);
+      setFileList([{ url: imageUrl, name: file.name, status: "done" }]);
+      message.success("Tải logo thành công!");
+    } catch (err) {
+      console.error(err);
+      message.error("Upload thất bại");
+    }
   };
 
   const handleSave = async () => {
@@ -116,8 +147,23 @@ export default function AdminBrandsPage() {
             <Form.Item name="country" label="Quốc gia">
               <Input />
             </Form.Item>
-            <Form.Item name="logo" label="Logo (URL)">
-              <Input placeholder="https://example.com/logo.png" />
+
+            <Form.Item label="Logo">
+              <Upload
+                listType="picture-card"
+                fileList={fileList}
+                customRequest={handleUpload}
+                onRemove={() => {
+                  setFileList([]);
+                  form.setFieldValue("logo", "");
+                }}
+                maxCount={1}
+              >
+                {fileList.length === 0 && <UploadOutlined />}
+              </Upload>
+              <Form.Item name="logo" hidden>
+                <Input />
+              </Form.Item>
             </Form.Item>
           </Form>
         </Modal>
