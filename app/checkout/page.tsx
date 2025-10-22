@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ListingService } from "@/service/listing.service";
 import { useAuth } from "@/hooks/useAuth";
-import { motion } from "framer-motion";
+import { m, motion } from "framer-motion";
 import {
   CreditCard,
   Wallet,
@@ -14,7 +14,10 @@ import {
   Car,
   DollarSign,
   Coins,
+  ArrowLeft,
 } from "lucide-react";
+import { OrderService } from "@/service/order.service";
+import { message } from "antd";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -24,9 +27,9 @@ export default function CheckoutPage() {
   const { user, isAuthenticated } = useAuth();
   const [listing, setListing] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [paymentMethod, setPaymentMethod] = useState<"bank" | "cash" | null>(
-    null
-  );
+  const [paymentMethod, setPaymentMethod] = useState<
+    "bank" | "cash" | "deposit" | null
+  >(null);
 
   useEffect(() => {
     if (!listingId) return;
@@ -50,7 +53,7 @@ export default function CheckoutPage() {
       minimumFractionDigits: 0,
     }).format(price);
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     if (!isAuthenticated) {
       alert("⚠️ Vui lòng đăng nhập để mua xe.");
       router.push("/login");
@@ -62,12 +65,21 @@ export default function CheckoutPage() {
       return;
     }
 
-    alert(
-      `✅ Thanh toán ${
-        paymentMethod === "bank" ? "chuyển khoản" : "tiền mặt"
-      } thành công!`
-    );
-    router.push("/thankyou");
+    const payload = {
+      buyer: user?._id,
+      seller: listing.seller._id,
+      listingId: listing._id,
+      price: listing.price,
+      paymentMethod,
+    };
+    try {
+      await OrderService.create(payload);
+      message.success("Thanh toán thành công!");
+      router.push("/thankyou");
+    } catch (error) {
+      message.error("Thanh toán thất bại. Vui lòng thử lại.");
+      console.error("Payment error:", error);
+    }
   };
 
   if (loading)
@@ -79,8 +91,14 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-20 px-4">
+      <button
+        onClick={() => router.back()}
+        className="flex items-center gap-1 text-gray-600 hover:text-gray-900 transition-all"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        <span>Quay lại</span>
+      </button>
       <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-lg p-8 grid grid-cols-1 md:grid-cols-2 gap-10">
-        {/* LEFT - Thông tin xe */}
         <div>
           <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
             <Car className="text-blue-600" /> Thông tin xe
@@ -107,7 +125,6 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {/* RIGHT - Người bán + Thanh toán */}
         <div>
           <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
             <User className="text-blue-600" /> Người bán
