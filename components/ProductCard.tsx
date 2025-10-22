@@ -100,17 +100,21 @@ const ProductCard = ({
         <div
           className={`absolute top-8 left-3 px-3 py-1 text-xs font-semibold rounded-full shadow-md ${
             isVerified === "sold"
-              ? "bg-gray-700 text-white"
-              : isVerified === "approved" || isVerified === "active"
+              ? "bg-red-700 text-white"
+              : isVerified === "approved"
               ? "bg-green-500 text-white"
-              : "bg-orange-500 text-white"
+              : isVerified === "active"
+              ? "bg-orange-500 text-white"
+              : "bg-gray-500 text-white"
           }`}
         >
           {isVerified === "sold"
             ? "Đã bán"
-            : isVerified === "approved" || isVerified === "active"
+            : isVerified === "approved"
             ? "✓ Đã kiểm định"
-            : "Chưa kiểm định"}
+            : isVerified === "active"
+            ? "Chưa kiểm định"
+            : "Không xác định"}
         </div>
 
         {/* Condition Badge */}
