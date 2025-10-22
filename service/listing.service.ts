@@ -53,4 +53,11 @@ export const ListingService = {
     const response = await api.delete(`/api/listings/${listingId}`);
     return response.data;
   },
+  compareListings: async (listing1: string, listing2: string) => {
+    const response = await api.post(`/api/listings/compare`, {
+      listing1,
+      listing2,
+    });
+    return response.data;
+  },
 };

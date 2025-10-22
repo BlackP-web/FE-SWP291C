@@ -11,6 +11,7 @@ import RelatedVehicles from "@/components/RelatedVehicles";
 import Reviews from "@/components/Reviews";
 import { useAuth } from "@/hooks/useAuth";
 import { message } from "antd";
+import ModalCompareCars from "../ModalCompareCars";
 
 interface Seller {
   _id: string;
@@ -52,7 +53,7 @@ export default function VehicleDetailPage({
   const [isLiked, setIsLiked] = useState(false);
   const [mainImage, setMainImage] = useState<string>("");
   const { isAuthenticated } = useAuth();
-
+  const [showCompareModal, setShowCompareModal] = useState(false);
   useEffect(() => {
     if (!id) return;
     const fetchListing = async () => {
@@ -225,7 +226,19 @@ export default function VehicleDetailPage({
                 >
                   Liên hệ người bán
                 </motion.button>
-
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => setShowCompareModal(true)}
+                  className="flex-1 px-6 py-3 bg-blue-500 text-white rounded-xl font-medium shadow-lg hover:bg-blue-600 transition-all"
+                >
+                  So sánh
+                </motion.button>
+                <ModalCompareCars
+                  open={showCompareModal}
+                  onClose={() => setShowCompareModal(false)}
+                  listingId={listing._id}
+                />
                 <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
