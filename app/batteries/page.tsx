@@ -67,7 +67,7 @@ const BatteriesPage = () => {
                 }
                 batteryHealth={90}
                 condition={"good"}
-                type={"vehicle"}
+                type={"battery"}
                 isVerified={item.status}
               />
             ))}
