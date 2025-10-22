@@ -17,14 +17,14 @@ interface Listing {
   status?: string;
 }
 
-const PinsPage = () => {
+const BatteriesPage = () => {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const res = await ListingService.getListingByType("pin");
+        const res = await ListingService.getListingByType("battery");
 
         setListings(res?.listings || []);
       } catch (err) {
@@ -78,4 +78,4 @@ const PinsPage = () => {
   );
 };
 
-export default PinsPage;
+export default BatteriesPage;
