@@ -26,8 +26,8 @@ import {
 import OwnerLayout from "../OwnerLayout";
 import { ListingService } from "@/service/listing.service";
 import { BrandService } from "@/service/brand.service";
-import { api } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
+import { UploadService } from "@/service/upload.service";
 
 const { Option } = Select;
 const { confirm } = Modal;
@@ -46,6 +46,7 @@ interface Listing {
   images: string[];
   status: "active" | "sold" | "pending";
 }
+
 export default function OwnerListingsPage() {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(false);
@@ -55,6 +56,7 @@ export default function OwnerListingsPage() {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<any[]>([]);
   const { user } = useAuth();
+
   const fetchBrands = async () => {
     try {
       const res = await BrandService.getAllBrands();
@@ -97,7 +99,14 @@ export default function OwnerListingsPage() {
       ...listing,
       brand: listing.brand?._id,
     });
-    setFileList(listing.images.map((url) => ({ url })));
+    setFileList(
+      listing.images.map((url, index) => ({
+        uid: index.toString(),
+        name: `image-${index}`,
+        status: "done",
+        url,
+      }))
+    );
     setModalOpen(true);
   };
 
@@ -112,17 +121,31 @@ export default function OwnerListingsPage() {
     form.setFieldsValue({ model: null });
   };
 
+  const handleImageUpload = async ({ file, onSuccess, onError }: any) => {
+    try {
+      const res = await UploadService.uploadSingleImage(file);
+      onSuccess(res);
+    } catch (err) {
+      onError(err);
+    }
+  };
+
   const handleImageChange = ({ fileList }: any) => {
     setFileList(fileList);
   };
 
   const handleSubmit = async (values: any) => {
     try {
+      const imageUrls = fileList
+        .filter((f) => f.status === "done" && (f.url || f.response?.data?.url))
+        .map((f) => f.url || f.response.data.url);
+
       const payload = {
         ...values,
         seller: user?._id,
-        images: fileList.map((f) => f.url || f.name),
+        images: imageUrls,
       };
+
       if (editingListing) {
         await ListingService.updateListing(editingListing._id, payload);
         message.success("Cập nhật thành công");
@@ -130,6 +153,7 @@ export default function OwnerListingsPage() {
         await ListingService.createListing(payload);
         message.success("Tạo bài đăng thành công");
       }
+
       setModalOpen(false);
       fetchListings();
     } catch {
@@ -159,15 +183,8 @@ export default function OwnerListingsPage() {
       title: "Loại",
       dataIndex: "type",
       key: "type",
-      render: (type: string) => {
-        let label =
-          type === "car"
-            ? "Xe điện"
-            : type === "battery"
-            ? "Pin xe điện"
-            : type;
-        return label;
-      },
+      render: (type: string) =>
+        type === "car" ? "Xe điện" : type === "battery" ? "Pin xe điện" : type,
     },
     {
       title: "Giá",
@@ -186,14 +203,12 @@ export default function OwnerListingsPage() {
             : status === "pending"
             ? "orange"
             : "red";
-
         let label =
           status === "active"
             ? "Đăng bán"
             : status === "pending"
             ? "Lưu trữ"
             : "Đã bán";
-
         return <Tag color={color}>{label}</Tag>;
       },
     },
@@ -264,6 +279,7 @@ export default function OwnerListingsPage() {
                   <Input />
                 </Form.Item>
               </Col>
+
               <Col span={12}>
                 <Form.Item
                   name="type"
@@ -276,6 +292,7 @@ export default function OwnerListingsPage() {
                   </Select>
                 </Form.Item>
               </Col>
+
               <Col span={12}>
                 <Form.Item
                   name="brand"
@@ -301,16 +318,19 @@ export default function OwnerListingsPage() {
                   />
                 </Form.Item>
               </Col>
+
               <Col span={12}>
                 <Form.Item name="kmDriven" label="Số km đã đi">
                   <InputNumber min={0} style={{ width: "100%" }} />
                 </Form.Item>
               </Col>
+
               <Col span={12}>
                 <Form.Item name="batteryCapacity" label="Dung lượng pin (kWh)">
                   <InputNumber min={0} style={{ width: "100%" }} />
                 </Form.Item>
               </Col>
+
               <Col span={12}>
                 <Form.Item
                   name="price"
@@ -320,6 +340,7 @@ export default function OwnerListingsPage() {
                   <InputNumber min={0} style={{ width: "100%" }} />
                 </Form.Item>
               </Col>
+
               <Col span={12}>
                 <Form.Item
                   name="status"
@@ -332,18 +353,21 @@ export default function OwnerListingsPage() {
                   </Select>
                 </Form.Item>
               </Col>
-              {/* <Col span={24}>
+
+              <Col span={24}>
                 <Form.Item name="images" label="Hình ảnh">
                   <Upload
                     listType="picture-card"
+                    customRequest={handleImageUpload}
                     fileList={fileList}
-                    beforeUpload={() => false}
                     onChange={handleImageChange}
+                    multiple
+                    maxCount={5}
                   >
                     {fileList.length < 5 && <PlusOutlined />}
                   </Upload>
                 </Form.Item>
-              </Col> */}
+              </Col>
             </Row>
           </Form>
         </Modal>
