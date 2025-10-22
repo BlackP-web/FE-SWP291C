@@ -67,7 +67,7 @@ const VehiclesPage = () => {
                 batteryHealth={90}
                 condition={"good"}
                 type={"vehicle"}
-                isVerified={item.status === "approved"}
+                isVerified={item.status}
               />
             ))}
           </div>

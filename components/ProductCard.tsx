@@ -17,7 +17,7 @@ interface ProductCardProps {
   batteryHealth: number;
   condition: "excellent" | "good" | "fair" | "poor";
   type: "vehicle" | "battery";
-  isVerified?: boolean;
+  isVerified?: string;
 }
 
 const ProductCard = ({
@@ -31,7 +31,7 @@ const ProductCard = ({
   image,
   batteryHealth,
   condition,
-  isVerified = false,
+  isVerified,
 }: ProductCardProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const router = useRouter();
@@ -99,10 +99,18 @@ const ProductCard = ({
         {/* Verified Badge */}
         <div
           className={`absolute top-8 left-3 px-3 py-1 text-xs font-semibold rounded-full shadow-md ${
-            isVerified ? "bg-green-500 text-white" : "bg-orange-500 text-white"
+            isVerified === "sold"
+              ? "bg-gray-700 text-white"
+              : isVerified === "approved" || isVerified === "active"
+              ? "bg-green-500 text-white"
+              : "bg-orange-500 text-white"
           }`}
         >
-          {isVerified ? "✓ Đã kiểm định" : "Chưa kiểm định"}
+          {isVerified === "sold"
+            ? "Đã bán"
+            : isVerified === "approved" || isVerified === "active"
+            ? "✓ Đã kiểm định"
+            : "Chưa kiểm định"}
         </div>
 
         {/* Condition Badge */}

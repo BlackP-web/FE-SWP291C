@@ -210,34 +210,35 @@ export default function VehicleDetailPage({
               <p className="text-gray-700">SĐT: {listing.seller.phone}</p>
             </div>
 
-            {/* Actions */}
-            <div className="mt-6 flex gap-4">
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() =>
-                  handleRequireLogin("liên hệ người bán") &&
-                  message.success(
-                    `Liên hệ ${listing.seller.name} qua số ${listing.seller.phone}`
-                  )
-                }
-                className="flex-1 px-6 py-3 bg-black text-white rounded-xl font-medium shadow-lg hover:bg-gray-800 transition-all"
-              >
-                Liên hệ người bán
-              </motion.button>
+            {listing.status !== "sold" && (
+              <div className="mt-6 flex gap-4">
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() =>
+                    handleRequireLogin("liên hệ người bán") &&
+                    message.success(
+                      `Liên hệ ${listing.seller.name} qua số ${listing.seller.phone}`
+                    )
+                  }
+                  className="flex-1 px-6 py-3 bg-black text-white rounded-xl font-medium shadow-lg hover:bg-gray-800 transition-all"
+                >
+                  Liên hệ người bán
+                </motion.button>
 
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() =>
-                  handleRequireLogin("mua ngay") &&
-                  message.success("Chuyển sang trang thanh toán...")
-                }
-                className="flex-1 px-6 py-3 bg-green-500 text-white rounded-xl font-medium shadow-lg hover:bg-green-600 transition-all"
-              >
-                Mua ngay
-              </motion.button>
-            </div>
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() =>
+                    handleRequireLogin("mua ngay") &&
+                    message.success("Chuyển sang trang thanh toán...")
+                  }
+                  className="flex-1 px-6 py-3 bg-green-500 text-white rounded-xl font-medium shadow-lg hover:bg-green-600 transition-all"
+                >
+                  Mua ngay
+                </motion.button>
+              </div>
+            )}
           </div>
         </div>
       </section>
