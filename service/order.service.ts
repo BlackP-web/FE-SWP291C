@@ -5,4 +5,14 @@ export const OrderService = {
     const response = await api.post("/api/orders", payload);
     return response.data;
   },
+  getOrdersBySeller: async (sellerId: string) => {
+    const response = await api.get(`/api/orders/seller/${sellerId}`);
+    return response.data;
+  },
+  updateStatus: async (orderId: string, status: string) => {
+    const response = await api.patch(`/api/orders/${orderId}/status`, {
+      status,
+    });
+    return response.data;
+  },
 };

@@ -29,7 +29,7 @@ export default function OwnerLayout({ children }: OwnerLayoutProps) {
     {
       key: "/owner/orders",
       icon: <FiShoppingCart />,
-      label: "Quản lý đơn thuê",
+      label: "Quản lý đơn hàng",
       path: "/owner/orders",
     },
     {
