@@ -197,18 +197,39 @@ export default function OwnerListingsPage() {
       dataIndex: "status",
       key: "status",
       render: (status: string) => {
-        let color =
-          status === "active"
-            ? "green"
-            : status === "pending"
-            ? "orange"
-            : "red";
-        let label =
-          status === "active"
-            ? "Đăng bán"
-            : status === "pending"
-            ? "Lưu trữ"
-            : "Đã bán";
+        let color: string;
+        let label: string;
+
+        switch (status) {
+          case "active":
+            color = "green";
+            label = "Đăng bán";
+            break;
+          case "sold":
+            color = "volcano";
+            label = "Đã bán";
+            break;
+          case "approved":
+            color = "blue";
+            label = "Đã kiểm định";
+            break;
+          case "pending":
+            color = "orange";
+            label = "Lưu trữ";
+            break;
+          case "processing":
+            color = "purple";
+            label = "Lên hồ sơ";
+            break;
+          case "rejected":
+            color = "red";
+            label = "Vi phạm";
+            break;
+          default:
+            color = "default";
+            label = status;
+        }
+
         return <Tag color={color}>{label}</Tag>;
       },
     },
@@ -217,25 +238,30 @@ export default function OwnerListingsPage() {
       key: "actions",
       render: (_: any, record: Listing) => (
         <Space>
-          <Button icon={<EditOutlined />} onClick={() => handleEdit(record)} />
           {record.status !== "sold" && (
-            <Button
-              icon={<DeleteOutlined />}
-              danger
-              onClick={() =>
-                confirm({
-                  title: "Xác nhận xóa",
-                  icon: <ExclamationCircleOutlined />,
-                  content: "Bạn có chắc chắn muốn xóa bài đăng này không?",
-                  okText: "Xóa",
-                  okType: "danger",
-                  cancelText: "Hủy",
-                  onOk() {
-                    handleDelete(record._id);
-                  },
-                })
-              }
-            />
+            <>
+              <Button
+                icon={<EditOutlined />}
+                onClick={() => handleEdit(record)}
+              />
+              <Button
+                icon={<DeleteOutlined />}
+                danger
+                onClick={() =>
+                  confirm({
+                    title: "Xác nhận xóa",
+                    icon: <ExclamationCircleOutlined />,
+                    content: "Bạn có chắc chắn muốn xóa bài đăng này không?",
+                    okText: "Xóa",
+                    okType: "danger",
+                    cancelText: "Hủy",
+                    onOk() {
+                      handleDelete(record._id);
+                    },
+                  })
+                }
+              />
+            </>
           )}
         </Space>
       ),
