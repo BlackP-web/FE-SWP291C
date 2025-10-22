@@ -1,9 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Heart, Eye, Calendar, Gauge, Battery } from "lucide-react";
+import { Heart, Eye, Gauge, Battery } from "lucide-react";
 import { useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 interface ProductCardProps {
@@ -32,23 +31,20 @@ const ProductCard = ({
   image,
   batteryHealth,
   condition,
-  type,
   isVerified = false,
 }: ProductCardProps) => {
   const [isLiked, setIsLiked] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
   const router = useRouter();
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
+
+  const formatPrice = (price: number) =>
+    new Intl.NumberFormat("vi-VN", {
       style: "currency",
       currency: "VND",
       minimumFractionDigits: 0,
     }).format(price);
-  };
 
-  const formatMileage = (mileage: number) => {
-    return new Intl.NumberFormat("vi-VN").format(mileage);
-  };
+  const formatMileage = (mileage: number) =>
+    new Intl.NumberFormat("vi-VN").format(mileage);
 
   const getConditionColor = (condition: string) => {
     switch (condition) {
@@ -84,122 +80,98 @@ const ProductCard = ({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
+      whileHover={{ y: -6 }}
+      transition={{ duration: 0.4 }}
       viewport={{ once: true }}
-      whileHover={{ y: -8 }}
-      className="bg-tesla-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group"
+      className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all overflow-hidden group"
     >
       {/* Image Container */}
-      <div className="relative h-64 overflow-hidden bg-gray-100">
+      <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
         <img
           src={image}
           alt={title}
-          // fill
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-          onLoad={() => setImageLoaded(true)}
-          onError={() => setImageLoaded(true)}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+          className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
         />
 
-        {/* Action Buttons */}
-        <div className="absolute top-4 right-4 flex flex-col space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <button
-            onClick={() => setIsLiked(!isLiked)}
-            className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 ${
-              isLiked
-                ? "bg-red-500 text-white shadow-lg"
-                : "bg-white/20 text-tesla-black hover:bg-white/30"
-            }`}
-          >
-            <Heart className={`w-4 h-4 ${isLiked ? "fill-current" : ""}`} />
-          </button>
-          <button className="p-2 rounded-full bg-white/20 text-tesla-black backdrop-blur-md hover:bg-white/30 transition-all duration-300 shadow-lg">
-            <Eye className="w-4 h-4" />
-          </button>
-        </div>
+        {/* Overlay gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
         {/* Verified Badge */}
-        {isVerified && (
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="absolute top-4 left-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg"
-          >
-            ✓ Đã kiểm định
-          </motion.div>
-        )}
-
-        {!isVerified && (
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="absolute top-4 left-4 bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg"
-          >
-            Chưa kiểm định
-          </motion.div>
-        )}
+        <div
+          className={`absolute top-8 left-3 px-3 py-1 text-xs font-semibold rounded-full shadow-md ${
+            isVerified ? "bg-green-500 text-white" : "bg-orange-500 text-white"
+          }`}
+        >
+          {isVerified ? "✓ Đã kiểm định" : "Chưa kiểm định"}
+        </div>
 
         {/* Condition Badge */}
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.3 }}
-          className={`absolute bottom-4 left-4 px-3 py-1 rounded-full text-xs font-medium shadow-lg ${getConditionColor(
+        <div
+          className={`absolute bottom-3 left-3 px-3 py-1 text-xs font-medium rounded-full ${getConditionColor(
             condition
           )}`}
         >
           {getConditionText(condition)}
-        </motion.div>
-      </div>
-
-      {/* Content */}
-      <div className="p-6">
-        {/* Title */}
-        <h3 className="text-xl font-medium text-tesla-black mb-2 group-hover:text-tesla-dark-gray transition-colors duration-300">
-          {title}
-        </h3>
-
-        {/* Brand & Model */}
-        <p className="text-tesla-dark-gray mb-4">
-          {brand} {model} • {year}
-        </p>
-
-        {/* Specs */}
-        <div className="space-y-2 mb-6">
-          <div className="flex items-center text-sm text-gray-700">
-            <Gauge className="w-4 h-4 mr-2" />
-            <span>{formatMileage(mileage)} km</span>
-          </div>
-          <div className="flex items-center text-sm text-gray-700">
-            <Battery className="w-4 h-4 mr-2" />
-            <span>Pin: {batteryHealth}%</span>
-          </div>
-        </div>
-
-        {/* Price */}
-        <div className="mb-6">
-          <div className="text-2xl font-light text-tesla-black mb-1">
-            {formatPrice(price)}
-          </div>
-          <div className="text-sm text-gray-600">Giá có thể thương lượng</div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex space-x-3">
+        <div className="absolute top-8 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <button
+            onClick={() => setIsLiked(!isLiked)}
+            className={`p-2 rounded-full shadow-lg transition-all duration-300 ${
+              isLiked ? "bg-red-500 text-white" : "bg-white/90 hover:bg-white"
+            }`}
+          >
+            <Heart className={`w-4 h-4 ${isLiked ? "fill-current" : ""}`} />
+          </button>
+          <button className="p-2 rounded-full bg-white/90 hover:bg-white text-gray-800 shadow-lg transition-all duration-300">
+            <Eye className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-5 flex flex-col justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-1 line-clamp-1">
+            {title}
+          </h3>
+          <p className="text-sm text-gray-600 mb-4">
+            {brand} {model} • {year}
+          </p>
+
+          <div className="space-y-2 mb-5">
+            <div className="flex items-center text-sm text-gray-700">
+              <Gauge className="w-4 h-4 mr-2 text-gray-500" />
+              <span>{formatMileage(mileage)} km</span>
+            </div>
+            <div className="flex items-center text-sm text-gray-700">
+              <Battery className="w-4 h-4 mr-2 text-gray-500" />
+              <span>Pin: {batteryHealth}%</span>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <div className="text-2xl font-bold text-gray-900">
+              {formatPrice(price)}
+            </div>
+            <div className="text-xs text-gray-500">Giá có thể thương lượng</div>
+          </div>
+        </div>
+
+        <div className="flex gap-3">
           <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="flex-1 btn-tesla-small"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="flex-1 bg-tesla-black text-white py-2 rounded-lg text-sm font-medium hover:bg-gray-900 transition-all"
             onClick={() => router.push(`/vehicles/${id}`)}
           >
             Xem chi tiết
           </motion.button>
           <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="flex-1 btn-tesla-secondary"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-all"
           >
             Liên hệ
           </motion.button>
