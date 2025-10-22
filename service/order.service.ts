@@ -15,4 +15,10 @@ export const OrderService = {
     });
     return response.data;
   },
+  updateContract: async (orderId: string, contractUrl: string) => {
+    const response = await api.patch(`/api/orders/${orderId}/contract`, {
+      contractUrl,
+    });
+    return response.data;
+  },
 };
