@@ -16,6 +16,7 @@ import { OrderService } from "@/service/order.service";
 import { ReviewService } from "@/service/review.service";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export default function BuyerOrdersPage() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();

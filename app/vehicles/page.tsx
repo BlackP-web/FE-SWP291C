@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import ProductCard from "@/components/ProductCard";
 import SearchFilter from "@/components/SearchFilter";
 import { ListingService } from "@/service/listing.service";
+import Navbar from "@/components/Navbar";
 
 interface Listing {
   _id: string;
@@ -38,7 +39,7 @@ const VehiclesPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Search & Filters */}
+      <Navbar />
       <SearchFilter />
 
       <div className="container-tesla py-10">
