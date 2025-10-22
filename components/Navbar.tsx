@@ -122,6 +122,11 @@ const Navbar = () => {
                         onClick: () => router.push("/profile"),
                       },
                       {
+                        key: "buyer-orders",
+                        label: "Theo dõi đơn hàng",
+                        onClick: () => router.push("/buyer-orders"),
+                      },
+                      {
                         key: "logout",
                         label: "Đăng xuất",
                         danger: true,
