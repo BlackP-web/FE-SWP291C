@@ -76,10 +76,11 @@ export default function VehicleDetailPage({
 
   const handleRequireLogin = (action: string) => {
     if (!isAuthenticated) {
-      message.warning("Vui lòng đăng nhập để " + action + "!");
+      message.info("Vui lòng đăng nhập để " + action + "!");
       router.push("/login");
       return false;
     }
+    router.push("/checkout?listingId=" + listing?._id);
     return true;
   };
 
