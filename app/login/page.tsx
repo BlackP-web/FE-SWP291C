@@ -140,7 +140,7 @@ export default function LoginPage() {
               </span>
             </button>
 
-            <button
+            {/* <button
               onClick={() =>
                 (window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/facebook`)
               }
@@ -152,8 +152,8 @@ export default function LoginPage() {
               <span className="text-gray-700 font-medium">
                 Đăng nhập với Facebook
               </span>
-            </button>
-
+            </button> */}
+            {/* 
             <button
               onClick={() => router.push("/login/phone")}
               className="w-full flex items-center justify-center px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
@@ -162,7 +162,7 @@ export default function LoginPage() {
               <span className="text-gray-700 font-medium">
                 Đăng nhập bằng SĐT
               </span>
-            </button>
+            </button> */}
           </div>
 
           <p className="text-center text-sm text-gray-600">
