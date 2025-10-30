@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { Heart, Eye, Gauge, Battery } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import { FavoriteService } from "@/service/favorite.service";
 
 interface ProductCardProps {
   id: string;
@@ -18,6 +20,7 @@ interface ProductCardProps {
   condition: "excellent" | "good" | "fair" | "poor";
   type: "vehicle" | "battery";
   isVerified?: string;
+  initialLiked?: boolean;
 }
 
 const ProductCard = ({
@@ -32,9 +35,11 @@ const ProductCard = ({
   batteryHealth,
   condition,
   isVerified,
+  initialLiked = false,
 }: ProductCardProps) => {
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(initialLiked);
   const router = useRouter();
+  const { user } = useAuth();
 
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("vi-VN", {
@@ -73,6 +78,21 @@ const ProductCard = ({
         return "Kém";
       default:
         return "Không xác định";
+    }
+  };
+
+  const handleToggleFavorite = async () => {
+    if (!user) {
+      alert("Vui lòng đăng nhập để thích sản phẩm!");
+      return;
+    }
+
+    try {
+      await FavoriteService.toggleFavorite({ userId: user._id, listingId: id });
+      setIsLiked((prev) => !prev);
+    } catch (err) {
+      console.error(err);
+      alert("Có lỗi xảy ra khi thích sản phẩm.");
     }
   };
 
@@ -129,7 +149,7 @@ const ProductCard = ({
         {/* Action Buttons */}
         <div className="absolute top-8 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <button
-            onClick={() => setIsLiked(!isLiked)}
+            onClick={handleToggleFavorite}
             className={`p-2 rounded-full shadow-lg transition-all duration-300 ${
               isLiked ? "bg-red-500 text-white" : "bg-white/90 hover:bg-white"
             }`}
