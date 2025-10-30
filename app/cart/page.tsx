@@ -1,10 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button, Table, Popconfirm, Typography, Space } from "antd";
+import {
+  Button,
+  Table,
+  Popconfirm,
+  Typography,
+  Space,
+  Tag,
+  message,
+} from "antd";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { ListingService } from "@/service/listing.service";
+import { CartService } from "@/service/cart.service";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Seller {
   _id: string;
@@ -36,22 +46,36 @@ interface Listing {
 
 export default function CartPage() {
   const [cart, setCart] = useState<Listing[]>([]);
+  const router = useRouter();
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const res = await ListingService.getListingByType("car");
-        // Tạm thời lấy 5 item làm demo
-        setCart(res.listings.slice(0, 5));
+        if (!user?._id) return;
+        const res = await CartService.getCartByUser(user?._id);
+        setCart(res.cart?.items?.map((i: any) => i.listing) || []);
       } catch (err) {
-        console.error(err);
+        console.error("Lỗi tải giỏ hàng:", err);
+        message.error("Không thể tải giỏ hàng!");
       }
     };
     fetchCart();
-  }, []);
+  }, [user?._id]);
 
-  const removeFromCart = (id: string) => {
-    setCart((prev) => prev.filter((item) => item._id !== id));
+  const handleRemoveFromCart = async (id: string) => {
+    try {
+      await CartService.removeFromCart(id, user?._id);
+      setCart((prev) => prev.filter((item) => item._id !== id));
+      message.success("Đã xóa khỏi giỏ hàng!");
+    } catch (err) {
+      console.error(err);
+      message.error("Không thể xóa sản phẩm!");
+    }
+  };
+
+  const handleBuyNow = (item: Listing) => {
+    router.push(`/checkout?listingId=${item._id}`);
   };
 
   const formatPrice = (price: number) =>
@@ -61,10 +85,6 @@ export default function CartPage() {
       minimumFractionDigits: 0,
     }).format(price);
 
-  const handleBuyNow = (item: Listing) => {
-    alert(`Mua ngay: ${item.title} - ${formatPrice(item.price)}`);
-  };
-
   const columns = [
     {
       title: "Hình ảnh",
@@ -72,9 +92,9 @@ export default function CartPage() {
       key: "image",
       render: (images: string[]) => (
         <img
-          src={images?.[0] || "https://via.placeholder.com/80"}
+          src={images?.[0] || "https://via.placeholder.com/100"}
           alt="listing"
-          className="w-20 h-12 object-cover rounded-lg"
+          className="w-24 h-16 object-cover rounded-lg shadow-sm"
         />
       ),
     },
@@ -86,52 +106,66 @@ export default function CartPage() {
         <div>
           <Typography.Text strong>{text}</Typography.Text>
           <div className="text-gray-500 text-sm">
-            {record.brand.name} • {record.year}
+            {record.brand?.name} • {record.year}
           </div>
         </div>
       ),
     },
     {
-      title: "Số km",
+      title: "Số km đã đi",
       dataIndex: "kmDriven",
       key: "km",
       render: (km: number) => <span>{km.toLocaleString()} km</span>,
     },
     {
-      title: "Pin",
+      title: "Dung lượng pin",
       dataIndex: "batteryCapacity",
       key: "battery",
       render: (battery: number) => <span>{battery}%</span>,
     },
     {
-      title: "Giá",
+      title: "Giá bán",
       dataIndex: "price",
       key: "price",
-      render: (price: number) => <span>{formatPrice(price)}</span>,
+      render: (price: number) => (
+        <span className="font-medium">{formatPrice(price)}</span>
+      ),
     },
     {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      render: (status: string) => (
-        <span
-          className={status === "approved" ? "text-green-600" : "text-red-600"}
-        >
-          {status}
-        </span>
-      ),
+      render: (status: string) => {
+        let color = "default";
+        let label = "Đang chờ";
+        if (status === "approved") {
+          color = "green";
+          label = "Đang bán";
+        } else if (status === "sold") {
+          color = "red";
+          label = "Đã bán";
+        } else if (status === "pending") {
+          color = "orange";
+          label = "Đang xử lý";
+        }
+        return <Tag color={color}>{label}</Tag>;
+      },
     },
     {
       title: "Hành động",
       key: "action",
       render: (_: any, record: Listing) => (
         <Space>
-          <Button type="primary" onClick={() => handleBuyNow(record)}>
-            Mua ngay
-          </Button>
+          {record.status !== "sold" && (
+            <Button type="primary" onClick={() => handleBuyNow(record)}>
+              Mua ngay
+            </Button>
+          )}
           <Popconfirm
-            title="Bạn có chắc chắn muốn xóa?"
-            onConfirm={() => removeFromCart(record._id)}
+            title="Bạn có chắc chắn muốn xóa xe này khỏi giỏ hàng?"
+            onConfirm={() => handleRemoveFromCart(record._id)}
+            okText="Xóa"
+            cancelText="Hủy"
           >
             <Button danger>Xóa</Button>
           </Popconfirm>
@@ -140,39 +174,26 @@ export default function CartPage() {
     },
   ];
 
-  const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
-
   return (
-    <main className="min-h-screen bg-tesla-white">
+    <main className="min-h-screen bg-gray-50">
       <Navbar />
-      <section className="pt-24 pb-12 container-tesla">
-        <h1 className="text-3xl font-semibold text-tesla-black mb-6">
-          Giỏ hàng
+      <section className="pt-24 pb-12 container mx-auto px-6">
+        <h1 className="text-3xl font-semibold text-gray-800 mb-6 text-center">
+          🛒 Giỏ hàng của bạn
         </h1>
         {cart.length === 0 ? (
-          <div className="text-center text-gray-500 py-20">Giỏ hàng trống</div>
+          <div className="text-center text-gray-500 py-20 text-lg">
+            Giỏ hàng của bạn hiện đang trống.
+          </div>
         ) : (
-          <>
+          <div className="bg-white p-6 rounded-xl shadow-md">
             <Table
               dataSource={cart}
               columns={columns}
               rowKey="_id"
               pagination={false}
             />
-            <div className="flex justify-between items-center mt-6 bg-gray-50 p-4 rounded-xl shadow-sm">
-              <span className="text-xl font-medium">
-                Tổng tiền: {formatPrice(totalPrice)}
-              </span>
-              <Button
-                type="primary"
-                onClick={() =>
-                  alert(`Thanh toán toàn bộ: ${formatPrice(totalPrice)}`)
-                }
-              >
-                Thanh toán toàn bộ
-              </Button>
-            </div>
-          </>
+          </div>
         )}
       </section>
       <Footer />

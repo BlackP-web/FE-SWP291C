@@ -6,6 +6,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { FavoriteService } from "@/service/favorite.service";
+import { CartService } from "@/service/cart.service";
+import { message } from "antd";
 
 interface ProductCardProps {
   id: string;
@@ -40,7 +42,7 @@ const ProductCard = ({
   const [isLiked, setIsLiked] = useState(initialLiked);
   const router = useRouter();
   const { user } = useAuth();
-
+  const [loading, setLoading] = useState(false);
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -78,6 +80,26 @@ const ProductCard = ({
         return "Kém";
       default:
         return "Không xác định";
+    }
+  };
+
+  const handleAddToCart = async () => {
+    if (!user?._id) {
+      message.info("Vui lòng đăng nhập trước khi thêm vào giỏ hàng!");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const res = await CartService.addToCart({
+        userId: user?._id,
+        listingId: id,
+      });
+      message.success(res.message || "Đã thêm vào giỏ hàng!");
+    } catch (err: any) {
+      message.error(err.response?.data?.message || "Thêm thất bại!");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -200,13 +222,19 @@ const ProductCard = ({
           >
             Xem chi tiết
           </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-all"
-          >
-            Liên hệ
-          </motion.button>
+          {isVerified !== "sold" && (
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              disabled={loading}
+              onClick={handleAddToCart}
+              className={`flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-all ${
+                loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              {loading ? "Đang thêm..." : "Thêm vào giỏ hàng"}
+            </motion.button>
+          )}
         </div>
       </div>
     </motion.div>
