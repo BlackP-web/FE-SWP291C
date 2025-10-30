@@ -2,7 +2,12 @@
 
 import { ReactNode, useState, useEffect } from "react";
 import { Layout, Menu, Avatar, Dropdown } from "antd";
-import { FiFileText, FiShoppingCart, FiDollarSign } from "react-icons/fi";
+import {
+  FiFileText,
+  FiShoppingCart,
+  FiDollarSign,
+  FiHome,
+} from "react-icons/fi";
 import { useAuth } from "@/hooks/useAuth";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -37,6 +42,12 @@ export default function OwnerLayout({ children }: OwnerLayoutProps) {
       icon: <FiDollarSign />,
       label: "Quản lý dòng tiền",
       path: "/owner/finance",
+    },
+    {
+      key: "/",
+      icon: <FiHome />,
+      label: "Trang chủ",
+      path: "/",
     },
   ];
 

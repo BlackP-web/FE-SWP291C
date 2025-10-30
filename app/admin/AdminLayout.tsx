@@ -8,6 +8,7 @@ import {
   FiShoppingCart,
   FiDollarSign,
   FiSettings,
+  FiHome,
 } from "react-icons/fi";
 import { useAuth } from "@/hooks/useAuth";
 import { usePathname, useRouter } from "next/navigation";
@@ -62,6 +63,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       icon: <FiSettings />,
       label: "Cài đặt & báo cáo",
       path: "/admin/settings",
+    },
+    {
+      key: "/",
+      icon: <FiHome />,
+      label: "Trang chủ",
+      path: "/",
     },
   ];
 
