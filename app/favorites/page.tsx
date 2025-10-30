@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
-import { ListingService } from "@/service/listing.service";
+import { useAuth } from "@/hooks/useAuth";
+import { FavoriteService } from "@/service/favorite.service";
 
 interface Seller {
   _id: string;
@@ -35,25 +36,49 @@ interface Listing {
 }
 
 export default function FavoritesPage() {
-  // Fake data tạm thời
+  const { user, loading } = useAuth();
   const [favorites, setFavorites] = useState<Listing[]>([]);
+  const [loadingFavorites, setLoadingFavorites] = useState(true);
 
-  // Giả lập fetch data từ API
+  // Lấy danh sách yêu thích từ API khi user có dữ liệu
   useEffect(() => {
+    if (!user) return;
+
     const fetchFavorites = async () => {
+      setLoadingFavorites(true);
       try {
-        const res = await ListingService.getListingByType("car");
-        setFavorites(res.listings.slice(0, 5));
+        const res = await FavoriteService.getFavorites(user._id);
+        console.log({ res });
+        // Giả sử API trả về array các listing
+        setFavorites(res?.favorites?.listings || []);
       } catch (err) {
-        console.error(err);
+        console.error("Lỗi khi fetch favorites:", err);
+      } finally {
+        setLoadingFavorites(false);
       }
     };
-    fetchFavorites();
-  }, []);
 
-  const removeFavorite = (id: string) => {
-    setFavorites((prev) => prev.filter((item) => item._id !== id));
+    fetchFavorites();
+  }, [user]);
+
+  // Xóa favorite cả local và gọi API toggle
+  const handleRemoveFavorite = async (listingId: string) => {
+    if (!user) return;
+    try {
+      await FavoriteService.toggleFavorite({ userId: user._id, listingId });
+      setFavorites((prev) => prev.filter((item) => item._id !== listingId));
+    } catch (err) {
+      console.error("Lỗi khi xóa favorite:", err);
+    }
   };
+
+  if (loading || loadingFavorites) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <span>Đang tải...</span>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-tesla-white">
@@ -65,13 +90,13 @@ export default function FavoritesPage() {
             Yêu thích của bạn
           </h1>
 
-          {favorites.length === 0 ? (
+          {favorites?.length === 0 ? (
             <div className="text-center text-gray-500 py-20">
               Bạn chưa có listing nào trong yêu thích.
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {favorites.map((item) => (
+              {favorites?.map((item) => (
                 <div key={item._id} className="relative">
                   <ProductCard
                     id={item._id}
@@ -87,10 +112,11 @@ export default function FavoritesPage() {
                     batteryHealth={item.batteryCapacity}
                     condition="good"
                     type={item.type as "vehicle" | "battery"}
-                    isVerified={true}
+                    isVerified={item.status} // có thể map status sang "approved"/"sold"
+                    initialLiked={true} // vì đây là danh sách favorite
                   />
                   <button
-                    onClick={() => removeFavorite(item._id)}
+                    onClick={() => handleRemoveFavorite(item._id)}
                     className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full shadow-lg hover:bg-red-600 transition-colors duration-300"
                   >
                     Xóa
