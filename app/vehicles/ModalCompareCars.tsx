@@ -8,6 +8,7 @@ import {
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import { ListingService } from "@/service/listing.service";
+import { AiService } from "@/service/ai.service";
 
 interface ModalCompareCarsProps {
   open: boolean;
@@ -25,7 +26,30 @@ export default function ModalCompareCars({
   const [selectedCars, setSelectedCars] = useState<string[]>([]);
   const [compareResult, setCompareResult] = useState<any | null>(null);
   const [comparing, setComparing] = useState(false);
+  const [aiAdvice, setAiAdvice] = useState<string | null>(null);
+  const [loadingAi, setLoadingAi] = useState(false);
 
+  const handleAiAdvice = async () => {
+    if (selectedCars.length !== 2) {
+      message.info("Vui lòng chọn thêm 1 xe để AI tư vấn!");
+      return;
+    }
+
+    const [id1, id2] = selectedCars;
+
+    try {
+      setLoadingAi(true);
+      const res = await AiService.compareAiService({ id1, id2 });
+      console.log({ res });
+      setAiAdvice(res?.data?.comparison);
+      message.success("Đã nhận được tư vấn từ AI!");
+    } catch (err) {
+      message.error("AI không thể đưa ra tư vấn!");
+      console.error(err);
+    } finally {
+      setLoadingAi(false);
+    }
+  };
   const fetchCars = async () => {
     try {
       setLoading(true);
@@ -51,13 +75,13 @@ export default function ModalCompareCars({
   const handleSelect = (id: string) => {
     if (selectedCars.includes(id)) {
       if (id === listingId) {
-        message.warning("Không thể bỏ chọn xe hiện tại!");
+        message.info("Không thể bỏ chọn xe hiện tại!");
         return;
       }
       setSelectedCars(selectedCars.filter((x) => x !== id));
     } else {
       if (selectedCars.length >= 2) {
-        message.warning("Chỉ có thể so sánh 2 xe!");
+        message.info("Chỉ có thể so sánh 2 xe!");
         return;
       }
       setSelectedCars([...selectedCars, id]);
@@ -66,7 +90,7 @@ export default function ModalCompareCars({
 
   const handleCompare = async () => {
     if (selectedCars.length !== 2) {
-      message.warning("Vui lòng chọn thêm 1 xe để so sánh!");
+      message.info("Vui lòng chọn thêm 1 xe để so sánh!");
       return;
     }
 
@@ -203,7 +227,7 @@ export default function ModalCompareCars({
 
   return (
     <Modal
-      title="🚗 So sánh xe"
+      title="So sánh xe"
       open={open}
       onCancel={onClose}
       width={1200}
@@ -261,8 +285,28 @@ export default function ModalCompareCars({
               );
             })}
           </div>
+          {renderCompareResult()}
+          {aiAdvice && (
+            <div className="mt-8 bg-white p-6 rounded-xl border border-gray-200 shadow-sm prose max-w-none">
+              <h3 className="text-lg font-semibold text-center mb-4 text-blue-600">
+                AI tư vấn & nhận định
+              </h3>
+              <div
+                className="text-gray-800 leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: aiAdvice }}
+              />
+            </div>
+          )}
+          <div className="flex justify-end mt-6 space-x-3">
+            <Button
+              type="default"
+              icon={<ExclamationCircleOutlined />}
+              onClick={handleAiAdvice}
+              loading={loadingAi}
+            >
+              AI tư vấn
+            </Button>
 
-          <div className="flex justify-end mt-6">
             <Button
               type="primary"
               icon={<CheckCircleOutlined />}
@@ -272,8 +316,6 @@ export default function ModalCompareCars({
               So sánh ngay
             </Button>
           </div>
-
-          {renderCompareResult()}
         </>
       )}
     </Modal>
