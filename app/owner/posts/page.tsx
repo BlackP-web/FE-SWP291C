@@ -157,8 +157,8 @@ export default function OwnerListingsPage() {
 
       setModalOpen(false);
       fetchListings();
-    } catch {
-      message.error("Thao tác thất bại");
+    } catch (error: any) {
+      message.error(error?.response?.data?.message || "Thao tác thất bại");
     }
   };
   const handleContractUpload = async ({ file, onSuccess, onError }: any) => {

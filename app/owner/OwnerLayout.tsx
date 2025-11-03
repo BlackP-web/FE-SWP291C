@@ -38,10 +38,10 @@ export default function OwnerLayout({ children }: OwnerLayoutProps) {
       path: "/owner/orders",
     },
     {
-      key: "/owner/finance",
+      key: "/owner/package",
       icon: <FiDollarSign />,
-      label: "Quản lý dòng tiền",
-      path: "/owner/finance",
+      label: "Gói của bạn",
+      path: "/owner/package",
     },
     {
       key: "/",
