@@ -14,6 +14,7 @@ import {
   FileText,
   CheckCircle,
   ArrowLeft,
+  Battery,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -104,7 +105,12 @@ export default function CheckoutPage() {
         {/* Thông tin xe */}
         <div>
           <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <Car className="text-blue-600" /> Thông tin xe
+            {listing.type === "battery" ? (
+              <Battery className="text-blue-600" />
+            ) : (
+              <Car className="text-blue-600" />
+            )}
+            {listing.type === "battery" ? "Thông tin PIN" : "Thông tin xe"}
           </h2>
           <div className="rounded-xl overflow-hidden shadow-md">
             <img
