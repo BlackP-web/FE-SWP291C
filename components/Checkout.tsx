@@ -158,7 +158,7 @@ export default function Checkout({ listing }: CheckoutProps) {
             </div>
             <div className="text-gray-700 mb-2">
               <span>Km đã đi: </span>
-              {listing.kmDriven.toLocaleString()} km
+              {listing.kmDriven?.toLocaleString()} km
             </div>
             <div className="text-gray-700 mb-2">
               <span>Pin: </span>

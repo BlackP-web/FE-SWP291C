@@ -116,7 +116,7 @@ const RelatedVehicles = ({ currentType, currentId }: RelatedVehiclesProps) => {
                 <div className="flex items-center text-gray-700 text-sm mb-2 space-x-4">
                   <div className="flex items-center space-x-1">
                     <Gauge className="w-4 h-4" />
-                    <span>{item.kmDriven.toLocaleString()} km</span>
+                    <span>{item.kmDriven?.toLocaleString()} km</span>
                   </div>
                   <div className="flex items-center space-x-1">
                     <Battery className="w-4 h-4" />

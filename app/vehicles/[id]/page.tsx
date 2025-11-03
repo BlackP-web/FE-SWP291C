@@ -172,7 +172,7 @@ export default function VehicleDetailPage({
               <div className="grid grid-cols-2 gap-4 text-gray-700 mb-6">
                 <div className="flex items-center gap-2">
                   <Gauge className="w-5 h-5" />
-                  <span>{listing.kmDriven.toLocaleString()} km</span>
+                  <span>{listing?.kmDriven?.toLocaleString()} km</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Battery className="w-5 h-5" />
