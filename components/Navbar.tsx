@@ -37,10 +37,10 @@ const Navbar = () => {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
           isScrolled
-            ? "bg-tesla-white/95 backdrop-blur-xl shadow-2xl border-b border-gray-100"
-            : "bg-tesla-white/10 backdrop-blur-sm"
+            ? "bg-tesla-white/98 backdrop-blur-xl shadow-2xl border-b border-gray-100"
+            : "bg-tesla-white/95 backdrop-blur-md shadow-lg"
         }`}
       >
         <div className="container-tesla">
@@ -59,7 +59,7 @@ const Navbar = () => {
                 className={`text-xl font-light transition-colors duration-300 ${
                   isScrolled
                     ? "text-tesla-black"
-                    : "text-tesla-white drop-shadow-lg"
+                    : "text-tesla-black"
                 }`}
               >
                 EV Trading
@@ -76,7 +76,7 @@ const Navbar = () => {
                   className={`transition-colors duration-300 font-medium ${
                     isScrolled
                       ? "text-tesla-black hover:text-tesla-dark-gray"
-                      : "text-tesla-white hover:text-tesla-white/80 drop-shadow-lg"
+                      : "text-tesla-black hover:text-tesla-dark-gray"
                   }`}
                 >
                   {item.name}
@@ -92,7 +92,7 @@ const Navbar = () => {
                 className={`p-2 transition-colors duration-300 ${
                   isScrolled
                     ? "text-tesla-black hover:text-tesla-dark-gray"
-                    : "text-tesla-white hover:text-tesla-white/80 drop-shadow-lg"
+                    : "text-tesla-black hover:text-tesla-dark-gray"
                 }`}
                 onClick={() => router.push("/favorites")}
               >
@@ -105,7 +105,7 @@ const Navbar = () => {
                 className={`p-2 transition-colors duration-300 ${
                   isScrolled
                     ? "text-tesla-black hover:text-tesla-dark-gray"
-                    : "text-tesla-white hover:text-tesla-white/80 drop-shadow-lg"
+                    : "text-tesla-black hover:text-tesla-dark-gray"
                 }`}
                 onClick={() => router.push("/cart")}
               >
@@ -173,7 +173,7 @@ const Navbar = () => {
               className={`md:hidden p-2 transition-colors duration-300 ${
                 isScrolled
                   ? "text-tesla-black"
-                  : "text-tesla-white drop-shadow-lg"
+                  : "text-tesla-black"
               }`}
             >
               {isMobileMenuOpen ? (

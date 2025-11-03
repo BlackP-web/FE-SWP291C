@@ -58,9 +58,9 @@ const createSampleData = async () => {
   // Create sample products
   const sampleProducts = [
     {
-      title: 'Tesla Model S Plaid 2022',
-      description: 'Xe điện Tesla Model S Plaid với hiệu suất vượt trội, chỉ chạy 15,000km',
-      brand: 'Tesla',
+      title: 'Xe điện Model S Plaid 2022',
+      description: 'Xe điện Model S Plaid với hiệu suất vượt trội, chỉ chạy 15,000km',
+      brand: 'Xe điện',
       model: 'Model S',
       year: 2022,
       mileage: 15000,
@@ -87,9 +87,9 @@ const createSampleData = async () => {
       }
     },
     {
-      title: 'Tesla Model 3 Performance 2021',
-      description: 'Tesla Model 3 Performance với hiệu suất cao và giá cả hợp lý',
-      brand: 'Tesla',
+      title: 'Xe điện Model 3 Performance 2021',
+      description: 'Xe điện Model 3 Performance với hiệu suất cao và giá cả hợp lý',
+      brand: 'Xe điện',
       model: 'Model 3',
       year: 2021,
       mileage: 25000,
@@ -116,9 +116,9 @@ const createSampleData = async () => {
       }
     },
     {
-      title: 'Tesla Model Y Long Range 2023',
-      description: 'SUV điện Tesla Model Y với không gian rộng rãi, phù hợp cho gia đình',
-      brand: 'Tesla',
+      title: 'Xe điện Model Y Long Range 2023',
+      description: 'SUV điện Model Y với không gian rộng rãi, phù hợp cho gia đình',
+      brand: 'Xe điện',
       model: 'Model Y',
       year: 2023,
       mileage: 8000,
@@ -145,9 +145,9 @@ const createSampleData = async () => {
       }
     },
     {
-      title: 'Tesla Model X Plaid 2022',
-      description: 'SUV điện Tesla Model X với cửa cánh bướm độc đáo',
-      brand: 'Tesla',
+      title: 'Xe điện Model X Plaid 2022',
+      description: 'SUV điện Model X với cửa cánh bướm độc đáo',
+      brand: 'Xe điện',
       model: 'Model X',
       year: 2022,
       mileage: 12000,

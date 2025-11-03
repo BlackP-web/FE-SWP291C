@@ -16,7 +16,7 @@ const SearchFilter = () => {
     batteryHealth: ''
   })
 
-  const brands = ['Tesla', 'BMW', 'Mercedes', 'Audi', 'Porsche', 'Hyundai', 'Kia', 'VinFast']
+  const brands = ['Xe điện', 'BMW', 'Mercedes', 'Audi', 'Porsche', 'Hyundai', 'Kia', 'VinFast']
   const conditions = ['excellent', 'good', 'fair', 'poor']
   const years = Array.from({ length: 10 }, (_, i) => 2024 - i)
 
@@ -44,7 +44,7 @@ const SearchFilter = () => {
   }
 
   return (
-    <div className="bg-tesla-white border-b border-gray-100 sticky top-16 z-40">
+    <div className="bg-white/98 backdrop-blur-xl border-b border-gray-200 sticky top-[64px] z-[90] shadow-md">
       <div className="container-tesla py-6">
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Search Input */}
