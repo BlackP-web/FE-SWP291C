@@ -37,14 +37,13 @@ interface Listing {
   seller: string;
   type: "car" | "battery";
   title: string;
-  brand: { _id: string; name: string };
-  year: number;
-  batteryCapacity?: number;
-  kmDriven?: number;
+  brand?: { _id: string; name: string };
+  year?: number;
   price: number;
-  aiSuggestedPrice?: number;
   images: string[];
-  status: "active" | "sold" | "pending";
+  status: string;
+  carDetails?: any;
+  batteryDetails?: any;
 }
 
 export default function OwnerListingsPage() {
@@ -53,6 +52,7 @@ export default function OwnerListingsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [brands, setBrands] = useState<any[]>([]);
   const [editingListing, setEditingListing] = useState<Listing | null>(null);
+  const [selectedType, setSelectedType] = useState<string | null>(null);
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<any[]>([]);
   const { user } = useAuth();
@@ -95,6 +95,7 @@ export default function OwnerListingsPage() {
 
   const handleEdit = (listing: Listing) => {
     setEditingListing(listing);
+    setSelectedType(listing.type);
     form.setFieldsValue({
       ...listing,
       brand: listing.brand?._id,
@@ -114,11 +115,8 @@ export default function OwnerListingsPage() {
     setEditingListing(null);
     form.resetFields();
     setFileList([]);
+    setSelectedType(null);
     setModalOpen(true);
-  };
-
-  const handleBrandChange = (brandId: string) => {
-    form.setFieldsValue({ model: null });
   };
 
   const handleImageUpload = async ({ file, onSuccess, onError }: any) => {
@@ -197,40 +195,23 @@ export default function OwnerListingsPage() {
       dataIndex: "status",
       key: "status",
       render: (status: string) => {
-        let color: string;
-        let label: string;
-
-        switch (status) {
-          case "active":
-            color = "green";
-            label = "Đăng bán";
-            break;
-          case "sold":
-            color = "volcano";
-            label = "Đã bán";
-            break;
-          case "approved":
-            color = "blue";
-            label = "Đã kiểm định";
-            break;
-          case "pending":
-            color = "orange";
-            label = "Lưu trữ";
-            break;
-          case "processing":
-            color = "purple";
-            label = "Lên hồ sơ";
-            break;
-          case "rejected":
-            color = "red";
-            label = "Vi phạm";
-            break;
-          default:
-            color = "default";
-            label = status;
-        }
-
-        return <Tag color={color}>{label}</Tag>;
+        const statusMap: Record<string, string> = {
+          active: "Đăng bán",
+          sold: "Đã bán",
+          approved: "Đã kiểm định",
+          pending: "Lưu trữ",
+          processing: "Lên hồ sơ",
+          rejected: "Vi phạm",
+        };
+        const colorMap: Record<string, string> = {
+          active: "green",
+          sold: "volcano",
+          approved: "blue",
+          pending: "orange",
+          processing: "purple",
+          rejected: "red",
+        };
+        return <Tag color={colorMap[status]}>{statusMap[status]}</Tag>;
       },
     },
     {
@@ -312,10 +293,21 @@ export default function OwnerListingsPage() {
                   label="Loại"
                   rules={[{ required: true, message: "Chọn loại" }]}
                 >
-                  <Select>
+                  <Select
+                    onChange={(value) => {
+                      setSelectedType(value);
+                      form.setFieldsValue({ type: value });
+                    }}
+                  >
                     <Option value="car">Xe điện</Option>
                     <Option value="battery">Pin xe điện</Option>
                   </Select>
+                </Form.Item>
+              </Col>
+
+              <Col span={24}>
+                <Form.Item name="description" label="Mô tả">
+                  <Input.TextArea rows={2} />
                 </Form.Item>
               </Col>
 
@@ -325,7 +317,7 @@ export default function OwnerListingsPage() {
                   label="Hãng"
                   rules={[{ required: true, message: "Chọn hãng" }]}
                 >
-                  <Select onChange={handleBrandChange}>
+                  <Select placeholder="Chọn hãng">
                     {brands.map((brand) => (
                       <Option key={brand._id} value={brand._id}>
                         {brand.name}
@@ -336,65 +328,212 @@ export default function OwnerListingsPage() {
               </Col>
 
               <Col span={12}>
-                <Form.Item name="year" label="Năm sản xuất">
-                  <InputNumber
-                    min={1900}
-                    max={2100}
-                    style={{ width: "100%" }}
-                  />
-                </Form.Item>
-              </Col>
-
-              <Col span={12}>
-                <Form.Item name="kmDriven" label="Số km đã đi">
+                <Form.Item name="price" label="Giá">
                   <InputNumber min={0} style={{ width: "100%" }} />
                 </Form.Item>
               </Col>
 
               <Col span={12}>
-                <Form.Item name="batteryCapacity" label="Dung lượng pin (kWh)">
-                  <InputNumber min={0} style={{ width: "100%" }} />
-                </Form.Item>
-              </Col>
-
-              <Col span={12}>
-                <Form.Item
-                  name="price"
-                  label="Giá"
-                  rules={[{ required: true, message: "Nhập giá" }]}
-                >
-                  <InputNumber min={0} style={{ width: "100%" }} />
-                </Form.Item>
-              </Col>
-
-              <Col span={12}>
-                <Form.Item
-                  name="status"
-                  label="Trạng thái"
-                  rules={[{ required: true }]}
-                >
+                <Form.Item name="status" label="Trạng thái">
                   <Select>
                     <Option value="pending">Lưu trữ</Option>
                     <Option value="active">Đăng bán</Option>
                   </Select>
                 </Form.Item>
               </Col>
-
-              <Col span={24}>
-                <Form.Item name="images" label="Hình ảnh">
-                  <Upload
-                    listType="picture-card"
-                    customRequest={handleImageUpload}
-                    fileList={fileList}
-                    onChange={handleImageChange}
-                    multiple
-                    maxCount={5}
-                  >
-                    {fileList.length < 5 && <PlusOutlined />}
-                  </Upload>
-                </Form.Item>
-              </Col>
             </Row>
+
+            {selectedType === "car" && (
+              <>
+                <h3 className="font-bold mt-4 mb-2">Thông tin xe điện</h3>
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      name={["carDetails", "registrationNumber"]}
+                      label="Biển số xe"
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name={["carDetails", "ownerNumber"]}
+                      label="Số đời chủ sở hữu"
+                    >
+                      <InputNumber min={1} style={{ width: "100%" }} />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name={["carDetails", "fuelType"]}
+                      label="Loại nhiên liệu"
+                    >
+                      <Select>
+                        <Option value="electric">Điện</Option>
+                        <Option value="hybrid">Hybrid</Option>
+                        <Option value="petrol">Xăng</Option>
+                        <Option value="diesel">Dầu</Option>
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name={["carDetails", "transmission"]}
+                      label="Hộp số"
+                    >
+                      <Select>
+                        <Option value="manual">Số sàn</Option>
+                        <Option value="automatic">Tự động</Option>
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name={["carDetails", "batteryCapacity"]}
+                      label="Dung lượng pin (kWh)"
+                    >
+                      <InputNumber min={0} style={{ width: "100%" }} />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item name={["carDetails", "color"]} label="Màu sắc">
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name={["carDetails", "insuranceExpiry"]}
+                      label="Hạn bảo hiểm"
+                    >
+                      <Input type="date" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name={["carDetails", "inspectionExpiry"]}
+                      label="Hạn đăng kiểm"
+                    >
+                      <Input type="date" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={24}>
+                    <Form.Item
+                      name={["carDetails", "accidentHistory"]}
+                      label="Lịch sử tai nạn"
+                    >
+                      <Input.TextArea rows={2} />
+                    </Form.Item>
+                  </Col>
+                  <Col span={24}>
+                    <Form.Item
+                      name={["carDetails", "location"]}
+                      label="Địa điểm"
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </>
+            )}
+
+            {selectedType === "battery" && (
+              <>
+                <h3 className="font-bold mt-4 mb-2">Thông tin pin xe điện</h3>
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      name={["batteryDetails", "brand"]}
+                      label="Hãng pin"
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name={["batteryDetails", "capacity"]}
+                      label="Dung lượng (kWh)"
+                    >
+                      <InputNumber min={0} style={{ width: "100%" }} />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name={["batteryDetails", "voltage"]}
+                      label="Điện áp (V)"
+                    >
+                      <InputNumber min={0} style={{ width: "100%" }} />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name={["batteryDetails", "healthPercentage"]}
+                      label="Tình trạng pin (%)"
+                    >
+                      <InputNumber
+                        min={0}
+                        max={100}
+                        style={{ width: "100%" }}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name={["batteryDetails", "warranty"]}
+                      label="Bảo hành"
+                    >
+                      <Input placeholder="VD: 12 tháng hoặc 6 tháng còn lại" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={24}>
+                    <Form.Item
+                      name={["batteryDetails", "compatibleModels"]}
+                      label="Xe tương thích"
+                    >
+                      <Select mode="tags" placeholder="Nhập xe tương thích" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name={["batteryDetails", "serialNumber"]}
+                      label="Số seri"
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name={["batteryDetails", "manufactureDate"]}
+                      label="Ngày sản xuất"
+                    >
+                      <Input type="date" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={24}>
+                    <Form.Item
+                      name={["batteryDetails", "location"]}
+                      label="Địa điểm"
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </>
+            )}
+
+            <Col span={24}>
+              <Form.Item name="images" label="Hình ảnh">
+                <Upload
+                  listType="picture-card"
+                  customRequest={handleImageUpload}
+                  fileList={fileList}
+                  onChange={handleImageChange}
+                  multiple
+                  maxCount={5}
+                >
+                  {fileList.length < 5 && <PlusOutlined />}
+                </Upload>
+              </Form.Item>
+            </Col>
           </Form>
         </Modal>
       </div>
