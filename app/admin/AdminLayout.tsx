@@ -53,10 +53,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       path: "/admin/orders",
     },
     {
-      key: "/admin/finance",
+      key: "/admin/package",
       icon: <FiDollarSign />,
-      label: "Quản lý phí & hoa hồng",
-      path: "/admin/finance",
+      label: "Quản lý gói",
+      path: "/admin/packge",
     },
     {
       key: "/admin/settings",

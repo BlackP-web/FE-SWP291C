@@ -44,6 +44,7 @@ interface Listing {
   status: string;
   carDetails?: any;
   batteryDetails?: any;
+  contract: string;
 }
 
 export default function OwnerListingsPage() {
@@ -99,6 +100,7 @@ export default function OwnerListingsPage() {
     form.setFieldsValue({
       ...listing,
       brand: listing.brand?._id,
+      contract: listing.contract || null,
     });
     setFileList(
       listing.images.map((url, index) => ({
@@ -142,6 +144,7 @@ export default function OwnerListingsPage() {
         ...values,
         seller: user?._id,
         images: imageUrls,
+        contract: values.contract,
       };
 
       if (editingListing) {
@@ -154,8 +157,20 @@ export default function OwnerListingsPage() {
 
       setModalOpen(false);
       fetchListings();
-    } catch {
-      message.error("Thao tác thất bại");
+    } catch (error: any) {
+      message.error(error?.response?.data?.message || "Thao tác thất bại");
+    }
+  };
+  const handleContractUpload = async ({ file, onSuccess, onError }: any) => {
+    try {
+      const res = await UploadService.uploadSingleImage(file); // nếu UploadService xử lý file PDF cũng ok
+      const fileUrl = res?.data?.url;
+      form.setFieldValue("contract", fileUrl);
+      onSuccess(res);
+      message.success("Tải lên hợp đồng thành công");
+    } catch (err) {
+      message.error("Tải lên hợp đồng thất bại");
+      onError(err);
     }
   };
 
@@ -519,6 +534,42 @@ export default function OwnerListingsPage() {
                 </Row>
               </>
             )}
+            <Col span={24}>
+              <Form.Item
+                name="contract"
+                label="Hợp đồng mua bán"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng tải lên hợp đồng mua bán",
+                  },
+                ]}
+              >
+                <Upload
+                  customRequest={handleContractUpload}
+                  fileList={
+                    form.getFieldValue("contract")
+                      ? [
+                          {
+                            uid: "-1",
+                            name: "contract",
+                            status: "done",
+                            url: form.getFieldValue("contract"),
+                          },
+                        ]
+                      : []
+                  }
+                  onRemove={() => {
+                    form.setFieldValue("contract", null);
+                  }}
+                  maxCount={1}
+                >
+                  {!form.getFieldValue("contract") && (
+                    <Button icon={<UploadOutlined />}>Tải lên hợp đồng</Button>
+                  )}
+                </Upload>
+              </Form.Item>
+            </Col>
 
             <Col span={24}>
               <Form.Item name="images" label="Hình ảnh">

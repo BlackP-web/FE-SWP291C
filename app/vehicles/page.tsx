@@ -24,7 +24,7 @@ const VehiclesPage = () => {
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const res = await ListingService.getListingByType("car");
+        const res = await ListingService.getListingApprove("car");
 
         setListings(res?.listings || []);
       } catch (err) {

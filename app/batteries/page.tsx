@@ -24,7 +24,7 @@ const BatteriesPage = () => {
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const res = await ListingService.getListingByType("battery");
+        const res = await ListingService.getListingApprove("battery");
 
         setListings(res?.listings || []);
       } catch (err) {

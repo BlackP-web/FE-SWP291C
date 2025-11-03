@@ -3,33 +3,31 @@
 import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ListingService } from "@/service/listing.service";
-import { useAuth } from "@/hooks/useAuth";
-import { m, motion } from "framer-motion";
-import {
-  CreditCard,
-  Wallet,
-  User,
-  Phone,
-  Mail,
-  Car,
-  DollarSign,
-  Coins,
-  ArrowLeft,
-} from "lucide-react";
 import { OrderService } from "@/service/order.service";
+import { useAuth } from "@/hooks/useAuth";
 import { message } from "antd";
+import {
+  Car,
+  User,
+  Mail,
+  Phone,
+  FileText,
+  CheckCircle,
+  ArrowLeft,
+  Battery,
+} from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function CheckoutPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const listingId = searchParams.get("listingId");
-
   const { user, isAuthenticated } = useAuth();
+
   const [listing, setListing] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [paymentMethod, setPaymentMethod] = useState<
-    "bank" | "cash" | "deposit" | null
-  >(null);
+  const [acceptedContract, setAcceptedContract] = useState(false);
+  const [creatingOrder, setCreatingOrder] = useState(false);
 
   useEffect(() => {
     if (!listingId) return;
@@ -53,32 +51,34 @@ export default function CheckoutPage() {
       minimumFractionDigits: 0,
     }).format(price);
 
-  const handlePayment = async () => {
+  const handleCreateOrder = async () => {
     if (!isAuthenticated) {
-      alert("⚠️ Vui lòng đăng nhập để mua xe.");
+      message.warning("Vui lòng đăng nhập để tiếp tục");
       router.push("/login");
       return;
     }
 
-    if (!paymentMethod) {
-      alert("Vui lòng chọn hình thức thanh toán!");
+    if (!acceptedContract) {
+      message.warning("Vui lòng đồng ý điều khoản hợp đồng trước khi tiếp tục");
       return;
     }
 
-    const payload = {
-      buyer: user?._id,
-      seller: listing.seller._id,
-      listing: listing._id,
-      price: listing.price,
-      paymentMethod,
-    };
     try {
+      setCreatingOrder(true);
+      const payload = {
+        buyer: user?._id,
+        seller: listing.seller._id,
+        listing: listing._id,
+        price: listing.price,
+      };
       await OrderService.create(payload);
-      message.success("Thanh toán thành công!");
+      message.success("Tạo đơn hàng thành công!");
       router.push("/thankyou");
     } catch (error) {
-      message.error("Thanh toán thất bại. Vui lòng thử lại.");
-      console.error("Payment error:", error);
+      console.error("Order error:", error);
+      message.error("Tạo đơn hàng thất bại. Vui lòng thử lại.");
+    } finally {
+      setCreatingOrder(false);
     }
   };
 
@@ -86,22 +86,31 @@ export default function CheckoutPage() {
     return <div className="text-center py-10 text-gray-500">Đang tải...</div>;
   if (!listing)
     return (
-      <div className="text-center py-10 text-red-500">Không tìm thấy xe.</div>
+      <div className="text-center py-10 text-red-500">
+        Không tìm thấy bài đăng.
+      </div>
     );
 
   return (
     <div className="min-h-screen bg-gray-50 py-20 px-4">
       <button
         onClick={() => router.back()}
-        className="flex items-center gap-1 text-gray-600 hover:text-gray-900 transition-all"
+        className="flex items-center gap-1 text-gray-600 hover:text-gray-900 mb-6 transition-all"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Quay lại</span>
       </button>
+
       <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-lg p-8 grid grid-cols-1 md:grid-cols-2 gap-10">
+        {/* Thông tin xe */}
         <div>
           <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <Car className="text-blue-600" /> Thông tin xe
+            {listing.type === "battery" ? (
+              <Battery className="text-blue-600" />
+            ) : (
+              <Car className="text-blue-600" />
+            )}
+            {listing.type === "battery" ? "Thông tin PIN" : "Thông tin xe"}
           </h2>
           <div className="rounded-xl overflow-hidden shadow-md">
             <img
@@ -115,23 +124,52 @@ export default function CheckoutPage() {
             <p className="text-gray-600">
               Hãng: <span className="font-medium">{listing.brand?.name}</span>
             </p>
-            <p className="text-gray-600">Năm: {listing.year}</p>
-            <p className="text-gray-600">
-              Quãng đường: {listing.kmDriven.toLocaleString()} km
-            </p>
             <p className="text-xl text-green-600 mt-2 font-semibold">
               {formatPrice(listing.price)}
             </p>
           </div>
         </div>
 
+        {/* Bên phải - hợp đồng + người bán */}
         <div>
           <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <User className="text-blue-600" /> Người bán
+            <FileText className="text-blue-600" /> Hợp đồng mua bán
+          </h2>
+
+          {listing.contract ? (
+            <iframe
+              src={listing.contract}
+              className="w-full h-80 border rounded-xl mb-4"
+            />
+          ) : (
+            <div className="p-4 bg-gray-100 rounded-xl text-center text-gray-500">
+              <FileText className="inline-block w-6 h-6 mb-2" />
+              <p>Không có hợp đồng đính kèm</p>
+            </div>
+          )}
+
+          <div className="flex items-center gap-2 mb-6">
+            <input
+              type="checkbox"
+              id="agree"
+              checked={acceptedContract}
+              onChange={(e) => setAcceptedContract(e.target.checked)}
+              className="w-4 h-4 accent-blue-600 cursor-pointer"
+            />
+            <label
+              htmlFor="agree"
+              className="text-gray-700 cursor-pointer select-none"
+            >
+              Tôi đã đọc và đồng ý với các điều khoản trong hợp đồng
+            </label>
+          </div>
+
+          <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <User className="text-blue-600" /> Thông tin người bán
           </h2>
           <div className="bg-gray-100 rounded-xl p-4 mb-6">
             <p className="font-medium text-gray-700">
-              Tên: {listing.seller?.name}
+              {listing.seller?.name || "Chưa có tên"}
             </p>
             <p className="text-gray-600 flex items-center gap-1">
               <Mail className="w-4 h-4" /> {listing.seller?.email}
@@ -141,72 +179,18 @@ export default function CheckoutPage() {
             </p>
           </div>
 
-          <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <DollarSign className="text-green-600" /> Hình thức thanh toán
-          </h2>
-          <div className="space-y-3">
-            {/* Chuyển khoản ngân hàng */}
-            <button
-              onClick={() => setPaymentMethod("bank")}
-              className={`w-full flex items-center gap-3 p-4 border rounded-xl transition-all text-gray-800 font-medium ${
-                paymentMethod === "bank"
-                  ? "border-blue-500 bg-blue-50 text-blue-700"
-                  : "border-gray-300 hover:border-blue-300 hover:bg-gray-50"
-              }`}
-            >
-              <CreditCard className="text-blue-600 w-5 h-5" />
-              <span className="flex-1 text-left">Chuyển khoản ngân hàng</span>
-              {paymentMethod === "bank" && (
-                <span className="text-blue-600 font-semibold text-sm">
-                  Đã chọn
-                </span>
-              )}
-            </button>
-
-            {/* Thanh toán tiền mặt */}
-            <button
-              onClick={() => setPaymentMethod("cash")}
-              className={`w-full flex items-center gap-3 p-4 border rounded-xl transition-all text-gray-800 font-medium ${
-                paymentMethod === "cash"
-                  ? "border-green-500 bg-green-50 text-green-700"
-                  : "border-gray-300 hover:border-green-300 hover:bg-gray-50"
-              }`}
-            >
-              <Wallet className="text-green-600 w-5 h-5" />
-              <span className="flex-1 text-left">Thanh toán tiền mặt</span>
-              {paymentMethod === "cash" && (
-                <span className="text-green-600 font-semibold text-sm">
-                  Đã chọn
-                </span>
-              )}
-            </button>
-
-            {/* Đặt cọc giữ xe */}
-            <button
-              onClick={() => setPaymentMethod("deposit")}
-              className={`w-full flex items-center gap-3 p-4 border rounded-xl transition-all text-gray-800 font-medium ${
-                paymentMethod === "deposit"
-                  ? "border-yellow-500 bg-yellow-50 text-yellow-700"
-                  : "border-gray-300 hover:border-yellow-300 hover:bg-gray-50"
-              }`}
-            >
-              <Coins className="text-yellow-600 w-5 h-5" />
-              <span className="flex-1 text-left">Đặt cọc giữ xe</span>
-              {paymentMethod === "deposit" && (
-                <span className="text-yellow-600 font-semibold text-sm">
-                  Đã chọn
-                </span>
-              )}
-            </button>
-          </div>
-
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={handlePayment}
-            className="w-full mt-6 py-3 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition-all"
+            onClick={handleCreateOrder}
+            disabled={!acceptedContract || creatingOrder}
+            className={`w-full mt-4 py-3 rounded-xl font-medium text-white shadow-lg transition-all ${
+              acceptedContract
+                ? "bg-gradient-to-r from-green-600 to-green-700 hover:shadow-xl"
+                : "bg-gray-400 cursor-not-allowed"
+            }`}
           >
-            Xác nhận thanh toán
+            {creatingOrder ? "Đang tạo đơn hàng..." : "Tạo đơn hàng"}
           </motion.button>
         </div>
       </div>
