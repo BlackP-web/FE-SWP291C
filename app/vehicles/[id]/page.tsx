@@ -1,7 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Heart, Eye, Gauge, Battery, Calendar } from "lucide-react";
+import {
+  Heart,
+  Eye,
+  Gauge,
+  Battery,
+  Calendar,
+  MapPin,
+  FileText,
+  Car,
+  Shield,
+  Settings,
+  Droplets,
+  Zap,
+  ClipboardList,
+  CheckCircle,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -10,37 +25,8 @@ import { useRouter } from "next/navigation";
 import RelatedVehicles from "@/components/RelatedVehicles";
 import Reviews from "@/components/Reviews";
 import { useAuth } from "@/hooks/useAuth";
-import { message } from "antd";
+import { message, Tag, Divider } from "antd";
 import ModalCompareCars from "../ModalCompareCars";
-
-interface Seller {
-  _id: string;
-  name: string;
-  email: string;
-  phone: string;
-}
-
-interface Brand {
-  _id: string;
-  name: string;
-  logo: string;
-  country: string;
-}
-
-interface Listing {
-  _id: string;
-  seller: Seller;
-  type: string;
-  title: string;
-  brand: Brand;
-  year: number;
-  batteryCapacity: number;
-  kmDriven: number;
-  price: number;
-  aiSuggestedPrice?: number;
-  images: string[];
-  status: string;
-}
 
 export default function VehicleDetailPage({
   params,
@@ -49,11 +35,12 @@ export default function VehicleDetailPage({
 }) {
   const router = useRouter();
   const { id } = params;
-  const [listing, setListing] = useState<Listing | null>(null);
+  const [listing, setListing] = useState<any>(null);
   const [isLiked, setIsLiked] = useState(false);
   const [mainImage, setMainImage] = useState<string>("");
   const { isAuthenticated } = useAuth();
   const [showCompareModal, setShowCompareModal] = useState(false);
+
   useEffect(() => {
     if (!id) return;
     const fetchListing = async () => {
@@ -87,10 +74,130 @@ export default function VehicleDetailPage({
 
   if (!listing)
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading...
+      <div className="min-h-screen flex items-center justify-center text-gray-600">
+        Đang tải dữ liệu...
       </div>
     );
+
+  // ⬇️ Dynamic Info Renderers
+  const renderCarDetails = () => (
+    <div className="space-y-3">
+      <InfoRow
+        icon={<Car />}
+        label="Biển số"
+        value={listing.carDetails?.registrationNumber}
+      />
+      <InfoRow
+        icon={<ClipboardList />}
+        label="Số chủ sở hữu"
+        value={listing.carDetails?.ownerNumber}
+      />
+      <InfoRow
+        icon={<Zap />}
+        label="Nhiên liệu"
+        value={listing.carDetails?.fuelType}
+      />
+      <InfoRow
+        icon={<Settings />}
+        label="Hộp số"
+        value={listing.carDetails?.transmission}
+      />
+      <InfoRow
+        icon={<Droplets />}
+        label="Màu sắc"
+        value={listing.carDetails?.color}
+      />
+      <InfoRow
+        icon={<Gauge />}
+        label="Số km đã đi"
+        value={`${listing.carDetails?.kmDriven ?? 0} km`}
+      />
+      <InfoRow
+        icon={<Battery />}
+        label="Dung lượng pin"
+        value={`${listing.carDetails?.batteryCapacity ?? 0} kWh`}
+      />
+      <InfoRow
+        icon={<Shield />}
+        label="Bảo hiểm hết hạn"
+        value={formatDate(listing.carDetails?.insuranceExpiry)}
+      />
+      <InfoRow
+        icon={<FileText />}
+        label="Đăng kiểm hết hạn"
+        value={formatDate(listing.carDetails?.inspectionExpiry)}
+      />
+      <InfoRow
+        icon={<CheckCircle />}
+        label="Lịch sử tai nạn"
+        value={listing.carDetails?.accidentHistory || "Không có"}
+      />
+      <InfoRow
+        icon={<MapPin />}
+        label="Khu vực"
+        value={listing.carDetails?.location}
+      />
+    </div>
+  );
+
+  const renderBatteryDetails = () => (
+    <div className="space-y-3">
+      <InfoRow
+        icon={<Battery />}
+        label="Thương hiệu"
+        value={listing.batteryDetails?.brand}
+      />
+      <InfoRow
+        icon={<Zap />}
+        label="Dung lượng"
+        value={`${listing.batteryDetails?.capacity} kWh`}
+      />
+      <InfoRow
+        icon={<Gauge />}
+        label="Điện áp"
+        value={`${listing.batteryDetails?.voltage} V`}
+      />
+      <InfoRow
+        icon={<Droplets />}
+        label="Số chu kỳ sạc/xả"
+        value={listing.batteryDetails?.cyclesUsed}
+      />
+      <InfoRow
+        icon={<Shield />}
+        label="Tình trạng pin"
+        value={`${listing.batteryDetails?.healthPercentage}%`}
+      />
+      <InfoRow
+        icon={<ClipboardList />}
+        label="Bảo hành"
+        value={listing.batteryDetails?.warranty}
+      />
+      <InfoRow
+        icon={<Calendar />}
+        label="Ngày sản xuất"
+        value={formatDate(listing.batteryDetails?.manufactureDate)}
+      />
+      <InfoRow
+        icon={<FileText />}
+        label="Số seri"
+        value={listing.batteryDetails?.serialNumber}
+      />
+      <InfoRow
+        icon={<MapPin />}
+        label="Khu vực"
+        value={listing.batteryDetails?.location}
+      />
+      <InfoRow
+        icon={<Car />}
+        label="Mẫu xe tương thích"
+        value={
+          listing.batteryDetails?.compatibleModels?.length
+            ? listing.batteryDetails.compatibleModels.join(", ")
+            : "Không có"
+        }
+      />
+    </div>
+  );
 
   return (
     <main className="min-h-screen bg-tesla-white">
@@ -98,20 +205,14 @@ export default function VehicleDetailPage({
 
       <section className="pt-24 pb-12">
         <div className="container-tesla grid grid-cols-1 lg:grid-cols-2 gap-10">
-          {/* ==== IMAGE GALLERY ==== */}
+          {/* IMAGE GALLERY */}
           <div>
-            {/* Main Image */}
             <div className="relative w-full h-96 bg-gray-100 rounded-xl overflow-hidden shadow-md">
               <img
-                src={
-                  mainImage ||
-                  "https://images2.thanhnien.vn/528068263637045248/2024/5/7/edit-vf-3dynamic-opt-1original-wheel-1715080408626820177534.png"
-                }
+                src={mainImage || listing.images?.[0]}
                 alt={listing.title}
-                className="w-full h-full object-cover transition-transform duration-500"
+                className="w-full h-full object-cover"
               />
-
-              {/* Like Button */}
               <button
                 onClick={() => setIsLiked(!isLiked)}
                 className={`absolute top-4 right-4 p-2 rounded-full backdrop-blur-md transition-all ${
@@ -124,7 +225,6 @@ export default function VehicleDetailPage({
               </button>
             </div>
 
-            {/* Thumbnail List */}
             {listing.images.length > 1 && (
               <div className="flex gap-3 mt-3 justify-center flex-wrap">
                 {listing.images.map((img, i) => (
@@ -144,9 +244,9 @@ export default function VehicleDetailPage({
             )}
           </div>
 
-          {/* ==== INFO SIDE ==== */}
+          {/* INFO SIDE */}
           <div className="flex flex-col justify-between">
-            {/* Header */}
+            {/* Title */}
             <div>
               <h1 className="text-3xl font-semibold text-gray-900 mb-2">
                 {listing.title}
@@ -166,31 +266,19 @@ export default function VehicleDetailPage({
                   {listing.brand.name}
                 </span>
                 <span className="text-gray-500">• {listing.year}</span>
+                <Tag color={getStatusColor(listing.status)}>
+                  {listing.status.toUpperCase()}
+                </Tag>
               </div>
 
-              {/* Specs */}
-              <div className="grid grid-cols-2 gap-4 text-gray-700 mb-6">
-                <div className="flex items-center gap-2">
-                  <Gauge className="w-5 h-5" />
-                  <span>{listing?.kmDriven?.toLocaleString()} km</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Battery className="w-5 h-5" />
-                  <span>Pin: {listing.batteryCapacity} Wh</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-5 h-5" />
-                  <span>Năm: {listing.year}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Eye className="w-5 h-5" />
-                  <span>Trạng thái: {listing.status}</span>
-                </div>
+              <div className="bg-gray-50 rounded-xl p-5 shadow-sm mb-6">
+                {listing.type === "car"
+                  ? renderCarDetails()
+                  : renderBatteryDetails()}
               </div>
 
-              {/* Price */}
               <div className="mb-4">
-                <div className="text-3xl font-light text-gray-900 mb-2">
+                <div className="text-3xl font-bold text-gray-900 mb-1">
                   {formatPrice(listing.price)}
                 </div>
                 {listing.aiSuggestedPrice && (
@@ -201,44 +289,34 @@ export default function VehicleDetailPage({
               </div>
             </div>
 
-            {/* Seller */}
-            <div className="mt-6 p-6 bg-gray-50 rounded-xl shadow-sm">
+            <Divider />
+            <div className="p-5 bg-white border rounded-xl shadow-sm">
               <h3 className="text-lg font-semibold text-gray-800 mb-2">
                 Người bán
               </h3>
-              <p className="text-gray-700">Tên: {listing.seller.name}</p>
-              <p className="text-gray-700">Email: {listing.seller.email}</p>
-              <p className="text-gray-700">SĐT: {listing.seller.phone}</p>
+              <p className="text-gray-700">👤 {listing.seller.name}</p>
             </div>
 
+            {/* Actions */}
             {listing.status !== "sold" && (
-              <div className="mt-6 flex gap-4">
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() =>
-                    handleRequireLogin("liên hệ người bán") &&
-                    message.success(
-                      `Liên hệ ${listing.seller.name} qua số ${listing.seller.phone}`
-                    )
-                  }
-                  className="flex-1 px-6 py-3 bg-black text-white rounded-xl font-medium shadow-lg hover:bg-gray-800 transition-all"
-                >
-                  Liên hệ người bán
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => setShowCompareModal(true)}
-                  className="flex-1 px-6 py-3 bg-blue-500 text-white rounded-xl font-medium shadow-lg hover:bg-blue-600 transition-all"
-                >
-                  So sánh
-                </motion.button>
+              <div className="mt-6 flex flex-wrap gap-4">
+                {listing.type === "car" && (
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => setShowCompareModal(true)}
+                    className="flex-1 px-6 py-3 bg-blue-500 text-white rounded-xl font-medium shadow-lg hover:bg-blue-600"
+                  >
+                    So sánh xe
+                  </motion.button>
+                )}
+
                 <ModalCompareCars
                   open={showCompareModal}
                   onClose={() => setShowCompareModal(false)}
                   listingId={listing._id}
                 />
+
                 <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
@@ -246,9 +324,9 @@ export default function VehicleDetailPage({
                     handleRequireLogin("mua ngay") &&
                     message.success("Chuyển sang trang thanh toán...")
                   }
-                  className="flex-1 px-6 py-3 bg-green-500 text-white rounded-xl font-medium shadow-lg hover:bg-green-600 transition-all"
+                  className="flex-1 px-6 py-3 bg-green-500 text-white rounded-xl font-medium shadow-lg hover:bg-green-600"
                 >
-                  Mua ngay
+                  Liên hệ người bán
                 </motion.button>
               </div>
             )}
@@ -262,3 +340,29 @@ export default function VehicleDetailPage({
     </main>
   );
 }
+
+const InfoRow = ({ icon, label, value }: any) => (
+  <div className="flex items-center gap-3 text-gray-700">
+    <div className="w-5 h-5 text-gray-500">{icon}</div>
+    <span className="font-medium">{label}:</span>
+    <span className="text-gray-600">{value || "—"}</span>
+  </div>
+);
+
+const formatDate = (date?: string) =>
+  date ? new Date(date).toLocaleDateString("vi-VN") : "—";
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "approved":
+      return "green";
+    case "pending":
+      return "orange";
+    case "sold":
+      return "volcano";
+    case "rejected":
+      return "red";
+    default:
+      return "blue";
+  }
+};
