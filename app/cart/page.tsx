@@ -115,7 +115,7 @@ export default function CartPage() {
       title: "Số km đã đi",
       dataIndex: "kmDriven",
       key: "km",
-      render: (km: number) => <span>{km.toLocaleString()} km</span>,
+      render: (km: number) => <span>{km?.toLocaleString()} km</span>,
     },
     {
       title: "Dung lượng pin",
