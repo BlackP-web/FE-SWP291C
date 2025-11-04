@@ -27,7 +27,6 @@ const Navbar = () => {
     { name: "Trang chủ", href: "/" },
     { name: "Xe điện", href: "/vehicles" },
     { name: "Pin xe điện", href: "/batteries" },
-    { name: "Đấu giá", href: "/auctions" },
     { name: "Tin tức", href: "/news" },
   ];
 
