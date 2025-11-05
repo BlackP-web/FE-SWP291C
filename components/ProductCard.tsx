@@ -137,7 +137,7 @@ const ProductCard = ({
 
         {/* Overlay gradient with shine effect */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
-        
+
         {/* Shine effect on hover */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
 
@@ -146,7 +146,7 @@ const ProductCard = ({
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ delay: 0.2, type: "spring" }}
-          className={`absolute top-3 left-3 px-4 py-2 text-xs font-bold rounded-full shadow-2xl backdrop-blur-md flex items-center gap-2 ${
+          className={`absolute top-8 left-3 px-4 py-2 text-xs font-bold rounded-full shadow-2xl backdrop-blur-md flex items-center gap-2 ${
             isVerified === "sold"
               ? "bg-gradient-to-r from-red-500 to-red-700 text-white"
               : isVerified === "approved"
@@ -194,8 +194,8 @@ const ProductCard = ({
             whileTap={{ scale: 0.9 }}
             onClick={handleToggleFavorite}
             className={`p-3 rounded-full shadow-2xl transition-all duration-300 backdrop-blur-md ${
-              isLiked 
-                ? "bg-gradient-to-r from-red-500 to-pink-600 text-white scale-110" 
+              isLiked
+                ? "bg-gradient-to-r from-red-500 to-pink-600 text-white scale-110"
                 : "bg-white/95 hover:bg-white text-red-500"
             }`}
           >
@@ -242,8 +242,12 @@ const ProductCard = ({
                 <Gauge className="w-4 h-4 text-white" />
               </div>
               <div>
-                <div className="text-xs text-blue-600 font-semibold">Quãng đường</div>
-                <div className="font-bold text-blue-900">{formatMileage(mileage)} km</div>
+                <div className="text-xs text-blue-600 font-semibold">
+                  Quãng đường
+                </div>
+                <div className="font-bold text-blue-900">
+                  {formatMileage(mileage)} km
+                </div>
               </div>
             </motion.div>
             <motion.div
@@ -254,7 +258,9 @@ const ProductCard = ({
                 <Battery className="w-4 h-4 text-white" />
               </div>
               <div>
-                <div className="text-xs text-green-600 font-semibold">Dung lượng pin</div>
+                <div className="text-xs text-green-600 font-semibold">
+                  Dung lượng pin
+                </div>
                 <div className="font-bold text-green-900">{batteryHealth}%</div>
               </div>
             </motion.div>
@@ -267,7 +273,7 @@ const ProductCard = ({
           >
             {/* Animated background */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-            
+
             <div className="relative z-10">
               <div className="text-xs text-blue-100 mb-1 font-semibold flex items-center gap-1">
                 <Zap className="w-3 h-3" />
@@ -307,7 +313,9 @@ const ProductCard = ({
               }`}
             >
               <Zap className="w-5 h-5 relative z-10 group-hover/cart:rotate-12 transition-transform" />
-              <span className="relative z-10">{loading ? "Đang thêm..." : "Thêm giỏ hàng"}</span>
+              <span className="relative z-10">
+                {loading ? "Đang thêm..." : "Thêm giỏ hàng"}
+              </span>
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/cart:translate-x-full transition-transform duration-700" />
             </motion.button>
           )}
