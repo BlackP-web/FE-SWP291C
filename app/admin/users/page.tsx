@@ -34,8 +34,6 @@ export default function AdminUsersPage() {
   const [roleFilter, setRoleFilter] = useState<string | undefined>(undefined);
   const [form] = Form.useForm();
 
-  const currentUserRole = "admin"; // mock tạm, có thể lấy từ auth context
-
   const loadUsers = async () => {
     setLoading(true);
     try {
@@ -50,13 +48,12 @@ export default function AdminUsersPage() {
   useEffect(() => {
     loadUsers();
   }, []);
+
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
       user.name?.toLowerCase().includes(search.toLowerCase()) ||
       user.email?.toLowerCase().includes(search.toLowerCase());
-
     const matchesRole = roleFilter ? user.role === roleFilter : true;
-
     return matchesSearch && matchesRole;
   });
 
@@ -109,18 +106,15 @@ export default function AdminUsersPage() {
       render: (role: string) => {
         const color =
           role === "admin" ? "red" : role === "owner" ? "blue" : "green";
-
         const displayText =
           role === "admin"
             ? "Quản trị viên"
             : role === "owner"
             ? "Người bán"
             : "Người mua";
-
         return <Tag color={color}>{displayText}</Tag>;
       },
     },
-
     {
       title: "Trạng thái",
       dataIndex: "blocked",
@@ -168,11 +162,6 @@ export default function AdminUsersPage() {
     <AdminLayout>
       <div className="p-4 bg-white rounded shadow">
         <div className="flex justify-between mb-4">
-          <Button type="primary" icon={<PlusOutlined />} onClick={openAddModal}>
-            Thêm mới
-          </Button>
-        </div>
-        <div className="flex justify-between mb-4">
           <h2 className="text-xl font-bold">Quản lý người dùng</h2>
           <Space>
             <Select
@@ -192,6 +181,10 @@ export default function AdminUsersPage() {
               onChange={(e) => setSearch(e.target.value)}
               style={{ width: 250 }}
             />
+            
+            <Button type="primary" icon={<PlusOutlined />} onClick={openAddModal}>
+              Thêm mới
+            </Button>
           </Space>
         </div>
 

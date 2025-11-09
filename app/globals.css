@@ -342,3 +342,92 @@ html {
   width: 300px;
   height: 300px;
 }
+
+/* Admin Dashboard Styles */
+.admin-card {
+  @apply rounded-xl border border-gray-100 bg-white shadow-sm transition-all duration-300;
+}
+
+.admin-card:hover {
+  @apply shadow-lg transform -translate-y-1;
+}
+
+.stat-card-gradient-blue {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.02) 100%);
+}
+
+.stat-card-gradient-green {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.02) 100%);
+}
+
+.stat-card-gradient-orange {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(245, 158, 11, 0.02) 100%);
+}
+
+.stat-card-gradient-purple {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(139, 92, 246, 0.02) 100%);
+}
+
+/* Admin Menu Item Hover */
+.ant-menu-item-selected {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+}
+
+.ant-menu-item:hover {
+  background-color: rgba(102, 126, 234, 0.1) !important;
+}
+
+/* Chart Animations */
+.recharts-surface {
+  @apply transition-all duration-500;
+}
+
+/* Dashboard Loading */
+@keyframes dashboard-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dashboard-animate {
+  animation: dashboard-fade-in 0.5s ease-out;
+}
+
+/* Status Badge Colors */
+.status-completed {
+  @apply bg-green-100 text-green-800 border border-green-200;
+}
+
+.status-pending {
+  @apply bg-orange-100 text-orange-800 border border-orange-200;
+}
+
+.status-cancelled {
+  @apply bg-red-100 text-red-800 border border-red-200;
+}
+
+/* Modern Scrollbar for Admin Panel */
+.admin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 10px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}

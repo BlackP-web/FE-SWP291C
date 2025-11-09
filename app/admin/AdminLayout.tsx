@@ -9,6 +9,7 @@ import {
   FiDollarSign,
   FiSettings,
   FiHome,
+  FiPackage,
 } from "react-icons/fi";
 import { useAuth } from "@/hooks/useAuth";
 import { usePathname, useRouter } from "next/navigation";
@@ -27,7 +28,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const [selectedKey, setSelectedKey] = useState<string>("/admin");
 
   const menuItems = [
-    { key: "/admin", icon: <FiFileText />, label: "Dashboard", path: "/admin" },
+    {
+      key: "/admin",
+      icon: <FiFileText />,
+      label: "Dashboard",
+      path: "/admin",
+    },
     {
       key: "/admin/users",
       icon: <FiUsers />,
@@ -42,7 +48,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     },
     {
       key: "/admin/brands",
-      icon: <FiFileText />,
+      icon: <FiPackage />,
       label: "Quản lý nhãn hiệu",
       path: "/admin/brands",
     },
@@ -107,12 +113,32 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed}>
-        <div className="text-white text-xl font-bold p-4">
-          {collapsed ? "ADM" : "Admin Panel"}
+      <Sider
+        collapsible
+        collapsed={collapsed}
+        onCollapse={setCollapsed}
+        style={{
+          boxShadow: "2px 0 8px rgba(0,0,0,0.08)",
+        }}
+        theme="light"
+      >
+        <div
+          style={{
+            padding: collapsed ? "16px 12px" : "20px 16px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            borderBottom: "1px solid #f0f0f0",
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            color: "white",
+          }}
+        >
+          <div style={{ fontSize: collapsed ? 18 : 22, fontWeight: 700 }}>
+            {collapsed ? "AP" : "Admin Panel"}
+          </div>
         </div>
         <Menu
-          theme="dark"
+          theme="light"
           mode="inline"
           selectedKeys={[selectedKey]}
           items={menuItems.map((item) => ({
@@ -120,7 +146,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             icon: item.icon,
             label: item.label,
             onClick: () => handleMenuClick(item.path),
+            style: {
+              borderRadius: 8,
+              margin: "4px 8px",
+            },
           }))}
+          style={{ border: "none", padding: "8px 0" }}
         />
       </Sider>
 
@@ -128,22 +159,54 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <Header
           style={{
             background: "#fff",
-            padding: "0 16px",
+            padding: "0 24px",
             display: "flex",
-            justifyContent: "flex-end",
+            justifyContent: "space-between",
             alignItems: "center",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+            position: "sticky",
+            top: 0,
+            zIndex: 1,
           }}
         >
+          <div style={{ fontSize: 18, fontWeight: 600, color: "#1e293b" }}>
+            Welcome back, {user?.name || "Admin"}!
+          </div>
           <Dropdown menu={userMenu} placement="bottomRight">
-            <div className="flex items-center cursor-pointer gap-2">
-              <Avatar size="small" src={user?.avatar} />
-              <span>{user?.name || "Admin"}</span>
+            <div
+              className="flex items-center cursor-pointer gap-3 hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors"
+              style={{ border: "1px solid #f0f0f0" }}
+            >
+              <Avatar
+                size={36}
+                src={user?.avatar}
+                style={{
+                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                }}
+              >
+                {user?.name?.charAt(0).toUpperCase() || "A"}
+              </Avatar>
+              <div style={{ textAlign: "left" }}>
+                <div style={{ fontWeight: 600, color: "#1e293b", fontSize: 14 }}>
+                  {user?.name || "Admin"}
+                </div>
+                <div style={{ fontSize: 12, color: "#64748b" }}>
+                  {user?.role || "Administrator"}
+                </div>
+              </div>
             </div>
           </Dropdown>
         </Header>
 
-        <Content style={{ margin: "16px" }}>{children}</Content>
+        <Content
+          style={{
+            margin: "0",
+            background: "#f8fafc",
+            minHeight: "calc(100vh - 64px)",
+          }}
+        >
+          {children}
+        </Content>
       </Layout>
     </Layout>
   );

@@ -158,52 +158,125 @@ export default function AdminListingsPage() {
     {
       title: "Ảnh",
       dataIndex: "images",
+      width: 120,
       render: (imgs: string[]) =>
         imgs?.length ? (
           <img
             src={imgs[0]}
-            className="w-20 h-14 object-cover rounded shadow-sm"
+            className="w-24 h-16 object-cover rounded-lg shadow-md"
+            style={{ border: "2px solid #f1f5f9" }}
           />
         ) : (
-          <div className="w-20 h-14 bg-gray-100 rounded flex items-center justify-center text-xs text-gray-400">
-            No Image
+          <div className="w-24 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center text-xs text-gray-400 shadow-sm">
+            <CarOutlined style={{ fontSize: 24, opacity: 0.3 }} />
           </div>
         ),
     },
-    { title: "Tiêu đề", dataIndex: "title" },
+    {
+      title: "Tiêu đề",
+      dataIndex: "title",
+      render: (title: string) => (
+        <Text strong style={{ fontSize: 14, color: "#1e293b" }}>
+          {title}
+        </Text>
+      ),
+    },
     {
       title: "Người bán",
       dataIndex: "seller",
       render: (s: any) =>
         s ? (
           <div>
-            <Text strong>{typeof s === "string" ? s : s.name || s.email}</Text>
+            <div style={{ fontWeight: 600, color: "#475569", fontSize: 14 }}>
+              <UserOutlined style={{ marginRight: 4, color: "#667eea" }} />
+              {typeof s === "string" ? s : s.name || s.email}
+            </div>
             {typeof s !== "string" && s.email && (
-              <div className="text-xs text-gray-500">{s.email}</div>
+              <div style={{ fontSize: 12, color: "#94a3b8" }}>{s.email}</div>
             )}
           </div>
         ) : (
-          "-"
+          <span style={{ color: "#cbd5e1" }}>—</span>
         ),
     },
-    { title: "Loại", dataIndex: "type", render: (t: string) => typeLabel(t) },
+    {
+      title: "Loại",
+      dataIndex: "type",
+      width: 140,
+      render: (t: string) => (
+        <Tag
+          icon={
+            t === "car" ? (
+              <CarOutlined />
+            ) : (
+              <ThunderboltOutlined />
+            )
+          }
+          color={t === "car" ? "blue" : "gold"}
+          style={{
+            borderRadius: 8,
+            padding: "4px 12px",
+            fontSize: 13,
+            fontWeight: 500,
+          }}
+        >
+          {t === "car" ? "Xe điện" : "Pin"}
+        </Tag>
+      ),
+    },
     {
       title: "Giá",
       dataIndex: "price",
+      width: 150,
       render: (p: number) =>
-        p != null ? `${Number(p).toLocaleString()}₫` : "—",
+        p != null ? (
+          <span style={{ fontWeight: 700, color: "#10b981", fontSize: 15 }}>
+            {Number(p).toLocaleString()}₫
+          </span>
+        ) : (
+          <span style={{ color: "#cbd5e1" }}>—</span>
+        ),
     },
     {
       title: "Trạng thái",
       dataIndex: "status",
-      render: (s: string) => <Tag color={statusColor(s)}>{statusLabel(s)}</Tag>,
+      width: 140,
+      render: (s: string) => {
+        const configs: Record<string, { color: string; icon: string }> = {
+          pending: { color: "orange", icon: "🕐" },
+          approved: { color: "blue", icon: "✅" },
+          active: { color: "green", icon: "🟢" },
+          processing: { color: "purple", icon: "🔄" },
+          sold: { color: "red", icon: "🔴" },
+          rejected: { color: "default", icon: "❌" },
+        };
+        const config = configs[s] || configs.pending;
+        return (
+          <Tag
+            color={config.color}
+            style={{
+              borderRadius: 8,
+              padding: "4px 12px",
+              fontSize: 13,
+              fontWeight: 500,
+            }}
+          >
+            {config.icon} {statusLabel(s)}
+          </Tag>
+        );
+      },
     },
     {
       title: "Hành động",
       key: "actions",
+      width: 200,
       render: (_: any, record: Listing) => (
         <Space>
-          <Button icon={<EyeOutlined />} onClick={() => openDetail(record._id)}>
+          <Button
+            icon={<EyeOutlined />}
+            onClick={() => openDetail(record._id)}
+            style={{ borderRadius: 8 }}
+          >
             Xem
           </Button>
           {(record.status === "pending" ||
@@ -213,7 +286,16 @@ export default function AdminListingsPage() {
               title="Duyệt bài này?"
               onConfirm={() => updateStatus(record._id, "approved")}
             >
-              <Button type="primary" icon={<CheckOutlined />}>
+              <Button
+                type="primary"
+                icon={<CheckOutlined />}
+                style={{
+                  borderRadius: 8,
+                  background:
+                    "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                  border: "none",
+                }}
+              >
                 Duyệt
               </Button>
             </Popconfirm>
@@ -223,7 +305,11 @@ export default function AdminListingsPage() {
               title="Từ chối bài này?"
               onConfirm={() => updateStatus(record._id, "rejected")}
             >
-              <Button danger icon={<CloseOutlined />}>
+              <Button
+                danger
+                icon={<CloseOutlined />}
+                style={{ borderRadius: 8 }}
+              >
                 Từ chối
               </Button>
             </Popconfirm>
@@ -235,94 +321,220 @@ export default function AdminListingsPage() {
 
   return (
     <AdminLayout>
-      <div className="p-6 bg-white rounded-xl shadow-md">
-        <div className="flex flex-wrap justify-between items-center gap-3 mb-5">
-          <Title level={3} className="!mb-0">
+      <div style={{ padding: 24, background: "#f8fafc", minHeight: "100vh" }}>
+        {/* Header */}
+        <div style={{ marginBottom: 24 }}>
+          <h1
+            style={{
+              fontSize: 28,
+              fontWeight: 700,
+              color: "#1e293b",
+              margin: 0,
+            }}
+          >
             Quản lý bài đăng
-          </Title>
-          <div className="flex flex-wrap gap-3">
-            <Select
-              allowClear
-              placeholder="Lọc theo trạng thái"
-              style={{ width: 180 }}
-              value={filterStatus}
-              onChange={setFilterStatus}
+          </h1>
+          <p style={{ color: "#64748b", marginTop: 4 }}>
+            Quản lý và duyệt tất cả bài đăng xe điện và pin
+          </p>
+        </div>
+
+        {/* Stats Cards */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 24 }}>
+          <Card
+            bordered={false}
+            style={{
+              borderRadius: 12,
+              background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+            }}
+          >
+            <div style={{ color: "white" }}>
+              <div style={{ fontSize: 14, opacity: 0.9 }}>Chờ duyệt</div>
+              <div style={{ fontSize: 32, fontWeight: 700, marginTop: 8 }}>
+                {listings.filter((l) => l.status === "pending").length}
+              </div>
+            </div>
+          </Card>
+          <Card
+            bordered={false}
+            style={{
+              borderRadius: 12,
+              background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+            }}
+          >
+            <div style={{ color: "white" }}>
+              <div style={{ fontSize: 14, opacity: 0.9 }}>Đã duyệt</div>
+              <div style={{ fontSize: 32, fontWeight: 700, marginTop: 8 }}>
+                {listings.filter((l) => l.status === "approved").length}
+              </div>
+            </div>
+          </Card>
+          <Card
+            bordered={false}
+            style={{
+              borderRadius: 12,
+              background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+            }}
+          >
+            <div style={{ color: "white" }}>
+              <div style={{ fontSize: 14, opacity: 0.9 }}>Đang bán</div>
+              <div style={{ fontSize: 32, fontWeight: 700, marginTop: 8 }}>
+                {listings.filter((l) => l.status === "active").length}
+              </div>
+            </div>
+          </Card>
+          <Card
+            bordered={false}
+            style={{
+              borderRadius: 12,
+              background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+            }}
+          >
+            <div style={{ color: "white" }}>
+              <div style={{ fontSize: 14, opacity: 0.9 }}>Đã bán</div>
+              <div style={{ fontSize: 32, fontWeight: 700, marginTop: 8 }}>
+                {listings.filter((l) => l.status === "sold").length}
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Main Table Card */}
+        <Card
+          bordered={false}
+          style={{ borderRadius: 12 }}
+          className="hover:shadow-lg transition-shadow duration-300"
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 20,
+              flexWrap: "wrap",
+              gap: 16,
+            }}
+          >
+            <Space size="middle">
+              <Select
+                allowClear
+                placeholder="Lọc theo trạng thái"
+                style={{ width: 180 }}
+                value={filterStatus}
+                onChange={setFilterStatus}
+                size="large"
+              >
+                <Option value="pending">🕐 Chờ duyệt</Option>
+                <Option value="approved">✅ Đã duyệt</Option>
+                <Option value="active">🟢 Đang bán</Option>
+                <Option value="sold">🔴 Đã bán</Option>
+                <Option value="rejected">❌ Từ chối</Option>
+              </Select>
+              <Search
+                placeholder="Tìm theo tiêu đề"
+                allowClear
+                onChange={(e) => setSearchText(e.target.value)}
+                style={{ width: 280 }}
+                size="large"
+              />
+            </Space>
+            <Button
+              icon={<ReloadOutlined />}
+              onClick={loadListings}
+              size="large"
+              style={{
+                borderRadius: 8,
+                borderColor: "#667eea",
+                color: "#667eea",
+              }}
             >
-              <Option value="pending">Chờ duyệt</Option>
-              <Option value="approved">Đã duyệt</Option>
-              <Option value="active">Đăng bán</Option>
-              <Option value="sold">Đã bán</Option>
-              <Option value="rejected">Từ chối</Option>
-            </Select>
-            <Search
-              placeholder="Tìm theo tiêu đề"
-              allowClear
-              onChange={(e) => setSearchText(e.target.value)}
-              style={{ width: 260 }}
-            />
-            <Button icon={<ReloadOutlined />} onClick={loadListings}>
               Làm mới
             </Button>
           </div>
-        </div>
 
-        <Table
-          columns={columns}
-          dataSource={filtered}
-          rowKey={(r) => r._id}
-          loading={loading}
-          pagination={{ pageSize: 8 }}
-          scroll={{ x: 1000 }}
-        />
+          <Table
+            columns={columns}
+            dataSource={filtered}
+            rowKey={(r) => r._id}
+            loading={loading}
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: true,
+              showTotal: (total) => `Tổng ${total} bài đăng`,
+            }}
+            scroll={{ x: 1200 }}
+          />
+        </Card>
 
         <Modal
           open={detailModalOpen}
           title={
-            <span>
-              <EyeOutlined className="mr-2" />
-              {currentListing?.title}
-            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <EyeOutlined style={{ color: "#667eea", fontSize: 20 }} />
+              <span style={{ fontSize: 18, fontWeight: 600 }}>
+                {currentListing?.title}
+              </span>
+            </div>
           }
           onCancel={() => setDetailModalOpen(false)}
           footer={null}
-          width={950}
+          width={1000}
+          style={{ top: 20 }}
         >
           {detailLoading || !currentListing ? (
-            <div className="py-10 text-center">Đang tải...</div>
+            <div style={{ padding: "60px 0", textAlign: "center", color: "#94a3b8" }}>
+              Đang tải...
+            </div>
           ) : (
-            <>
+            <div style={{ maxHeight: "70vh", overflowY: "auto", padding: "8px 0" }}>
               {/* Ảnh */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                {currentListing.images?.length ? (
-                  currentListing.images.map((img, idx) => (
-                    <Image
-                      key={idx}
-                      src={img}
-                      alt={`img-${idx}`}
-                      className="rounded-lg"
-                    />
-                  ))
-                ) : (
-                  <div className="col-span-4 text-center text-gray-400 py-10">
-                    Không có hình ảnh
-                  </div>
-                )}
+              <div style={{ marginBottom: 24 }}>
+                <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: "#1e293b" }}>
+                  Hình ảnh
+                </h4>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: 12 }}>
+                  {currentListing.images?.length ? (
+                    currentListing.images.map((img, idx) => (
+                      <Image
+                        key={idx}
+                        src={img}
+                        alt={`img-${idx}`}
+                        style={{ borderRadius: 12, objectFit: "cover", height: 120 }}
+                      />
+                    ))
+                  ) : (
+                    <div style={{ gridColumn: "1 / -1", textAlign: "center", color: "#cbd5e1", padding: 40 }}>
+                      Không có hình ảnh
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <Divider orientation="left">Thông tin chung</Divider>
-              <Descriptions bordered column={2} size="small">
-                <Descriptions.Item label="Tiêu đề">
-                  {currentListing.title}
+              <Divider style={{ margin: "24px 0" }} />
+
+              {/* Thông tin chung */}
+              <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: "#1e293b" }}>
+                Thông tin chung
+              </h4>
+              <Descriptions bordered column={2} size="middle" style={{ marginBottom: 24 }}>
+                <Descriptions.Item label="Tiêu đề" span={2}>
+                  <Text strong>{currentListing.title}</Text>
                 </Descriptions.Item>
                 <Descriptions.Item label="Người bán">
-                  <UserOutlined className="mr-1" />
-                  {typeof currentListing.seller === "string"
-                    ? currentListing.seller
-                    : currentListing.seller?.name ||
-                      currentListing.seller?.email}
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <UserOutlined style={{ color: "#667eea" }} />
+                    {typeof currentListing.seller === "string"
+                      ? currentListing.seller
+                      : currentListing.seller?.name ||
+                        currentListing.seller?.email}
+                  </div>
                 </Descriptions.Item>
                 <Descriptions.Item label="Loại">
-                  {typeLabel(currentListing.type)}
+                  {currentListing.type === "car" ? (
+                    <Tag icon={<CarOutlined />} color="blue">Xe điện</Tag>
+                  ) : (
+                    <Tag icon={<ThunderboltOutlined />} color="gold">Pin xe điện</Tag>
+                  )}
                 </Descriptions.Item>
                 <Descriptions.Item label="Hãng">
                   {typeof currentListing.brand === "string"
@@ -330,9 +542,11 @@ export default function AdminListingsPage() {
                     : currentListing.brand?.name || "-"}
                 </Descriptions.Item>
                 <Descriptions.Item label="Giá">
-                  {currentListing.price
-                    ? `${currentListing.price.toLocaleString()}₫`
-                    : "-"}
+                  <Text strong style={{ color: "#10b981", fontSize: 16 }}>
+                    {currentListing.price
+                      ? `${currentListing.price.toLocaleString()}₫`
+                      : "-"}
+                  </Text>
                 </Descriptions.Item>
                 <Descriptions.Item label="Giá AI gợi ý">
                   {currentListing.aiSuggestedPrice
@@ -349,8 +563,10 @@ export default function AdminListingsPage() {
               {/* Chi tiết kỹ thuật */}
               {currentListing.type === "car" && (
                 <>
-                  <Divider orientation="left">Chi tiết xe điện</Divider>
-                  <Descriptions bordered size="small" column={2}>
+                  <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: "#1e293b" }}>
+                    Chi tiết xe điện
+                  </h4>
+                  <Descriptions bordered size="middle" column={2} style={{ marginBottom: 24 }}>
                     <Descriptions.Item label="Số km đã đi">
                       {currentListing.carDetails?.kmDriven ?? "-"}
                     </Descriptions.Item>
@@ -385,8 +601,10 @@ export default function AdminListingsPage() {
 
               {currentListing.type === "battery" && (
                 <>
-                  <Divider orientation="left">Chi tiết pin xe điện</Divider>
-                  <Descriptions bordered size="small" column={2}>
+                  <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: "#1e293b" }}>
+                    Chi tiết pin xe điện
+                  </h4>
+                  <Descriptions bordered size="middle" column={2} style={{ marginBottom: 24 }}>
                     <Descriptions.Item label="Thương hiệu">
                       {currentListing.batteryDetails?.brand ?? "-"}
                     </Descriptions.Item>
@@ -413,7 +631,7 @@ export default function AdminListingsPage() {
                 </>
               )}
 
-              <div className="mt-4 flex justify-end gap-2">
+              <div style={{ marginTop: 24, display: "flex", justifyContent: "flex-end", gap: 12 }}>
                 {currentListing.status === "pending" && (
                   <Popconfirm
                     title="Duyệt bài đăng này?"
@@ -421,8 +639,18 @@ export default function AdminListingsPage() {
                       updateStatus(currentListing._id, "approved")
                     }
                   >
-                    <Button type="primary" icon={<CheckOutlined />}>
-                      Duyệt
+                    <Button
+                      type="primary"
+                      icon={<CheckOutlined />}
+                      size="large"
+                      style={{
+                        borderRadius: 8,
+                        background:
+                          "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                        border: "none",
+                      }}
+                    >
+                      Duyệt bài đăng
                     </Button>
                   </Popconfirm>
                 )}
@@ -433,13 +661,18 @@ export default function AdminListingsPage() {
                       updateStatus(currentListing._id, "rejected")
                     }
                   >
-                    <Button danger icon={<CloseOutlined />}>
+                    <Button
+                      danger
+                      icon={<CloseOutlined />}
+                      size="large"
+                      style={{ borderRadius: 8 }}
+                    >
                       Từ chối
                     </Button>
                   </Popconfirm>
                 )}
               </div>
-            </>
+            </div>
           )}
         </Modal>
       </div>

@@ -31,7 +31,6 @@
     "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {
-    "@types/antd": "^0.12.32",
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/multer": "^1.4.11",

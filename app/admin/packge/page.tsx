@@ -45,82 +45,329 @@ export default function PackageAdminPage() {
 
   return (
     <AdminLayout>
-      <div className="min-h-screen bg-gray-50 py-10 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
-              <Tag className="text-blue-600" /> Quản lý gói dịch vụ
-            </h1>
-            <Button
-              onClick={() => setShowAddModal(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white flex items-center"
-            >
-              <Plus className="w-4 h-4 mr-1" /> Thêm gói mới
-            </Button>
-          </div>
+      <div style={{ padding: 24, background: "#f8fafc", minHeight: "100vh" }}>
+        {/* Header */}
+        <div style={{ marginBottom: 24 }}>
+          <h1
+            style={{
+              fontSize: 28,
+              fontWeight: 700,
+              color: "#1e293b",
+              margin: 0,
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+            }}
+          >
+            <Tag className="text-blue-600" style={{ fontSize: 24 }} />
+            Quản lý gói dịch vụ
+          </h1>
+          <p style={{ color: "#64748b", marginTop: 4 }}>
+            Quản lý các gói dịch vụ và người dùng đã mua
+          </p>
+        </div>
 
-          {loading ? (
-            <p className="text-gray-500">Đang tải dữ liệu...</p>
-          ) : packages.length === 0 ? (
-            <p className="text-gray-500 italic">Chưa có gói nào.</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {packages.map((pkg) => (
+        {/* Stats Summary */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: 16,
+            marginBottom: 32,
+          }}
+        >
+          <div
+            style={{
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              borderRadius: 12,
+              padding: 20,
+              color: "white",
+            }}
+          >
+            <div style={{ fontSize: 14, opacity: 0.9 }}>Tổng gói</div>
+            <div style={{ fontSize: 36, fontWeight: 700, marginTop: 8 }}>
+              {packages.length}
+            </div>
+          </div>
+          <div
+            style={{
+              background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+              borderRadius: 12,
+              padding: 20,
+              color: "white",
+            }}
+          >
+            <div style={{ fontSize: 14, opacity: 0.9 }}>Người dùng</div>
+            <div style={{ fontSize: 36, fontWeight: 700, marginTop: 8 }}>
+              {packages.reduce((sum, pkg) => sum + (pkg.userCount || 0), 0)}
+            </div>
+          </div>
+          <div
+            style={{
+              background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+              borderRadius: 12,
+              padding: 20,
+              color: "white",
+            }}
+          >
+            <div style={{ fontSize: 14, opacity: 0.9 }}>Doanh thu ước tính</div>
+            <div style={{ fontSize: 28, fontWeight: 700, marginTop: 8 }}>
+              {packages
+                .reduce(
+                  (sum, pkg) =>
+                    sum + (pkg.price || 0) * (pkg.userCount || 0),
+                  0
+                )
+                .toLocaleString("vi-VN")}
+              đ
+            </div>
+          </div>
+        </div>
+
+        {/* Add Package Button */}
+        <div style={{ marginBottom: 24, display: "flex", justifyContent: "flex-end" }}>
+          <Button
+            onClick={() => setShowAddModal(true)}
+            type="primary"
+            icon={<Plus className="w-4 h-4" />}
+            size="large"
+            style={{
+              borderRadius: 8,
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              border: "none",
+              height: 44,
+              fontWeight: 600,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            Thêm gói mới
+          </Button>
+        </div>
+
+        {loading ? (
+          <div style={{ textAlign: "center", padding: 60, color: "#94a3b8" }}>
+            Đang tải dữ liệu...
+          </div>
+        ) : packages.length === 0 ? (
+          <div
+            style={{
+              textAlign: "center",
+              padding: 60,
+              background: "white",
+              borderRadius: 12,
+              color: "#cbd5e1",
+            }}
+          >
+            Chưa có gói nào. Hãy thêm gói mới!
+          </div>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+              gap: 24,
+            }}
+          >
+            {packages.map((pkg, idx) => {
+              const gradients = [
+                "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+                "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
+                "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+              ];
+              const gradient = gradients[idx % gradients.length];
+
+              return (
                 <div
                   key={pkg._id}
-                  className="bg-white rounded-2xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition-all"
+                  style={{
+                    background: "white",
+                    borderRadius: 16,
+                    overflow: "hidden",
+                    boxShadow: "0 4px 6px rgba(0,0,0,0.07)",
+                    transition: "all 0.3s",
+                    border: "1px solid #f1f5f9",
+                  }}
+                  className="hover:shadow-xl hover:-translate-y-1"
                 >
-                  <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                    {pkg.name}
-                  </h2>
-                  <p className="text-gray-600 text-sm mb-4">
-                    {pkg.description || "Không có mô tả"}
-                  </p>
-
-                  <div className="space-y-1 text-sm text-gray-700">
-                    <p className="flex items-center gap-2">
-                      <DollarSign className="w-4 h-4 text-green-600" />
-                      {Number(pkg.price || 0).toLocaleString("vi-VN")}{" "}
-                      {pkg.currency || "VND"}
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-yellow-600" />{" "}
-                      {pkg.durationDays} ngày
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <Users className="w-4 h-4 text-blue-600" />{" "}
-                      {pkg.userCount || 0} người đã mua
+                  {/* Header with gradient */}
+                  <div
+                    style={{
+                      background: gradient,
+                      padding: "24px 20px",
+                      color: "white",
+                    }}
+                  >
+                    <h2
+                      style={{
+                        fontSize: 22,
+                        fontWeight: 700,
+                        margin: 0,
+                        marginBottom: 8,
+                      }}
+                    >
+                      {pkg.name}
+                    </h2>
+                    <p
+                      style={{
+                        fontSize: 14,
+                        margin: 0,
+                        opacity: 0.95,
+                        minHeight: 40,
+                      }}
+                    >
+                      {pkg.description || "Không có mô tả"}
                     </p>
                   </div>
 
-                  <div className="flex justify-end mt-5">
+                  {/* Pricing */}
+                  <div
+                    style={{
+                      padding: "20px",
+                      background: "#f8fafc",
+                      textAlign: "center",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: 40,
+                        fontWeight: 700,
+                        color: "#1e293b",
+                      }}
+                    >
+                      {Number(pkg.price || 0).toLocaleString("vi-VN")}
+                      <span style={{ fontSize: 18, color: "#64748b" }}>
+                        {" "}
+                        {pkg.currency || "VND"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Features */}
+                  <div style={{ padding: 20 }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 12,
+                        padding: "12px 0",
+                        borderBottom: "1px solid #f1f5f9",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 10,
+                          background: "linear-gradient(135deg, #fef3c7 0%, #fde047 100%)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Clock style={{ width: 20, height: 20, color: "#ca8a04" }} />
+                      </div>
+                      <div>
+                        <div
+                          style={{
+                            fontSize: 13,
+                            color: "#64748b",
+                          }}
+                        >
+                          Thời hạn
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 16,
+                            fontWeight: 600,
+                            color: "#1e293b",
+                          }}
+                        >
+                          {pkg.durationDays} ngày
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 12,
+                        padding: "12px 0",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 10,
+                          background: "linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Users style={{ width: 20, height: 20, color: "#1d4ed8" }} />
+                      </div>
+                      <div>
+                        <div
+                          style={{
+                            fontSize: 13,
+                            color: "#64748b",
+                          }}
+                        >
+                          Người dùng
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 16,
+                            fontWeight: 600,
+                            color: "#1e293b",
+                          }}
+                        >
+                          {pkg.userCount || 0} người
+                        </div>
+                      </div>
+                    </div>
+
                     <Button
-                      variant="outline"
-                      className="text-blue-600 border-blue-400 hover:bg-blue-50"
                       onClick={() => setSelectedPackage(pkg)}
+                      size="large"
+                      style={{
+                        width: "100%",
+                        marginTop: 16,
+                        borderRadius: 8,
+                        height: 44,
+                        fontWeight: 600,
+                        borderColor: "#667eea",
+                        color: "#667eea",
+                      }}
                     >
                       Xem người dùng
                     </Button>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
+              );
+            })}
+          </div>
+        )}
 
-          {showAddModal && (
-            <AddPackageModal
-              onClose={() => setShowAddModal(false)}
-              onSuccess={fetchPackages}
-            />
-          )}
+        {showAddModal && (
+          <AddPackageModal
+            onClose={() => setShowAddModal(false)}
+            onSuccess={fetchPackages}
+          />
+        )}
 
-          {selectedPackage && (
-            <UsersModal
-              pkg={selectedPackage}
-              onClose={() => setSelectedPackage(null)}
-            />
-          )}
-        </div>
+        {selectedPackage && (
+          <UsersModal
+            pkg={selectedPackage}
+            onClose={() => setSelectedPackage(null)}
+          />
+        )}
       </div>
     </AdminLayout>
   );
