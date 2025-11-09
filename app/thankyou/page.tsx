@@ -39,7 +39,7 @@ export default function ThankYouPage() {
         </p>
 
         {/* Thông tin đơn */}
-        <div className="bg-gray-50 rounded-xl p-4 mb-6 text-left">
+        {/* <div className="bg-gray-50 rounded-xl p-4 mb-6 text-left">
           <p className="text-sm text-gray-700 mb-1">
             <span className="font-medium">Mã giao dịch:</span>{" "}
             <span className="text-blue-600">{orderId || "Đang xử lý..."}</span>
@@ -56,7 +56,7 @@ export default function ThankYouPage() {
                 : "Không xác định"}
             </span>
           </p>
-        </div>
+        </div> */}
 
         {/* Nút hành động */}
         <div className="flex flex-col sm:flex-row gap-3">
@@ -69,7 +69,7 @@ export default function ThankYouPage() {
           </button>
 
           <button
-            onClick={() => router.push("/orders")}
+            onClick={() => router.push("/buyer-orders")}
             className="flex items-center justify-center gap-2 w-full py-3 border border-gray-300 hover:border-blue-400 hover:bg-blue-50 text-gray-700 rounded-xl font-semibold transition-all"
           >
             <FileText className="w-5 h-5" />

@@ -343,7 +343,18 @@ export default function OwnerListingsPage() {
               </Col>
 
               <Col span={12}>
-                <Form.Item name="price" label="Giá">
+                <Form.Item
+                  name="price"
+                  label="Giá"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập giá" },
+                    {
+                      type: "number",
+                      min: 0,
+                      message: "Giá phải là số lớn hơn hoặc bằng 0",
+                    },
+                  ]}
+                >
                   <InputNumber min={0} style={{ width: "100%" }} />
                 </Form.Item>
               </Col>
@@ -406,10 +417,23 @@ export default function OwnerListingsPage() {
                     <Form.Item
                       name={["carDetails", "batteryCapacity"]}
                       label="Dung lượng pin (kWh)"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng nhập dung lượng pin",
+                        },
+                        {
+                          type: "number",
+                          min: 0,
+                          message:
+                            "Dung lượng pin phải là số lớn hơn hoặc bằng 0",
+                        },
+                      ]}
                     >
                       <InputNumber min={0} style={{ width: "100%" }} />
                     </Form.Item>
                   </Col>
+
                   <Col span={12}>
                     <Form.Item name={["carDetails", "color"]} label="Màu sắc">
                       <Input />
@@ -467,18 +491,36 @@ export default function OwnerListingsPage() {
                     <Form.Item
                       name={["batteryDetails", "capacity"]}
                       label="Dung lượng (kWh)"
+                      rules={[
+                        { required: true, message: "Vui lòng nhập dung lượng" },
+                        {
+                          type: "number",
+                          min: 0,
+                          message: "Dung lượng phải là số lớn hơn hoặc bằng 0",
+                        },
+                      ]}
                     >
                       <InputNumber min={0} style={{ width: "100%" }} />
                     </Form.Item>
                   </Col>
+
                   <Col span={12}>
                     <Form.Item
                       name={["batteryDetails", "voltage"]}
                       label="Điện áp (V)"
+                      rules={[
+                        { required: true, message: "Vui lòng nhập điện áp" },
+                        {
+                          type: "number",
+                          min: 0,
+                          message: "Điện áp phải là số lớn hơn hoặc bằng 0",
+                        },
+                      ]}
                     >
                       <InputNumber min={0} style={{ width: "100%" }} />
                     </Form.Item>
                   </Col>
+
                   <Col span={12}>
                     <Form.Item
                       name={["batteryDetails", "healthPercentage"]}
