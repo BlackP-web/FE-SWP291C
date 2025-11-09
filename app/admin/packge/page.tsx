@@ -25,7 +25,7 @@ export default function PackageAdminPage() {
             const countRes = await PackageService.getUserCountByPackage(
               pkg._id
             );
-            return { ...pkg, userCount: countRes.count };
+            return { ...pkg, userCount: countRes.totalUsers };
           } catch {
             return { ...pkg, userCount: 0 };
           }
@@ -114,8 +114,7 @@ export default function PackageAdminPage() {
             <div style={{ fontSize: 28, fontWeight: 700, marginTop: 8 }}>
               {packages
                 .reduce(
-                  (sum, pkg) =>
-                    sum + (pkg.price || 0) * (pkg.userCount || 0),
+                  (sum, pkg) => sum + (pkg.price || 0) * (pkg.userCount || 0),
                   0
                 )
                 .toLocaleString("vi-VN")}
@@ -125,7 +124,13 @@ export default function PackageAdminPage() {
         </div>
 
         {/* Add Package Button */}
-        <div style={{ marginBottom: 24, display: "flex", justifyContent: "flex-end" }}>
+        <div
+          style={{
+            marginBottom: 24,
+            display: "flex",
+            justifyContent: "flex-end",
+          }}
+        >
           <Button
             onClick={() => setShowAddModal(true)}
             type="primary"
@@ -262,13 +267,16 @@ export default function PackageAdminPage() {
                           width: 40,
                           height: 40,
                           borderRadius: 10,
-                          background: "linear-gradient(135deg, #fef3c7 0%, #fde047 100%)",
+                          background:
+                            "linear-gradient(135deg, #fef3c7 0%, #fde047 100%)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
                         }}
                       >
-                        <Clock style={{ width: 20, height: 20, color: "#ca8a04" }} />
+                        <Clock
+                          style={{ width: 20, height: 20, color: "#ca8a04" }}
+                        />
                       </div>
                       <div>
                         <div
@@ -304,13 +312,16 @@ export default function PackageAdminPage() {
                           width: 40,
                           height: 40,
                           borderRadius: 10,
-                          background: "linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%)",
+                          background:
+                            "linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
                         }}
                       >
-                        <Users style={{ width: 20, height: 20, color: "#1d4ed8" }} />
+                        <Users
+                          style={{ width: 20, height: 20, color: "#1d4ed8" }}
+                        />
                       </div>
                       <div>
                         <div

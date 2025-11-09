@@ -205,13 +205,7 @@ export default function AdminListingsPage() {
       width: 140,
       render: (t: string) => (
         <Tag
-          icon={
-            t === "car" ? (
-              <CarOutlined />
-            ) : (
-              <ThunderboltOutlined />
-            )
-          }
+          icon={t === "car" ? <CarOutlined /> : <ThunderboltOutlined />}
           color={t === "car" ? "blue" : "gold"}
           style={{
             borderRadius: 8,
@@ -340,7 +334,14 @@ export default function AdminListingsPage() {
         </div>
 
         {/* Stats Cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 24 }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: 16,
+            marginBottom: 24,
+          }}
+        >
           <Card
             bordered={false}
             style={{
@@ -482,28 +483,61 @@ export default function AdminListingsPage() {
           style={{ top: 20 }}
         >
           {detailLoading || !currentListing ? (
-            <div style={{ padding: "60px 0", textAlign: "center", color: "#94a3b8" }}>
+            <div
+              style={{
+                padding: "60px 0",
+                textAlign: "center",
+                color: "#94a3b8",
+              }}
+            >
               Đang tải...
             </div>
           ) : (
-            <div style={{ maxHeight: "70vh", overflowY: "auto", padding: "8px 0" }}>
+            <div
+              style={{ maxHeight: "70vh", overflowY: "auto", padding: "8px 0" }}
+            >
               {/* Ảnh */}
               <div style={{ marginBottom: 24 }}>
-                <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: "#1e293b" }}>
+                <h4
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 600,
+                    marginBottom: 12,
+                    color: "#1e293b",
+                  }}
+                >
                   Hình ảnh
                 </h4>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: 12 }}>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns:
+                      "repeat(auto-fill, minmax(150px, 1fr))",
+                    gap: 12,
+                  }}
+                >
                   {currentListing.images?.length ? (
                     currentListing.images.map((img, idx) => (
                       <Image
                         key={idx}
                         src={img}
                         alt={`img-${idx}`}
-                        style={{ borderRadius: 12, objectFit: "cover", height: 120 }}
+                        style={{
+                          borderRadius: 12,
+                          objectFit: "cover",
+                          height: 120,
+                        }}
                       />
                     ))
                   ) : (
-                    <div style={{ gridColumn: "1 / -1", textAlign: "center", color: "#cbd5e1", padding: 40 }}>
+                    <div
+                      style={{
+                        gridColumn: "1 / -1",
+                        textAlign: "center",
+                        color: "#cbd5e1",
+                        padding: 40,
+                      }}
+                    >
                       Không có hình ảnh
                     </div>
                   )}
@@ -513,15 +547,29 @@ export default function AdminListingsPage() {
               <Divider style={{ margin: "24px 0" }} />
 
               {/* Thông tin chung */}
-              <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: "#1e293b" }}>
+              <h4
+                style={{
+                  fontSize: 16,
+                  fontWeight: 600,
+                  marginBottom: 12,
+                  color: "#1e293b",
+                }}
+              >
                 Thông tin chung
               </h4>
-              <Descriptions bordered column={2} size="middle" style={{ marginBottom: 24 }}>
+              <Descriptions
+                bordered
+                column={2}
+                size="middle"
+                style={{ marginBottom: 24 }}
+              >
                 <Descriptions.Item label="Tiêu đề" span={2}>
                   <Text strong>{currentListing.title}</Text>
                 </Descriptions.Item>
                 <Descriptions.Item label="Người bán">
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: 6 }}
+                  >
                     <UserOutlined style={{ color: "#667eea" }} />
                     {typeof currentListing.seller === "string"
                       ? currentListing.seller
@@ -531,9 +579,13 @@ export default function AdminListingsPage() {
                 </Descriptions.Item>
                 <Descriptions.Item label="Loại">
                   {currentListing.type === "car" ? (
-                    <Tag icon={<CarOutlined />} color="blue">Xe điện</Tag>
+                    <Tag icon={<CarOutlined />} color="blue">
+                      Xe điện
+                    </Tag>
                   ) : (
-                    <Tag icon={<ThunderboltOutlined />} color="gold">Pin xe điện</Tag>
+                    <Tag icon={<ThunderboltOutlined />} color="gold">
+                      Pin xe điện
+                    </Tag>
                   )}
                 </Descriptions.Item>
                 <Descriptions.Item label="Hãng">
@@ -548,11 +600,11 @@ export default function AdminListingsPage() {
                       : "-"}
                   </Text>
                 </Descriptions.Item>
-                <Descriptions.Item label="Giá AI gợi ý">
+                {/* <Descriptions.Item label="Giá AI gợi ý">
                   {currentListing.aiSuggestedPrice
                     ? `${currentListing.aiSuggestedPrice.toLocaleString()}₫`
                     : "-"}
-                </Descriptions.Item>
+                </Descriptions.Item> */}
                 <Descriptions.Item label="Trạng thái">
                   <Tag color={statusColor(currentListing.status)}>
                     {statusLabel(currentListing.status)}
@@ -563,10 +615,22 @@ export default function AdminListingsPage() {
               {/* Chi tiết kỹ thuật */}
               {currentListing.type === "car" && (
                 <>
-                  <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: "#1e293b" }}>
+                  <h4
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 600,
+                      marginBottom: 12,
+                      color: "#1e293b",
+                    }}
+                  >
                     Chi tiết xe điện
                   </h4>
-                  <Descriptions bordered size="middle" column={2} style={{ marginBottom: 24 }}>
+                  <Descriptions
+                    bordered
+                    size="middle"
+                    column={2}
+                    style={{ marginBottom: 24 }}
+                  >
                     <Descriptions.Item label="Số km đã đi">
                       {currentListing.carDetails?.kmDriven ?? "-"}
                     </Descriptions.Item>
@@ -601,10 +665,22 @@ export default function AdminListingsPage() {
 
               {currentListing.type === "battery" && (
                 <>
-                  <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: "#1e293b" }}>
+                  <h4
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 600,
+                      marginBottom: 12,
+                      color: "#1e293b",
+                    }}
+                  >
                     Chi tiết pin xe điện
                   </h4>
-                  <Descriptions bordered size="middle" column={2} style={{ marginBottom: 24 }}>
+                  <Descriptions
+                    bordered
+                    size="middle"
+                    column={2}
+                    style={{ marginBottom: 24 }}
+                  >
                     <Descriptions.Item label="Thương hiệu">
                       {currentListing.batteryDetails?.brand ?? "-"}
                     </Descriptions.Item>
@@ -631,7 +707,14 @@ export default function AdminListingsPage() {
                 </>
               )}
 
-              <div style={{ marginTop: 24, display: "flex", justifyContent: "flex-end", gap: 12 }}>
+              <div
+                style={{
+                  marginTop: 24,
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: 12,
+                }}
+              >
                 {currentListing.status === "pending" && (
                   <Popconfirm
                     title="Duyệt bài đăng này?"

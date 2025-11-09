@@ -10,10 +10,27 @@ export default function UsersModal({ pkg, onClose }: any) {
   useEffect(() => {
     const fetchUsers = async () => {
       const res = await PackageService.getUsersByPackage(pkg._id);
-      setUsers(res.users || []);
+      setUsers(res.data || []);
     };
     fetchUsers();
   }, [pkg]);
+
+  const renderStatus = (status: string) => {
+    const map: Record<string, { color: string; text: string }> = {
+      cancelled: { color: "red", text: "Đã hủy" },
+      active: { color: "green", text: "Đang hoạt động" },
+      pending: { color: "orange", text: "Chờ xử lý" },
+    };
+    const item = map[status] || { color: "default", text: status };
+    return (
+      <span
+        className={`inline-block px-2 py-1 rounded text-white text-xs`}
+        style={{ backgroundColor: item.color }}
+      >
+        {item.text}
+      </span>
+    );
+  };
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
@@ -36,13 +53,16 @@ export default function UsersModal({ pkg, onClose }: any) {
             {users.map((u) => (
               <div
                 key={u._id}
-                className="flex items-center gap-3 border p-3 rounded-lg hover:bg-gray-50 transition"
+                className="flex items-center justify-between gap-3 border p-3 rounded-lg hover:bg-gray-50 transition"
               >
-                <User className="w-5 h-5 text-blue-600" />
-                <div>
-                  <p className="font-medium text-gray-800">{u.name}</p>
-                  <p className="text-gray-600 text-sm">{u.email}</p>
+                <div className="flex items-center gap-3">
+                  <User className="w-5 h-5 text-blue-600" />
+                  <div>
+                    <p className="font-medium text-gray-800">{u.user.name}</p>
+                    <p className="text-gray-600 text-sm">{u.user.email}</p>
+                  </div>
                 </div>
+                <div>{renderStatus(u.status)}</div>
               </div>
             ))}
           </div>
