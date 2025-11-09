@@ -285,7 +285,7 @@ export default function LoginPage() {
                 </h1>
               </div>
               <p className="text-gray-600 text-lg font-medium">
-                Truy cập vào thế giới xe điện! ⚡🚗
+                Truy cập vào thế giới xe điện!
               </p>
               <p className="text-sm text-gray-500 mt-2">
                 Mua bán xe điện an toàn, nhanh chóng
@@ -316,7 +316,7 @@ export default function LoginPage() {
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-14 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 bg-white/50 backdrop-blur-sm font-medium"
+                    className="w-full pl-14 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 bg-white/50 backdrop-blur-sm font-medium text-gray-800 placeholder-gray-400"
                     required
                   />
                 </div>
@@ -334,7 +334,7 @@ export default function LoginPage() {
                     placeholder="Mật khẩu"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-14 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 bg-white/50 backdrop-blur-sm font-medium"
+                    className="w-full pl-14 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 bg-white/50 backdrop-blur-sm font-medium text-gray-800 placeholder-gray-400"
                     required
                   />
                 </div>

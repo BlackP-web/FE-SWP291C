@@ -32,7 +32,7 @@ export default function ThankYouPage() {
 
         {/* Title */}
         <h1 className="text-2xl font-bold text-gray-800 mb-2">
-          Thanh toán thành công!
+          Yêu Cầu Đã Được Gửi Đến Nhà Cung Cấp!
         </h1>
         <p className="text-gray-600 mb-6">
           Cảm ơn bạn đã tin tưởng và giao dịch cùng chúng tôi.
