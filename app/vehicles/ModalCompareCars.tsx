@@ -195,18 +195,18 @@ export default function ModalCompareCars({
                 car1: listing1.year,
                 car2: listing2.year,
               },
-              {
-                key: "battery",
-                label: "Dung lượng pin",
-                car1: listing1.batteryCapacity + " mAh",
-                car2: listing2.batteryCapacity + " mAh",
-              },
-              {
-                key: "km",
-                label: "Số km đã đi",
-                car1: listing1.kmDriven + " km",
-                car2: listing2.kmDriven + " km",
-              },
+              // {
+              //   key: "battery",
+              //   label: "Dung lượng pin",
+              //   car1: listing1.batteryCapacity + " mAh",
+              //   car2: listing2.batteryCapacity + " mAh",
+              // },
+              // {
+              //   key: "km",
+              //   label: "Số km đã đi",
+              //   car1: listing1.kmDriven + " km",
+              //   car2: listing2.kmDriven + " km",
+              // },
               {
                 key: "status",
                 label: "Trạng thái",

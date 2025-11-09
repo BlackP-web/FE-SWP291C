@@ -443,10 +443,26 @@ export default function OwnerListingsPage() {
                     <Form.Item
                       name={["carDetails", "insuranceExpiry"]}
                       label="Hạn bảo hiểm"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng chọn hạn bảo hiểm",
+                        },
+                        {
+                          validator: (_, value) => {
+                            if (!value) return Promise.resolve();
+                            const date = new Date(value);
+                            return isNaN(date.getTime())
+                              ? Promise.reject(new Error("Ngày không hợp lệ"))
+                              : Promise.resolve();
+                          },
+                        },
+                      ]}
                     >
-                      <Input type="date" />
+                      <Input type="date" style={{ width: "100%" }} />
                     </Form.Item>
                   </Col>
+
                   <Col span={12}>
                     <Form.Item
                       name={["carDetails", "inspectionExpiry"]}
