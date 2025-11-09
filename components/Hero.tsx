@@ -143,8 +143,8 @@ const Hero = () => {
                       transition={{ duration: 0.6, delay: 0.2 }}
                       className="mb-6"
                     >
-                      <span className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full text-sm font-semibold shadow-lg backdrop-blur-sm">
-                        <Zap className="w-4 h-4" />
+                      <span className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-full text-sm font-semibold shadow-lg backdrop-blur-sm text-white">
+                        <Zap className="w-4 h-4 text-white" />
                         {slide.badge}
                       </span>
                     </motion.div>
@@ -184,8 +184,8 @@ const Hero = () => {
                       transition={{ duration: 0.8, delay: 0.6 }}
                       className="flex flex-wrap gap-4 mb-10"
                     >
-                      <div className="bg-white/10 backdrop-blur-md px-6 py-3 rounded-xl border border-white/20 flex items-center gap-3">
-                        <div className="bg-green-500 p-2 rounded-lg">
+                      <div className="bg-white/8 backdrop-blur-md px-6 py-3 rounded-xl border border-white/10 flex items-center gap-3">
+                        <div className="bg-gray-700 p-2 rounded-lg">
                           <Battery className="w-5 h-5 text-white" />
                         </div>
                         <div>
@@ -193,8 +193,8 @@ const Hero = () => {
                           <div className="text-lg font-bold">{slide.price}</div>
                         </div>
                       </div>
-                      <div className="bg-white/10 backdrop-blur-md px-6 py-3 rounded-xl border border-white/20 flex items-center gap-3">
-                        <div className="bg-blue-500 p-2 rounded-lg">
+                      <div className="bg-white/8 backdrop-blur-md px-6 py-3 rounded-xl border border-white/10 flex items-center gap-3">
+                        <div className="bg-gray-700 p-2 rounded-lg">
                           <Shield className="w-5 h-5 text-white" />
                         </div>
                         <div>
@@ -202,8 +202,8 @@ const Hero = () => {
                           <div className="text-lg font-bold">{slide.year}</div>
                         </div>
                       </div>
-                      <div className="bg-white/10 backdrop-blur-md px-6 py-3 rounded-xl border border-white/20 flex items-center gap-3">
-                        <div className="bg-purple-500 p-2 rounded-lg">
+                      <div className="bg-white/8 backdrop-blur-md px-6 py-3 rounded-xl border border-white/10 flex items-center gap-3">
+                        <div className="bg-gray-700 p-2 rounded-lg">
                           <Zap className="w-5 h-5 text-white" />
                         </div>
                         <div>

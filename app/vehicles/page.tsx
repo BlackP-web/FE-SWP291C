@@ -17,16 +17,30 @@ interface Listing {
   status?: string;
 }
 
+type Filters = {
+  brand?: string;
+  model?: string;
+  year?: string | number;
+  priceMin?: string | number;
+  priceMax?: string | number;
+  condition?: string;
+  batteryHealth?: string;
+};
+
 const VehiclesPage = () => {
+  const [allListings, setAllListings] = useState<Listing[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState<Filters>({});
 
   useEffect(() => {
     const fetchListings = async () => {
       try {
         const res = await ListingService.getListingApprove("car");
 
-        setListings(res?.listings || []);
+        const data = res?.listings || [];
+        setAllListings(data);
+        setListings(data);
       } catch (err) {
         console.error("Error fetching listings:", err);
       } finally {
@@ -40,7 +54,54 @@ const VehiclesPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <SearchFilter />
+      <SearchFilter
+        value={filters}
+        onChange={(k, v) => setFilters((s) => ({ ...(s || {}), [k]: v }))}
+        onApply={(f) => {
+          // apply client-side filtering
+          const applied = (allListings || []).filter((item) => {
+            // brand
+            if (f.brand) {
+              const b = (item as any).brand?.name || (item as any).brand || "";
+              if (!b.toLowerCase().includes(String(f.brand).toLowerCase())) return false;
+            }
+            // year
+            if (f.year) {
+              if (Number(item.year) !== Number(f.year)) return false;
+            }
+            // condition
+            if (f.condition) {
+              if (((item as any).condition || "") !== String(f.condition)) return false;
+            }
+            // batteryHealth range like '80-89' or '0-59'
+            if (f.batteryHealth) {
+              const bh = Number((item as any).batteryHealth ?? -1);
+              const parts = String(f.batteryHealth).split("-");
+              if (parts.length === 2) {
+                const min = Number(parts[0]);
+                const max = Number(parts[1]);
+                if (isNaN(bh) || bh < min || bh > max) return false;
+              }
+            }
+            // price
+            if (f.priceMin) {
+              const min = Number(f.priceMin);
+              if (!isNaN(min) && Number(item.price ?? 0) < min) return false;
+            }
+            if (f.priceMax) {
+              const max = Number(f.priceMax);
+              if (!isNaN(max) && Number(item.price ?? 0) > max) return false;
+            }
+
+            return true;
+          });
+          setListings(applied);
+        }}
+        onClear={() => {
+          setFilters({});
+          setListings(allListings);
+        }}
+      />
 
       <div className="container-tesla py-10">
         {loading ? (

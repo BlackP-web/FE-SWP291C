@@ -51,7 +51,7 @@ const Navbar = () => {
               whileTap={{ scale: 0.95 }}
               className="flex items-center space-x-2"
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-tesla-black to-tesla-dark-gray rounded-sm flex items-center justify-center">
+              <div className="w-8 h-8 bg-tesla-black rounded-sm flex items-center justify-center">
                 <span className="text-tesla-white font-bold text-lg">E</span>
               </div>
               <span
@@ -158,7 +158,7 @@ const Navbar = () => {
                   }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => router.push("/login")}
-                  className="bg-gradient-to-r from-tesla-black to-tesla-dark-gray text-tesla-white px-6 py-2 rounded-full font-medium transition-all duration-300 shadow-lg hover:shadow-xl"
+                  className="bg-tesla-black text-tesla-white px-6 py-2 rounded-full font-medium transition-all duration-300 shadow-lg hover:shadow-xl"
                 >
                   <User className="w-4 h-4 inline mr-2" />
                   Đăng nhập
@@ -169,11 +169,11 @@ const Navbar = () => {
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className={`md:hidden p-2 transition-colors duration-300 ${
-                isScrolled
-                  ? "text-tesla-black"
-                  : "text-tesla-black"
-              }`}
+          className={`md:hidden p-2 transition-colors duration-300 ${
+        isScrolled
+          ? "text-tesla-black"
+          : "text-tesla-black"
+        }`}
             >
               {isMobileMenuOpen ? (
                 <X className="w-6 h-6" />

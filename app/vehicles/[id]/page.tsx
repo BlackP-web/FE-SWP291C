@@ -27,6 +27,10 @@ import Reviews from "@/components/Reviews";
 import { useAuth } from "@/hooks/useAuth";
 import { message, Tag } from "antd";
 import ModalCompareCars from "../ModalCompareCars";
+import Lightbox from "@/components/Lightbox";
+import PriceRangeBar from "@/components/PriceRangeBar";
+import PriceCard from "@/components/PriceCard";
+import SpecsGrid from "@/components/SpecsGrid";
 
 export default function VehicleDetailPage({
   params,
@@ -38,6 +42,8 @@ export default function VehicleDetailPage({
   const [listing, setListing] = useState<any>(null);
   const [isLiked, setIsLiked] = useState(false);
   const [mainImage, setMainImage] = useState<string>("");
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { isAuthenticated } = useAuth();
   const [showCompareModal, setShowCompareModal] = useState(false);
 
@@ -46,8 +52,12 @@ export default function VehicleDetailPage({
     const fetchListing = async () => {
       try {
         const res = await ListingService.getById(id as string);
-        setListing(res.listing);
+        // DEBUG: log response shape to confirm where car details live
+        // (remove this log after verification)
+        console.debug("ListingService.getById response:", res);
+        setListing(res.listing ?? res);
         setMainImage(res.listing?.images?.[0] || "");
+        setCurrentImageIndex(0);
       } catch (err) {
         console.error(err);
       }
@@ -79,20 +89,34 @@ export default function VehicleDetailPage({
       </div>
     );
 
+  // tolerant reader: accept either listing.carDetails.* / listing.batteryDetails.* OR top-level listing.*
+  const read = (nestedKey: string, topKey?: string) => {
+    const cd = listing?.carDetails || listing?.batteryDetails || {};
+    const nested = cd?.[nestedKey as any];
+    const top = topKey ? (listing as any)[topKey] : (listing as any)[nestedKey];
+    return nested ?? top ?? null;
+  };
+
   // ⬇️ Dynamic Info Renderers
   const renderCarDetails = () => {
     const details = [
-      { icon: <Car />, label: "Biển số", value: listing.carDetails?.registrationNumber },
-      { icon: <ClipboardList />, label: "Số chủ sở hữu", value: listing.carDetails?.ownerNumber },
-      { icon: <Zap />, label: "Nhiên liệu", value: listing.carDetails?.fuelType },
-      { icon: <Settings />, label: "Hộp số", value: listing.carDetails?.transmission },
-      { icon: <Droplets />, label: "Màu sắc", value: listing.carDetails?.color },
-      { icon: <Gauge />, label: "Số km đã đi", value: `${listing.carDetails?.kmDriven ?? 0} km` },
-      { icon: <Battery />, label: "Dung lượng pin", value: `${listing.carDetails?.batteryCapacity ?? 0} kWh` },
-      { icon: <Shield />, label: "Bảo hiểm hết hạn", value: formatDate(listing.carDetails?.insuranceExpiry) },
-      { icon: <FileText />, label: "Đăng kiểm hết hạn", value: formatDate(listing.carDetails?.inspectionExpiry) },
-      { icon: <CheckCircle />, label: "Lịch sử tai nạn", value: listing.carDetails?.accidentHistory || "Không có" },
-      { icon: <MapPin />, label: "Khu vực", value: listing.carDetails?.location },
+      { icon: <Car />, label: "Biển số", value: read("registrationNumber", "registrationNumber") },
+      { icon: <ClipboardList />, label: "Số chủ sở hữu", value: read("ownerNumber", "ownerNumber") },
+      { icon: <Zap />, label: "Nhiên liệu", value: read("fuelType", "fuelType") },
+      { icon: <Settings />, label: "Hộp số", value: read("transmission", "transmission") },
+      { icon: <Droplets />, label: "Màu sắc", value: read("color", "color") },
+      { icon: <Gauge />, label: "Số km đã đi", value: (() => {
+          const v = read("kmDriven", "kmDriven");
+          return v != null ? `${v} km` : null;
+        })() },
+      { icon: <Battery />, label: "Dung lượng pin", value: (() => {
+          const v = read("batteryCapacity", "batteryCapacity");
+          return v != null ? `${v} kWh` : null;
+        })() },
+      { icon: <Shield />, label: "Bảo hiểm hết hạn", value: formatDate(read("insuranceExpiry", "insuranceExpiry")) },
+      { icon: <FileText />, label: "Đăng kiểm hết hạn", value: formatDate(read("inspectionExpiry", "inspectionExpiry")) },
+      { icon: <CheckCircle />, label: "Lịch sử tai nạn", value: read("accidentHistory", "accidentHistory") || "Không có" },
+      { icon: <MapPin />, label: "Khu vực", value: read("location", "location") },
     ];
 
     return details.map((detail, index) => (
@@ -102,16 +126,25 @@ export default function VehicleDetailPage({
 
   const renderBatteryDetails = () => {
     const details = [
-      { icon: <Battery />, label: "Thương hiệu", value: listing.batteryDetails?.brand },
-      { icon: <Zap />, label: "Dung lượng", value: `${listing.batteryDetails?.capacity} kWh` },
-      { icon: <Gauge />, label: "Điện áp", value: `${listing.batteryDetails?.voltage} V` },
-      { icon: <Droplets />, label: "Số chu kỳ sạc/xả", value: listing.batteryDetails?.cyclesUsed },
-      { icon: <Shield />, label: "Tình trạng pin", value: `${listing.batteryDetails?.healthPercentage}%` },
-      { icon: <ClipboardList />, label: "Bảo hành", value: listing.batteryDetails?.warranty },
-      { icon: <Calendar />, label: "Ngày sản xuất", value: formatDate(listing.batteryDetails?.manufactureDate) },
-      { icon: <FileText />, label: "Số seri", value: listing.batteryDetails?.serialNumber },
-      { icon: <MapPin />, label: "Khu vực", value: listing.batteryDetails?.location },
-      { icon: <Car />, label: "Mẫu xe tương thích", value: listing.batteryDetails?.compatibleModels?.length ? listing.batteryDetails.compatibleModels.join(", ") : "Không có" },
+      { icon: <Battery />, label: "Thương hiệu", value: read("brand", "brand") },
+      { icon: <Zap />, label: "Dung lượng", value: (() => {
+          const v = read("capacity", "batteryCapacity");
+          return v != null ? `${v} kWh` : null;
+        })() },
+      { icon: <Gauge />, label: "Điện áp", value: (() => {
+          const v = read("voltage", "voltage");
+          return v != null ? `${v} V` : null;
+        })() },
+      { icon: <Droplets />, label: "Số chu kỳ sạc/xả", value: read("cyclesUsed", "cyclesUsed") },
+      { icon: <Shield />, label: "Tình trạng pin", value: (() => {
+          const v = read("healthPercentage", "healthPercentage");
+          return v != null ? `${v}%` : null;
+        })() },
+      { icon: <ClipboardList />, label: "Bảo hành", value: read("warranty", "warranty") },
+      { icon: <Calendar />, label: "Ngày sản xuất", value: formatDate(read("manufactureDate", "manufactureDate")) },
+      { icon: <FileText />, label: "Số seri", value: read("serialNumber", "serialNumber") },
+      { icon: <MapPin />, label: "Khu vực", value: read("location", "location") },
+      { icon: <Car />, label: "Mẫu xe tương thích", value: (read("compatibleModels", "compatibleModels")?.length ? read("compatibleModels", "compatibleModels").join(", ") : "Không có") },
     ];
 
     return details.map((detail, index) => (
@@ -178,7 +211,12 @@ export default function VehicleDetailPage({
                     transition={{ duration: 0.4 }}
                     src={mainImage || listing.images?.[0]}
                     alt={listing.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    onClick={() => {
+                      const idx = listing.images?.indexOf(mainImage) ?? 0;
+                      setCurrentImageIndex(idx);
+                      setLightboxOpen(true);
+                    }}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 cursor-zoom-in"
                   />
                   
                   {/* Like Button */}
@@ -206,7 +244,7 @@ export default function VehicleDetailPage({
                 </div>
 
                 {/* Thumbnail Gallery */}
-                {listing.images.length > 1 && (
+                  {listing.images?.length > 1 && (
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -220,7 +258,10 @@ export default function VehicleDetailPage({
                         whileTap={{ scale: 0.95 }}
                         src={img}
                         alt={`thumb-${i}`}
-                        onClick={() => setMainImage(img)}
+                        onClick={() => {
+                          setMainImage(img);
+                          setCurrentImageIndex(i);
+                        }}
                         className={`w-24 h-24 object-cover rounded-xl cursor-pointer border-3 transition-all duration-300 shadow-md flex-shrink-0 ${
                           mainImage === img
                             ? "border-blue-500 ring-4 ring-blue-200"
@@ -240,119 +281,7 @@ export default function VehicleDetailPage({
               transition={{ duration: 0.6, delay: 0.2 }}
               className="lg:col-span-1"
             >
-              <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/60 sticky top-24">
-                {/* Title & Brand */}
-                <div className="mb-6">
-                  <motion.h1
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 mb-4 leading-tight"
-                  >
-                    {listing.title}
-                  </motion.h1>
-
-                  <div className="flex items-center gap-3 mb-4">
-                    {listing.brand?.logo && (
-                      <motion.img
-                        whileHover={{ rotate: 360, scale: 1.1 }}
-                        transition={{ duration: 0.5 }}
-                        src={listing.brand.logo}
-                        alt={listing.brand.name}
-                        width={50}
-                        height={50}
-                        className="rounded-full shadow-lg ring-2 ring-gray-200"
-                      />
-                    )}
-                    <div>
-                      <span className="text-gray-900 font-bold text-lg block">
-                        {listing.brand.name}
-                      </span>
-                      <span className="text-gray-500 text-sm flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        {listing.year}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Price Section */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 mb-6 border-2 border-green-200 shadow-lg"
-                >
-                  <div className="text-sm text-gray-600 mb-2 font-medium">Giá bán</div>
-                  <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-600 mb-2">
-                    {formatPrice(listing.price)}
-                  </div>
-                  {listing.aiSuggestedPrice && (
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Zap className="w-4 h-4 text-yellow-500" />
-                      AI gợi ý: <span className="font-semibold">{formatPrice(listing.aiSuggestedPrice)}</span>
-                    </div>
-                  )}
-                </motion.div>
-
-                {/* Seller Info */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-5 mb-6 border border-blue-200 shadow-md"
-                >
-                  <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
-                    <Shield className="w-5 h-5 text-blue-600" />
-                    Người bán
-                  </h3>
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-xl shadow-lg">
-                      {listing.seller.name.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="text-gray-900 font-bold text-base">{listing.seller.name}</p>
-                      <p className="text-gray-500 text-sm">Người bán uy tín</p>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Action Buttons */}
-                {listing.status !== "sold" && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
-                    className="space-y-3"
-                  >
-                    {listing.type === "car" && (
-                      <motion.button
-                        whileHover={{ scale: 1.02, y: -2 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => setShowCompareModal(true)}
-                        className="w-full px-6 py-4 bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 text-white rounded-xl font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-2"
-                      >
-                        <Eye className="w-5 h-5" />
-                        So sánh xe
-                      </motion.button>
-                    )}
-
-                    <motion.button
-                      whileHover={{ scale: 1.02, y: -2 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() =>
-                        handleRequireLogin("mua ngay") &&
-                      }
-                      className="w-full px-6 py-4 bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 text-white rounded-xl font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-2 relative overflow-hidden group"
-                    >
-                      <span className="relative z-10 flex items-center gap-2">
-                        <Zap className="w-5 h-5" />
-                        Liên hệ người bán
-                      </span>
-                      <div className="absolute inset-0 bg-gradient-to-r from-teal-600 to-green-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    </motion.button>
-                  </motion.div>
-                )}
-              </div>
+              <PriceCard listing={listing} onCompare={() => setShowCompareModal(true)} onContact={() => handleRequireLogin("mua ngay")} />
             </motion.div>
           </div>
 
@@ -363,17 +292,13 @@ export default function VehicleDetailPage({
             transition={{ duration: 0.6, delay: 0.4 }}
             className="mt-8"
           >
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/60">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                <FileText className="w-8 h-8 text-blue-600" />
-                Thông tin chi tiết
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {listing.type === "car"
-                  ? renderCarDetails()
-                  : renderBatteryDetails()}
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/60">
+                <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                  <FileText className="w-8 h-8 text-blue-600" />
+                  Thông tin chi tiết
+                </h2>
+                <SpecsGrid listing={listing} />
               </div>
-            </div>
           </motion.div>
         </div>
       </section>
@@ -382,6 +307,17 @@ export default function VehicleDetailPage({
         open={showCompareModal}
         onClose={() => setShowCompareModal(false)}
         listingId={listing._id}
+      />
+
+      <Lightbox
+        images={listing.images || []}
+        initialIndex={currentImageIndex}
+        open={lightboxOpen}
+        onClose={() => setLightboxOpen(false)}
+        onChange={(i: number) => {
+          setCurrentImageIndex(i);
+          setMainImage(listing.images?.[i] || mainImage);
+        }}
       />
 
       <RelatedVehicles currentType={listing.type} currentId={listing._id} />

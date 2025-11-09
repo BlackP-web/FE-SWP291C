@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { FavoriteService } from "@/service/favorite.service";
 import { CartService } from "@/service/cart.service";
 import { message } from "antd";
+import { formatVND } from '@/lib/formatCurrency'
 
 interface ProductCardProps {
   id: string;
@@ -43,12 +44,7 @@ const ProductCard = ({
   const router = useRouter();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const formatPrice = (price: number) =>
-    new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-      minimumFractionDigits: 0,
-    }).format(price);
+  const formatPrice = (price: number) => formatVND(price)
 
   const formatMileage = (mileage: number) =>
     new Intl.NumberFormat("vi-VN").format(mileage);
@@ -104,17 +100,19 @@ const ProductCard = ({
   };
 
   const handleToggleFavorite = async () => {
-    if (!user) {
-      alert("Vui lòng đăng nhập để thích sản phẩm!");
+    if (!user?._id) {
+      message.info("Vui lòng đăng nhập để thích sản phẩm!");
+      router.push("/login");
       return;
     }
 
     try {
       await FavoriteService.toggleFavorite({ userId: user._id, listingId: id });
       setIsLiked((prev) => !prev);
+      message.success("Cập nhật yêu thích thành công");
     } catch (err) {
       console.error(err);
-      alert("Có lỗi xảy ra khi thích sản phẩm.");
+      message.error("Có lỗi xảy ra khi cập nhật yêu thích");
     }
   };
 
@@ -125,10 +123,10 @@ const ProductCard = ({
       whileHover={{ y: -8, scale: 1.02 }}
       transition={{ duration: 0.4 }}
       viewport={{ once: true }}
-      className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all overflow-hidden group border border-gray-100"
+      className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden group border border-gray-100"
     >
       {/* Image Container */}
-      <div className="relative aspect-[4/3] bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 overflow-hidden">
+  <div className="relative aspect-[3/2] bg-gray-50 overflow-hidden">
         <img
           src={image}
           alt={title}
@@ -136,7 +134,7 @@ const ProductCard = ({
         />
 
         {/* Overlay gradient with shine effect */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
+  <div className="absolute inset-0 bg-black/20 opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
 
         {/* Shine effect on hover */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
@@ -146,18 +144,10 @@ const ProductCard = ({
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ delay: 0.2, type: "spring" }}
-          className={`absolute top-8 left-3 px-4 py-2 text-xs font-bold rounded-full shadow-2xl backdrop-blur-md flex items-center gap-2 ${
-            isVerified === "sold"
-              ? "bg-gradient-to-r from-red-500 to-red-700 text-white"
-              : isVerified === "approved"
-              ? "bg-gradient-to-r from-green-400 via-emerald-500 to-teal-600 text-white"
-              : isVerified === "active"
-              ? "bg-gradient-to-r from-orange-400 to-red-500 text-white"
-              : "bg-gradient-to-r from-gray-500 to-gray-700 text-white"
-          }`}
+          className="absolute top-4 left-3 px-3 py-1 text-xs font-semibold rounded-full shadow backdrop-blur-sm flex items-center gap-2 bg-gray-800 text-white"
         >
-          {isVerified === "approved" && <Shield className="w-4 h-4" />}
-          <span className="font-extrabold tracking-wide">
+          {isVerified === "approved" && <Shield className="w-3.5 h-3.5" />}
+          <span className="font-semibold tracking-wide text-xs">
             {isVerified === "sold"
               ? "ĐÃ BÁN"
               : isVerified === "approved"
@@ -173,30 +163,22 @@ const ProductCard = ({
           initial={{ x: -100, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className={`absolute bottom-3 left-3 px-4 py-2 text-sm font-bold rounded-full shadow-xl backdrop-blur-md flex items-center gap-2 ${
-            condition === "excellent"
-              ? "bg-gradient-to-r from-green-400 to-emerald-600 text-white"
-              : condition === "good"
-              ? "bg-gradient-to-r from-blue-400 to-cyan-600 text-white"
-              : condition === "fair"
-              ? "bg-gradient-to-r from-yellow-400 to-orange-500 text-white"
-              : "bg-gradient-to-r from-red-400 to-pink-600 text-white"
-          }`}
+          className="absolute bottom-3 left-3 px-3 py-1 text-xs font-medium rounded-full shadow-sm backdrop-blur-sm flex items-center gap-2 bg-gray-100 text-gray-900"
         >
-          <Award className="w-4 h-4" />
-          <span className="font-extrabold">{getConditionText(condition)}</span>
+          <Award className="w-3.5 h-3.5" />
+          <span className="font-medium text-xs">{getConditionText(condition)}</span>
         </motion.div>
 
         {/* Action Buttons - Top Right với màu gradient */}
-        <div className="absolute top-3 right-3 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
+          <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
           <motion.button
             whileHover={{ scale: 1.2, rotate: 5 }}
             whileTap={{ scale: 0.9 }}
             onClick={handleToggleFavorite}
-            className={`p-3 rounded-full shadow-2xl transition-all duration-300 backdrop-blur-md ${
+            className={`p-2 rounded-full shadow transition-all duration-300 backdrop-blur-sm ${
               isLiked
-                ? "bg-gradient-to-r from-red-500 to-pink-600 text-white scale-110"
-                : "bg-white/95 hover:bg-white text-red-500"
+                ? "bg-gray-800 text-white scale-105"
+                : "bg-white/95 hover:bg-white text-gray-700"
             }`}
           >
             <Heart className={`w-5 h-5 ${isLiked ? "fill-current" : ""}`} />
@@ -204,7 +186,7 @@ const ProductCard = ({
           <motion.button
             whileHover={{ scale: 1.2, rotate: -5 }}
             whileTap={{ scale: 0.9 }}
-            className="p-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-2xl transition-all duration-300 backdrop-blur-md hover:from-blue-600 hover:to-purple-700"
+            className="p-2 rounded-full bg-gray-800 text-white shadow transition-all duration-300 backdrop-blur-sm hover:opacity-90"
           >
             <Eye className="w-5 h-5" />
           </motion.button>
@@ -215,53 +197,53 @@ const ProductCard = ({
           initial={{ x: 100, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="absolute bottom-3 right-3 bg-gradient-to-r from-purple-600 to-blue-600 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm font-bold shadow-2xl flex items-center gap-2"
+          className="absolute bottom-3 right-3 bg-gray-800 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-sm flex items-center gap-2"
         >
-          <Zap className="w-4 h-4" />
-          <span>{year}</span>
+          <Zap className="w-3.5 h-3.5" />
+          <span className="text-xs">{year}</span>
         </motion.div>
       </div>
 
       {/* Content */}
-      <div className="p-6 flex flex-col justify-between bg-gradient-to-br from-white via-gray-50 to-blue-50">
+  <div className="p-4 flex flex-col justify-between bg-white">
         <div>
-          <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 mb-2 line-clamp-1 group-hover:from-blue-600 group-hover:to-purple-600 transition-all">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1 line-clamp-1 transition-all">
             {title}
           </h3>
-          <p className="text-sm text-gray-600 mb-4 font-semibold">
+          <p className="text-xs text-gray-600 mb-3 font-medium">
             {brand} {model} • {year}
           </p>
 
           {/* Specs with icons and better layout với gradient backgrounds */}
-          <div className="grid grid-cols-2 gap-3 mb-5">
+          <div className="grid grid-cols-2 gap-2 mb-4">
             <motion.div
               whileHover={{ scale: 1.05, x: 5 }}
-              className="flex items-center text-sm text-gray-700 bg-gradient-to-br from-blue-50 to-cyan-100 p-3 rounded-xl border border-blue-200 shadow-sm hover:shadow-md transition-all"
+              className="flex items-center text-xs text-gray-700 bg-gray-100 p-2 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all"
             >
-              <div className="bg-gradient-to-br from-blue-400 to-blue-600 p-2 rounded-lg mr-2 shadow-lg">
+              <div className="bg-gray-700 p-1.5 rounded-md mr-2 shadow">
                 <Gauge className="w-4 h-4 text-white" />
               </div>
               <div>
-                <div className="text-xs text-blue-600 font-semibold">
+                <div className="text-xs text-gray-500 font-medium">
                   Quãng đường
                 </div>
-                <div className="font-bold text-blue-900">
+                <div className="font-semibold text-gray-800 text-sm">
                   {formatMileage(mileage)} km
                 </div>
               </div>
             </motion.div>
             <motion.div
               whileHover={{ scale: 1.05, x: 5 }}
-              className="flex items-center text-sm text-gray-700 bg-gradient-to-br from-green-50 to-emerald-100 p-3 rounded-xl border border-green-200 shadow-sm hover:shadow-md transition-all"
+              className="flex items-center text-xs text-gray-700 bg-gray-100 p-2 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all"
             >
-              <div className="bg-gradient-to-br from-green-400 to-emerald-600 p-2 rounded-lg mr-2 shadow-lg">
+              <div className="bg-gray-700 p-1.5 rounded-md mr-2 shadow">
                 <Battery className="w-4 h-4 text-white" />
               </div>
               <div>
-                <div className="text-xs text-green-600 font-semibold">
+                <div className="text-xs text-gray-500 font-medium">
                   Dung lượng pin
                 </div>
-                <div className="font-bold text-green-900">{batteryHealth}%</div>
+                <div className="font-semibold text-gray-800 text-sm">{batteryHealth}%</div>
               </div>
             </motion.div>
           </div>
@@ -269,54 +251,49 @@ const ProductCard = ({
           {/* Price Section with vibrant gradient background */}
           <motion.div
             whileHover={{ scale: 1.03, y: -2 }}
-            className="mb-5 p-5 bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-600 text-white rounded-2xl shadow-xl hover:shadow-2xl transition-all relative overflow-hidden"
+            className="mb-4 p-4 bg-gray-50 rounded-lg shadow-sm transition-all relative overflow-hidden border border-gray-100"
           >
             {/* Animated background */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
 
             <div className="relative z-10">
-              <div className="text-xs text-blue-100 mb-1 font-semibold flex items-center gap-1">
-                <Zap className="w-3 h-3" />
+              <div className="text-xs text-gray-500 mb-1 font-medium flex items-center gap-2">
+                <Zap className="w-3 h-3 text-gray-600" />
                 Giá xe
               </div>
-              <div className="text-3xl font-extrabold mb-1 drop-shadow-lg">
+              <div className="text-xl font-bold mb-1 text-gray-900">
                 {formatPrice(price)}
               </div>
-              <div className="text-xs text-green-200 flex items-center gap-1 font-semibold">
-                <Zap className="w-3 h-3" />
+              <div className="text-xs text-gray-500 flex items-center gap-1 font-medium">
+                <Zap className="w-3 h-3 text-gray-500" />
                 Có thể thương lượng
               </div>
             </div>
           </motion.div>
         </div>
-
-        {/* Action Buttons with vibrant gradients */}
-        <div className="flex gap-3">
+        {/* Action Buttons compact and neutral */}
+        <div className="flex gap-2">
           <motion.button
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex-1 bg-gradient-to-r from-green-600 via-emerald-600 to-teal-700 text-white py-3 rounded-xl font-bold shadow-xl hover:shadow-2xl transition-all relative overflow-hidden group/btn flex items-center justify-center gap-2"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="flex-1 bg-gray-900 text-white py-2 rounded-md font-semibold text-sm flex items-center justify-center gap-2"
             onClick={() => router.push(`/vehicles/${id}`)}
           >
-            <Eye className="w-5 h-5 relative z-10 group-hover/btn:scale-110 transition-transform" />
-            <span className="relative z-10">Xem chi tiết</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" />
+            <Eye className="w-4 h-4" />
+            <span>Xem chi tiết</span>
           </motion.button>
           {isVerified !== "sold" && (
             <motion.button
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               disabled={loading}
               onClick={handleAddToCart}
-              className={`flex-1 bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 text-white py-3 rounded-xl font-bold shadow-xl hover:shadow-2xl transition-all relative overflow-hidden group/cart flex items-center justify-center gap-2 ${
+              className={`flex-1 border border-gray-200 bg-white text-gray-900 py-2 rounded-md font-semibold text-sm flex items-center justify-center gap-2 ${
                 loading ? "opacity-50 cursor-not-allowed" : ""
               }`}
             >
-              <Zap className="w-5 h-5 relative z-10 group-hover/cart:rotate-12 transition-transform" />
-              <span className="relative z-10">
-                {loading ? "Đang thêm..." : "Thêm giỏ hàng"}
-              </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/cart:translate-x-full transition-transform duration-700" />
+              <Zap className="w-4 h-4" />
+              <span>{loading ? "Đang thêm..." : "Thêm giỏ hàng"}</span>
             </motion.button>
           )}
         </div>

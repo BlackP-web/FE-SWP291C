@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { Heart, Eye, Gauge, Battery, Calendar } from "lucide-react";
 import { ListingService } from "@/service/listing.service";
+import { formatVND } from '@/lib/formatCurrency'
 
 interface Seller {
   _id: string;
@@ -58,12 +59,7 @@ const RelatedVehicles = ({ currentType, currentId }: RelatedVehiclesProps) => {
     fetchRelated();
   }, [currentType, currentId]);
 
-  const formatPrice = (price: number) =>
-    new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-      minimumFractionDigits: 0,
-    }).format(price);
+  const formatPrice = (price: number) => formatVND(price)
 
   if (!listings.length) return null; // Không hiển thị nếu không có dữ liệu
 

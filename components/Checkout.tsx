@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Input, Button, Select, Form, Typography } from "antd";
 import Image from "next/image";
+import { formatVND } from '@/lib/formatCurrency'
 
 interface Seller {
   _id: string;
@@ -41,12 +42,7 @@ export default function Checkout({ listing }: CheckoutProps) {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
-  const formatPrice = (price: number) =>
-    new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-      minimumFractionDigits: 0,
-    }).format(price);
+  const formatPrice = (price: number) => formatVND(price)
 
   const handleSubmit = (values: any) => {
     setLoading(true);

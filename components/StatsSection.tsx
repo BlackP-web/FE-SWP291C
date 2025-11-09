@@ -9,41 +9,41 @@ const StatsSection = () => {
       icon: Car,
       value: '1,200+',
       label: 'Xe điện đã bán',
-      color: 'from-blue-500 to-blue-600',
-      bgColor: 'bg-blue-50',
-      iconColor: 'text-blue-600'
+      color: 'from-gray-600 to-gray-700',
+      bgColor: 'bg-gray-100',
+      iconColor: 'text-gray-700'
     },
     {
       icon: Users,
       value: '5,000+',
       label: 'Khách hàng hài lòng',
-      color: 'from-green-500 to-green-600',
-      bgColor: 'bg-green-50',
-      iconColor: 'text-green-600'
+      color: 'from-gray-600 to-gray-700',
+      bgColor: 'bg-gray-100',
+      iconColor: 'text-gray-700'
     },
     {
       icon: Battery,
       value: '98%',
       label: 'Tình trạng pin trung bình',
-      color: 'from-purple-500 to-purple-600',
-      bgColor: 'bg-purple-50',
-      iconColor: 'text-purple-600'
+      color: 'from-gray-600 to-gray-700',
+      bgColor: 'bg-gray-100',
+      iconColor: 'text-gray-700'
     },
     {
       icon: Award,
       value: '100%',
       label: 'Xe được kiểm định',
-      color: 'from-orange-500 to-orange-600',
-      bgColor: 'bg-orange-50',
-      iconColor: 'text-orange-600'
+      color: 'from-gray-600 to-gray-700',
+      bgColor: 'bg-gray-100',
+      iconColor: 'text-gray-700'
     }
   ]
 
   return (
     <section className="py-20 bg-white/40 backdrop-blur-sm relative overflow-hidden">
       {/* Background decorations */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-200 rounded-full blur-3xl opacity-20 -translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-200 rounded-full blur-3xl opacity-20 translate-x-1/2 translate-y-1/2" />
+  <div className="absolute top-0 left-0 w-96 h-96 bg-gray-200 rounded-full blur-3xl opacity-12 -translate-x-1/2 -translate-y-1/2" />
+  <div className="absolute bottom-0 right-0 w-96 h-96 bg-gray-200 rounded-full blur-3xl opacity-12 translate-x-1/2 translate-y-1/2" />
       
       <div className="container-tesla relative z-10">
         <motion.div
@@ -82,7 +82,7 @@ const StatsSection = () => {
                 <motion.div
                   whileHover={{ rotate: 360, scale: 1.2 }}
                   transition={{ duration: 0.6 }}
-                  className={`w-16 h-16 bg-gradient-to-br ${stat.color} rounded-2xl flex items-center justify-center mb-6 shadow-lg mx-auto`}
+                  className={`w-16 h-16 ${'bg-gray-700'} rounded-2xl flex items-center justify-center mb-6 shadow-lg mx-auto`}
                 >
                   <stat.icon className="w-8 h-8 text-white" />
                 </motion.div>
@@ -95,7 +95,7 @@ const StatsSection = () => {
                   viewport={{ once: true }}
                   className="text-center"
                 >
-                  <div className={`text-4xl md:text-5xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-3`}>
+                  <div className={`text-4xl md:text-5xl font-bold text-gray-900 mb-3`}>
                     {stat.value}
                   </div>
                   <div className="text-gray-700 font-semibold text-lg">
@@ -121,7 +121,7 @@ const StatsSection = () => {
           <motion.button
             whileHover={{ scale: 1.05, y: -5 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-gradient-to-r from-tesla-black via-gray-900 to-tesla-dark-gray text-white px-10 py-4 rounded-full font-semibold text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 relative overflow-hidden group"
+            className="bg-tesla-black text-white px-10 py-4 rounded-full font-semibold text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 relative overflow-hidden group"
           >
             <span className="relative z-10">Khám phá ngay</span>
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />

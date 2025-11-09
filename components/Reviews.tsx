@@ -89,12 +89,12 @@ const Reviews = ({ listingId }: ReviewsProps) => {
                     </p>
                   </div>
                 </div>
-                <div className="flex text-yellow-400">
+                <div className="flex text-gray-500">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star
                       key={i}
                       className={`w-4 h-4 ${
-                        i < review.rating ? "fill-current" : ""
+                        i < review.rating ? "fill-current text-gray-700" : "text-gray-300"
                       }`}
                     />
                   ))}

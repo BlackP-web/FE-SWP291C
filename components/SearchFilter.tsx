@@ -4,9 +4,29 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Search, Filter, X } from "lucide-react";
 
-const SearchFilter = () => {
+type Filters = {
+  brand?: string;
+  model?: string;
+  year?: string | number;
+  priceMin?: string | number;
+  priceMax?: string | number;
+  condition?: string;
+  batteryHealth?: string;
+};
+
+const SearchFilter = ({
+  value,
+  onChange,
+  onApply,
+  onClear,
+}: {
+  value?: Filters;
+  onChange?: (k: string, v: any) => void;
+  onApply?: (filters: Filters) => void;
+  onClear?: () => void;
+}) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [filters, setFilters] = useState({
+  const [local, setLocal] = useState<Filters>({
     brand: "",
     model: "",
     year: "",
@@ -15,6 +35,9 @@ const SearchFilter = () => {
     condition: "",
     batteryHealth: "",
   });
+
+  // controlled fallback: if parent provides value, prefer it
+  const filters = value ?? local;
 
   const brands = [
     "Xe điện",
@@ -29,15 +52,13 @@ const SearchFilter = () => {
   const conditions = ["excellent", "good", "fair", "poor"];
   const years = Array.from({ length: 10 }, (_, i) => 2024 - i);
 
-  const handleFilterChange = (key: string, value: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
+  const handleFilterChange = (key: string, val: any) => {
+    if (onChange) onChange(key, val);
+    setLocal((prev) => ({ ...prev, [key]: val }));
   };
 
   const clearFilters = () => {
-    setFilters({
+    setLocal({
       brand: "",
       model: "",
       year: "",
@@ -46,10 +67,12 @@ const SearchFilter = () => {
       condition: "",
       batteryHealth: "",
     });
+    if (onClear) onClear();
   };
 
   const handleSearch = () => {
-    console.log("Search with filters:", filters);
+    if (onApply) onApply(filters);
+    else console.log("Search with filters:", filters);
   };
 
   return (

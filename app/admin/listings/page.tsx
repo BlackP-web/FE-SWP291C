@@ -27,6 +27,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import AdminLayout from "../AdminLayout";
+import { formatVND } from "@/lib/formatCurrency";
 import { ListingService } from "@/service/listing.service";
 
 const { Option } = Select;
@@ -225,7 +226,7 @@ export default function AdminListingsPage() {
       render: (p: number) =>
         p != null ? (
           <span style={{ fontWeight: 700, color: "#10b981", fontSize: 15 }}>
-            {Number(p).toLocaleString()}₫
+            {formatVND(p)}
           </span>
         ) : (
           <span style={{ color: "#cbd5e1" }}>—</span>
@@ -595,9 +596,7 @@ export default function AdminListingsPage() {
                 </Descriptions.Item>
                 <Descriptions.Item label="Giá">
                   <Text strong style={{ color: "#10b981", fontSize: 16 }}>
-                    {currentListing.price
-                      ? `${currentListing.price.toLocaleString()}₫`
-                      : "-"}
+                    {currentListing.price ? formatVND(currentListing.price) : "-"}
                   </Text>
                 </Descriptions.Item>
                 {/* <Descriptions.Item label="Giá AI gợi ý">
