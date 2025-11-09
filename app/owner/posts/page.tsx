@@ -28,6 +28,8 @@ import { ListingService } from "@/service/listing.service";
 import { BrandService } from "@/service/brand.service";
 import { useAuth } from "@/hooks/useAuth";
 import { UploadService } from "@/service/upload.service";
+import { UserService } from "@/service/user.service";
+import { PackageService } from "@/service/package.service";
 
 const { Option } = Select;
 const { confirm } = Modal;
@@ -56,8 +58,49 @@ export default function OwnerListingsPage() {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<any[]>([]);
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
+  const [remainingPosts, setRemainingPosts] = useState<number | null>(null);
 
+  const fetchUserInfo = async () => {
+    if (!user?._id) return;
+
+    try {
+      setLoading(true);
+
+      // 1. Lấy số bài đăng hiện tại
+      const resUser = await UserService.getById(user._id);
+      const postCount = resUser.postCount || 0;
+
+      // 2. Lấy gói active của user để biết maxListings
+      const resPackages = await PackageService.getUserPackages(user._id);
+      console.log({ resPackages });
+      const activePackage = resPackages.data?.find(
+        (p: any) => p.status === "active"
+      );
+
+      let maxListings = null;
+      if (activePackage) {
+        maxListings = activePackage.package.maxListings; // lấy maxListings từ gói
+      }
+
+      // 3. Tính số bài còn lại
+      if (maxListings !== null) {
+        const remaining = maxListings - postCount;
+        setRemainingPosts(remaining >= 0 ? remaining : 0);
+      } else {
+        setRemainingPosts(null); // Không giới hạn
+      }
+    } catch (err) {
+      console.log({ err });
+      message.error("Không thể tải thông tin người dùng!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) fetchUserInfo();
+  }, [isAuthenticated, user]);
   const fetchBrands = async () => {
     try {
       const res = await BrandService.getAllBrands();
@@ -267,11 +310,21 @@ export default function OwnerListingsPage() {
   return (
     <OwnerLayout>
       <div>
-        <div className="flex justify-between mb-4">
+        <div className="flex justify-between items-center mb-4">
           <h1 className="text-xl font-bold">Quản lý bài đăng</h1>
-          <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-            Thêm bài đăng
-          </Button>
+          <div className="flex items-center gap-2">
+            {remainingPosts !== null && (
+              <Tag
+                color={remainingPosts > 0 ? "green" : "red"}
+                className="font-semibold"
+              >
+                {remainingPosts} bài đăng còn lại
+              </Tag>
+            )}
+            <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
+              Thêm bài đăng
+            </Button>
+          </div>
         </div>
 
         <Table
