@@ -6,8 +6,9 @@ import { Card, Button, message, Spin, Badge } from "antd";
 import OwnerLayout from "../OwnerLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { api } from "@/lib/api";
-import { PayosService } from "@/service/payos.service";
 import { PackageService } from "@/service/package.service";
+import { PayosService } from "@/service/payos.service";
+import { useSearchParams } from "next/navigation"; // dùng Next.js App Router
 
 interface Package {
   _id: string;
@@ -28,6 +29,7 @@ interface UserPackage {
 
 export default function UserPackagePage() {
   const { user } = useAuth();
+  const searchParams = useSearchParams();
   const [packages, setPackages] = useState<Package[]>([]);
   const [userPackages, setUserPackages] = useState<UserPackage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -83,6 +85,32 @@ export default function UserPackagePage() {
       setAssigning(null);
     }
   };
+
+  // handle auto assign khi quay lại từ PayOS
+  useEffect(() => {
+    const status = searchParams.get("status");
+    const packageId = searchParams.get("packageId");
+
+    if (status === "PAID" && packageId && user) {
+      const assignPaidPackage = async () => {
+        setAssigning(packageId);
+        try {
+          await PackageService.assignPackageToUser({
+            userId: user._id,
+            packageId,
+          });
+          message.success("Thanh toán thành công! Gói đã được kích hoạt.");
+          fetchData();
+        } catch (err) {
+          console.error(err);
+          message.error("Kích hoạt gói thất bại");
+        } finally {
+          setAssigning(null);
+        }
+      };
+      assignPaidPackage();
+    }
+  }, [searchParams, user]);
 
   const userPackageStatus = (pkgId: string) => {
     const up = userPackages.find((p) => p?.package?._id === pkgId);
