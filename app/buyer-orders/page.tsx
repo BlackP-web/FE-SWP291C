@@ -1,7 +1,18 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Card, Rate, Modal, Button, message, Spin, Tag, Empty } from "antd";
+import {
+  Card,
+  Rate,
+  Modal,
+  Button,
+  message,
+  Spin,
+  Tag,
+  Empty,
+  Col,
+  Row,
+} from "antd";
 import {
   ShoppingCart,
   MessageSquare,
@@ -11,12 +22,14 @@ import {
   Gauge,
   Calendar,
   CheckCircle,
+  ArrowLeft,
 } from "lucide-react";
 import { OrderService } from "@/service/order.service";
 import { ReviewService } from "@/service/review.service";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useRouter } from "next/navigation";
 
 export default function BuyerOrdersPage() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -26,6 +39,8 @@ export default function BuyerOrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
   const [rating, setRating] = useState<number>(0);
   const [comment, setComment] = useState<string>("");
+
+  const router = useRouter();
 
   const fetchOrders = async () => {
     if (!user?._id) return;
@@ -112,6 +127,16 @@ export default function BuyerOrdersPage() {
     <main className="min-h-screen bg-gray-50 pb-16">
       <Navbar />
       <div className="px-6 md:px-12 mt-20">
+        {/* Nút quay về Home */}
+        <Button
+          type="default"
+          icon={<ArrowLeft className="w-4 h-4" />}
+          className="mb-6"
+          onClick={() => router.push("/")}
+        >
+          Quay về Home
+        </Button>
+
         <div className="flex items-center gap-3 mb-8">
           <ShoppingCart className="w-7 h-7 text-blue-600" />
           <h2 className="text-2xl font-bold text-gray-800">
@@ -149,22 +174,45 @@ export default function BuyerOrdersPage() {
                       <span className="font-medium">{order.seller?.name}</span>
                     </p>
 
-                    <div className="flex items-center gap-2 mt-2 text-gray-600 text-sm">
-                      <Calendar className="w-4 h-4" /> Năm:{" "}
-                      {order.listing?.year || "—"}
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-600 text-sm">
-                      <Battery className="w-4 h-4" /> Pin:{" "}
-                      {order.listing?.batteryCapacity
-                        ? `${order.listing.batteryCapacity} kWh`
-                        : "—"}
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-600 text-sm">
-                      <Gauge className="w-4 h-4" /> Quãng đường:{" "}
-                      {order.listing?.kmDriven
-                        ? `${order.listing.kmDriven} km`
-                        : "—"}
-                    </div>
+                    {/* Thông tin xe chi tiết */}
+                    <Row className="mt-2 gap-2 text-gray-600 text-sm">
+                      <Col span={12}>
+                        <Calendar className="w-4 h-4 inline" /> Năm đăng ký:{" "}
+                        {order.listing?.carDetails?.registrationNumber || "—"}
+                      </Col>
+                      <Col span={12}>
+                        <Battery className="w-4 h-4 inline" /> Pin:{" "}
+                        {order.listing?.carDetails?.batteryCapacity
+                          ? `${order.listing.carDetails.batteryCapacity} kWh`
+                          : "—"}
+                      </Col>
+                      <Col span={12}>
+                        Màu: {order.listing?.carDetails?.color || "—"}
+                      </Col>
+                      <Col span={12}>
+                        Hạn bảo hiểm:{" "}
+                        {order.listing?.carDetails?.insuranceExpiry
+                          ? new Date(
+                              order.listing.carDetails.insuranceExpiry
+                            ).toLocaleDateString()
+                          : "—"}
+                      </Col>
+                      <Col span={12}>
+                        Hạn đăng kiểm:{" "}
+                        {order.listing?.carDetails?.inspectionExpiry
+                          ? new Date(
+                              order.listing.carDetails.inspectionExpiry
+                            ).toLocaleDateString()
+                          : "—"}
+                      </Col>
+                      <Col span={12}>
+                        Lịch sử tai nạn:{" "}
+                        {order.listing?.carDetails?.accidentHistory || "—"}
+                      </Col>
+                      <Col span={12}>
+                        Vị trí: {order.listing?.carDetails?.location || "—"}
+                      </Col>
+                    </Row>
 
                     <p className="text-green-600 font-semibold mt-2 text-lg">
                       {new Intl.NumberFormat("vi-VN", {
@@ -183,12 +231,13 @@ export default function BuyerOrdersPage() {
                   </div>
                 </div>
 
-                {order.contractUrl && (
+                {/* Hợp đồng */}
+                {order.listing?.contract && (
                   <div className="mt-3">
                     <Button
                       type="default"
                       icon={<FileText className="w-4 h-4" />}
-                      href={order.contractUrl}
+                      href={order.listing.contract}
                       target="_blank"
                       className="text-blue-600 border-blue-500 hover:bg-blue-50"
                     >
@@ -196,20 +245,6 @@ export default function BuyerOrdersPage() {
                     </Button>
                   </div>
                 )}
-
-                <div className="mt-5 flex justify-between items-center">
-                  <Rate disabled value={order.review?.rating || 0} />
-                  {order.status === "completed" && (
-                    <Button
-                      type="primary"
-                      shape="round"
-                      icon={<MessageSquare className="w-4 h-4" />}
-                      onClick={() => handleOpenReview(order)}
-                    >
-                      {order.review ? "Chỉnh sửa" : "Đánh giá"}
-                    </Button>
-                  )}
-                </div>
               </Card>
             ))}
           </div>
@@ -268,6 +303,8 @@ export default function BuyerOrdersPage() {
           </div>
         )}
       </Modal>
+
+      <Footer />
     </main>
   );
 }

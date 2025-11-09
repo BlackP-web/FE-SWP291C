@@ -341,7 +341,6 @@ export default function VehicleDetailPage({
                       whileTap={{ scale: 0.98 }}
                       onClick={() =>
                         handleRequireLogin("mua ngay") &&
-                        message.success("Chuyển sang trang thanh toán...")
                       }
                       className="w-full px-6 py-4 bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 text-white rounded-xl font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-2 relative overflow-hidden group"
                     >
