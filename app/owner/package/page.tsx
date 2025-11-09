@@ -2,10 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import { DollarSign, Clock, Tag } from "lucide-react";
-import { Card, Button, message, Spin, Badge, Tooltip } from "antd";
-import { PackageService } from "@/service/package.service";
-import { useAuth } from "@/hooks/useAuth";
+import { Card, Button, message, Spin, Badge } from "antd";
 import OwnerLayout from "../OwnerLayout";
+import { useAuth } from "@/hooks/useAuth";
+import { api } from "@/lib/api";
+import { PayosService } from "@/service/payos.service";
+import { PackageService } from "@/service/package.service";
 
 interface Package {
   _id: string;
@@ -31,6 +33,7 @@ export default function UserPackagePage() {
   const [loading, setLoading] = useState(true);
   const [assigning, setAssigning] = useState<string | null>(null);
 
+  // fetch packages + user packages
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -53,18 +56,29 @@ export default function UserPackagePage() {
     fetchData();
   }, [user]);
 
+  // handle mua gói (PayOS)
   const handleBuy = async (pkg: Package) => {
     setAssigning(pkg._id);
     try {
-      await PackageService.assignPackageToUser({
-        userId: user?._id,
+      if (!user) return;
+
+      const res = await PayosService.createPayment({
+        userId: user._id,
         packageId: pkg._id,
+        amount: pkg.price,
+        description: `Mua gói ${pkg.name}`,
       });
-      message.success(`Đã mua gói ${pkg.name} thành công!`);
-      fetchData();
+
+      const checkoutUrl = res.data.checkoutUrl;
+      if (checkoutUrl) {
+        // Redirect user qua PayOS
+        window.location.href = checkoutUrl;
+      } else {
+        message.error("Không tạo được link thanh toán");
+      }
     } catch (err) {
-      message.error("Mua gói thất bại");
       console.error(err);
+      message.error("Mua gói thất bại");
     } finally {
       setAssigning(null);
     }
@@ -74,6 +88,7 @@ export default function UserPackagePage() {
     const up = userPackages.find((p) => p?.package?._id === pkgId);
     return up?.status || null;
   };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -81,6 +96,7 @@ export default function UserPackagePage() {
       </div>
     );
   }
+
   return (
     <OwnerLayout>
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-6">
