@@ -513,6 +513,54 @@ export default function OwnerListingsPage() {
                   </Col>
 
                   <Col span={12}>
+                    <Form.Item
+                      name={["carDetails", "kmDriven"]}
+                      label="Số km đã đi"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng nhập số km đã đi",
+                        },
+                        {
+                          type: "number",
+                          min: 0,
+                          message: "Số km phải là số lớn hơn hoặc bằng 0",
+                        },
+                      ]}
+                    >
+                      <InputNumber
+                        min={0}
+                        style={{ width: "100%" }}
+                        addonAfter="km"
+                      />
+                    </Form.Item>
+                  </Col>
+
+                  <Col span={12}>
+                    <Form.Item
+                      name={["carDetails", "seats"]}
+                      label="Số ghế ngồi"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng nhập số ghế ngồi",
+                        },
+                        {
+                          type: "number",
+                          min: 1,
+                          message: "Số ghế phải lớn hơn hoặc bằng 1",
+                        },
+                      ]}
+                    >
+                      <InputNumber
+                        min={1}
+                        style={{ width: "100%" }}
+                        addonAfter="ghế"
+                      />
+                    </Form.Item>
+                  </Col>
+
+                  <Col span={12}>
                     <Form.Item name={["carDetails", "color"]} label="Màu sắc">
                       <Input />
                     </Form.Item>
