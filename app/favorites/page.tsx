@@ -33,6 +33,7 @@ interface Listing {
   price: number;
   images: string[];
   status: string;
+  carDetails: any;
 }
 
 export default function FavoritesPage() {
@@ -104,6 +105,9 @@ export default function FavoritesPage() {
                     brand={item.brand.name}
                     model={item.type}
                     year={item.year}
+                    batteryPercentage={
+                      item?.carDetails?.batteryPercentage || 100
+                    }
                     mileage={item.kmDriven}
                     price={item.price}
                     image={

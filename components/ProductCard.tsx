@@ -24,6 +24,7 @@ interface ProductCardProps {
   type: "vehicle" | "battery";
   isVerified?: string;
   initialLiked?: boolean;
+  batteryPercentage?: number;
 }
 
 const ProductCard = ({
@@ -36,6 +37,7 @@ const ProductCard = ({
   price,
   image,
   batteryHealth,
+  batteryPercentage,
   condition,
   isVerified,
   initialLiked = false,
@@ -131,7 +133,6 @@ const ProductCard = ({
       message.error("Có lỗi xảy ra khi cập nhật yêu thích");
     }
   };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -264,7 +265,7 @@ const ProductCard = ({
                   Dung lượng pin
                 </div>
                 <div className="font-semibold text-gray-800 text-sm">
-                  {batteryHealth}%
+                  {batteryPercentage}%
                 </div>
               </div>
             </motion.div>

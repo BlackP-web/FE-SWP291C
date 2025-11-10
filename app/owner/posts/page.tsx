@@ -535,6 +535,32 @@ export default function OwnerListingsPage() {
                       />
                     </Form.Item>
                   </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name={["carDetails", "batteryPercentage"]}
+                      label="Phần trăm pin (%)"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng nhập phần trăm pin",
+                        },
+                        {
+                          type: "number",
+                          min: 0,
+                          max: 100,
+                          message:
+                            "Phần trăm pin phải nằm trong khoảng 0 đến 100",
+                        },
+                      ]}
+                    >
+                      <InputNumber
+                        min={0}
+                        max={100}
+                        style={{ width: "100%" }}
+                        addonAfter="%"
+                      />
+                    </Form.Item>
+                  </Col>
 
                   <Col span={12}>
                     <Form.Item
