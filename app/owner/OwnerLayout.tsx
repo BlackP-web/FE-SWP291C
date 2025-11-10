@@ -1,13 +1,8 @@
 "use client";
 
 import { ReactNode, useState, useEffect } from "react";
-import { Layout, Menu, Avatar, Dropdown } from "antd";
-import {
-  FiFileText,
-  FiShoppingCart,
-  FiDollarSign,
-  FiHome,
-} from "react-icons/fi";
+import { Layout, Avatar, Dropdown } from "antd";
+import { FiFileText, FiShoppingCart, FiDollarSign } from "react-icons/fi";
 import { useAuth } from "@/hooks/useAuth";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -24,7 +19,7 @@ export default function OwnerLayout({ children }: OwnerLayoutProps) {
   const pathname = usePathname();
   const [selectedKey, setSelectedKey] = useState<string>("/owner");
   const menuItems = [
-    { key: "/owner", icon: <FiFileText />, label: "Dashboard", path: "/owner" },
+    { key: "/owner", icon: <FiFileText />, label: "Bảng điều khiển", path: "/owner" },
     {
       key: "/owner/posts",
       icon: <FiFileText />,
@@ -42,12 +37,6 @@ export default function OwnerLayout({ children }: OwnerLayoutProps) {
       icon: <FiDollarSign />,
       label: "Gói của bạn",
       path: "/owner/package",
-    },
-    {
-      key: "/",
-      icon: <FiHome />,
-      label: "Trang chủ",
-      path: "/",
     },
   ];
 
@@ -93,17 +82,28 @@ export default function OwnerLayout({ children }: OwnerLayoutProps) {
         <div className="text-white text-xl font-bold p-4">
           {collapsed ? "EV" : "EV Market Owner"}
         </div>
-        <Menu
-          theme="dark"
-          mode="inline"
-          selectedKeys={[selectedKey]}
-          items={menuItems.map((item) => ({
-            key: item.key,
-            icon: item.icon,
-            label: item.label,
-            onClick: () => handleMenuClick(item.path),
-          }))}
-        />
+        {/* Custom nav to allow monochrome styling and remove 'Trang chủ' */}
+        <nav className="p-2">
+          {menuItems.map((item) => {
+            const active = selectedKey === item.key;
+            return (
+              <div
+                key={item.key}
+                onClick={() => handleMenuClick(item.path)}
+                className={`flex items-center gap-3 px-3 py-2 mb-1 rounded-md cursor-pointer transition-colors duration-150 ${
+                  active
+                    ? "bg-gray-800 text-white"
+                    : "text-gray-200 hover:bg-gray-700 hover:text-white"
+                }`}
+                title={item.label}
+                style={{ justifyContent: collapsed ? "center" : "flex-start" }}
+              >
+                <div className="text-lg">{item.icon}</div>
+                {!collapsed && <span className="whitespace-nowrap">{item.label}</span>}
+              </div>
+            );
+          })}
+        </nav>
       </Sider>
 
       <Layout>

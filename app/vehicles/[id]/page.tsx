@@ -236,10 +236,10 @@ export default function VehicleDetailPage({
                   {/* Status Badge */}
                   <div className="absolute top-6 left-6">
                     <span
-                      className={`text-base font-bold px-4 py-2 rounded-full shadow-lg inline-block ${getStatusColorClass(listing.status)}`}
-                    >
-                      {listing.status.toUpperCase()}
-                    </span>
+                              className={`text-base font-bold px-4 py-2 rounded-full shadow-lg inline-block ${getStatusColorClass(listing.status)}`}
+                            >
+                              {getStatusLabel(listing.status)}
+                            </span>
                   </div>
                 </div>
 
@@ -364,16 +364,32 @@ const getStatusColor = (status: string) => {
 };
 
 const getStatusColorClass = (status: string) => {
+  // Monochrome palette: use grayscale tones to match site UI (black/white/gray)
   switch (status) {
     case "approved":
-      return "bg-green-500 text-white";
+      return "bg-gray-800 text-white";
     case "pending":
-      return "bg-orange-500 text-white";
+      return "bg-gray-600 text-white";
     case "sold":
-      return "bg-red-500 text-white";
+      return "bg-gray-700 text-white";
     case "rejected":
       return "bg-gray-500 text-white";
     default:
-      return "bg-blue-500 text-white";
+      return "bg-gray-800 text-white";
+  }
+};
+
+const getStatusLabel = (status: string) => {
+  switch (status) {
+    case "approved":
+      return "Đã kiểm định";
+    case "pending":
+      return "Lưu trữ";
+    case "sold":
+      return "Đã bán";
+    case "rejected":
+      return "Vi phạm";
+    default:
+      return status?.toUpperCase() || "—";
   }
 };

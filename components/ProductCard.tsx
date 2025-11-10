@@ -79,6 +79,22 @@ const ProductCard = ({
     }
   };
 
+  const getVerifiedColorClass = (status?: string) => {
+    // Monochrome tone: gray/black/white for all statuses to match site UI
+    switch (status) {
+      case "approved":
+        return "bg-gray-800 text-white";
+      case "pending":
+        return "bg-gray-600 text-white";
+      case "sold":
+        return "bg-gray-700 text-white";
+      case "rejected":
+        return "bg-gray-500 text-white";
+      default:
+        return "bg-gray-800 text-white";
+    }
+  };
+
   const handleAddToCart = async () => {
     if (!user?._id) {
       message.info("Vui lòng đăng nhập trước khi thêm vào giỏ hàng!");
@@ -144,18 +160,18 @@ const ProductCard = ({
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ delay: 0.2, type: "spring" }}
-          className="absolute top-4 left-3 px-3 py-1 text-xs font-semibold rounded-full shadow backdrop-blur-sm flex items-center gap-2 bg-gray-800 text-white"
+          className={`absolute top-4 left-3 px-3 py-1 text-xs font-semibold rounded-full shadow backdrop-blur-sm flex items-center gap-2 ${getVerifiedColorClass(isVerified)}`}
         >
-          {isVerified === "approved" && <Shield className="w-3.5 h-3.5" />}
-          <span className="font-semibold tracking-wide text-xs">
-            {isVerified === "sold"
-              ? "ĐÃ BÁN"
-              : isVerified === "approved"
-              ? "ĐÃ KIỂM ĐỊNH"
-              : isVerified === "active"
-              ? "CHƯA KIỂM ĐỊNH"
-              : "KHÔNG XÁC ĐỊNH"}
-          </span>
+            {isVerified === "approved" && <Shield className="w-3.5 h-3.5" />}
+            <span className="font-semibold tracking-wide text-xs">
+              {isVerified === "sold"
+                ? "ĐÃ BÁN"
+                : isVerified === "approved"
+                ? "ĐÃ KIỂM ĐỊNH"
+                : isVerified === "active"
+                ? "CHƯA KIỂM ĐỊNH"
+                : "KHÔNG XÁC ĐỊNH"}
+            </span>
         </motion.div>
 
         {/* Condition Badge - Bottom Left với màu sắc rực rỡ */}

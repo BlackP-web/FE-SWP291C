@@ -24,13 +24,14 @@ import { OrderService } from "@/service/order.service";
 import { UploadService } from "@/service/upload.service";
 import { useAuth } from "@/hooks/useAuth";
 import OwnerLayout from "../OwnerLayout";
+import { formatVND } from "@/lib/formatCurrency";
 
 const statusColors: Record<string, string> = {
-  pending: "orange",
-  approved: "blue",
-  sold: "green",
-  rejected: "red",
-  processing: "purple",
+  pending: "#6b7280",
+  approved: "#1f2937",
+  sold: "#374151",
+  rejected: "#9ca3af",
+  processing: "#4b5563",
 };
 
 export default function OrdersPage() {
@@ -111,14 +112,7 @@ export default function OrdersPage() {
           <div>
             <div className="font-medium text-gray-800">{text}</div>
             <div className="text-gray-500 text-sm">
-              {record.listing?.year || ""} •{" "}
-              {record.listing?.price
-                ? new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                    minimumFractionDigits: 0,
-                  }).format(record.listing.price)
-                : ""}
+              {record.listing?.year || ""} • {record.listing?.price ? formatVND(record.listing.price) : ""}
             </div>
           </div>
         </div>
@@ -148,19 +142,19 @@ export default function OrdersPage() {
       key: "status",
       render: (status: string) => {
         const statusMap: Record<string, { label: string; color: string }> = {
-          pending: { label: "Đang xử lý", color: "gold" },
-          completed: { label: "Hoàn tất", color: "green" },
-          cancelled: { label: "Đã hủy", color: "red" },
-          approved: { label: "Duyệt đơn", color: "blue" },
+          pending: { label: "Đang xử lý", color: statusColors.pending },
+          completed: { label: "Hoàn tất", color: statusColors.sold },
+          cancelled: { label: "Đã hủy", color: statusColors.rejected },
+          approved: { label: "Duyệt đơn", color: statusColors.approved },
         };
 
         const { label, color } = statusMap[status] || {
           label: "Không xác định",
-          color: "default",
+          color: "#6b7280",
         };
 
         return (
-          <Tag color={color} className="capitalize">
+          <Tag style={{ backgroundColor: color, color: "#fff", fontWeight: 600 }} className="capitalize">
             {label}
           </Tag>
         );
@@ -175,7 +169,7 @@ export default function OrdersPage() {
             href={record.contractUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 hover:underline"
+            className="text-gray-800 hover:underline"
           >
             Xem hợp đồng
           </a>
@@ -194,7 +188,7 @@ export default function OrdersPage() {
               <>
                 <Button
                   size="small"
-                  type="primary"
+                  className="bg-gray-900 text-white border-gray-900 hover:bg-gray-800"
                   icon={<CheckCircle className="w-4 h-4" />}
                   onClick={() => handleStatusChange(record._id, "approved")}
                 >
@@ -202,7 +196,7 @@ export default function OrdersPage() {
                 </Button>
                 <Button
                   size="small"
-                  danger
+                  className="bg-gray-200 text-gray-800 hover:bg-gray-300"
                   icon={<XCircle className="w-4 h-4" />}
                   onClick={() => handleStatusChange(record._id, "rejected")}
                 >
@@ -296,10 +290,7 @@ export default function OrdersPage() {
               {selectedOrder.buyer?.phone}
             </Descriptions.Item>
             <Descriptions.Item label="Giá">
-              {new Intl.NumberFormat("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              }).format(selectedOrder.price)}
+              {formatVND(selectedOrder.price)}
             </Descriptions.Item>
             <Descriptions.Item label="Phương thức thanh toán">
               {selectedOrder.paymentMethod === "bank"
@@ -307,9 +298,19 @@ export default function OrdersPage() {
                 : "Tiền mặt"}
             </Descriptions.Item>
             <Descriptions.Item label="Trạng thái">
-              <Tag color={statusColors[selectedOrder.status]}>
-                {selectedOrder.status}
-              </Tag>
+              {
+                (() => {
+                  const map: Record<string,string> = {
+                    pending: 'Đang xử lý',
+                    completed: 'Hoàn tất',
+                    cancelled: 'Đã hủy',
+                    approved: 'Đã duyệt'
+                  };
+                  const label = map[selectedOrder.status] || selectedOrder.status;
+                  const color = statusColors[selectedOrder.status] || '#6b7280';
+                  return <Tag style={{ backgroundColor: color, color: '#fff', fontWeight:600 }}>{label}</Tag>
+                })()
+              }
             </Descriptions.Item>
             {selectedOrder.contractUrl && (
               <Descriptions.Item label="Hợp đồng">

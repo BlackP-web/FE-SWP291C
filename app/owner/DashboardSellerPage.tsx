@@ -9,6 +9,7 @@ import {
   AppstoreOutlined,
 } from "@ant-design/icons";
 import { DashboardService } from "@/service/dashboard.service";
+import { formatVND } from "@/lib/formatCurrency";
 import {
   LineChart,
   Line,
@@ -65,7 +66,7 @@ export default function DashboardSellerPage() {
       title: "Giá",
       dataIndex: "price",
       key: "price",
-      render: (v: number) => `${v.toLocaleString()} VND`,
+      render: (v: number) => formatVND(v),
     },
     { title: "Trạng thái", dataIndex: "status", key: "status" },
   ];
@@ -79,16 +80,15 @@ export default function DashboardSellerPage() {
 
         {/* Card thống kê */}
         <Row gutter={16}>
-          <Col xs={24} md={6}>
-            <Card>
-              <Statistic
-                title="Tổng doanh thu"
-                value={totals.revenue}
-                prefix={<DollarCircleOutlined />}
-                suffix="VND"
-              />
-            </Card>
-          </Col>
+            <Col xs={24} md={6}>
+              <Card className="bg-white shadow-sm">
+                <Statistic
+                  title="Tổng doanh thu"
+                  value={formatVND(totals.revenue)}
+                  prefix={<DollarCircleOutlined className="text-gray-700" />}
+                />
+              </Card>
+            </Col>
           <Col xs={24} md={6}>
             <Card>
               <Statistic
@@ -119,7 +119,7 @@ export default function DashboardSellerPage() {
         </Row>
 
         {/* Biểu đồ doanh thu */}
-        <Card title="Doanh thu 7 ngày gần nhất" className="mt-8">
+          <Card title="Doanh thu 7 ngày gần nhất" className="mt-8">
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={revenueByDay}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -129,7 +129,7 @@ export default function DashboardSellerPage() {
               <Line
                 type="monotone"
                 dataKey="revenue"
-                stroke="#1890ff"
+                  stroke="#111827"
                 strokeWidth={2}
               />
             </LineChart>
@@ -154,7 +154,7 @@ export default function DashboardSellerPage() {
                 title={item.title}
                 description={
                   <>
-                    <p>Doanh thu: {item.revenue.toLocaleString()} VND</p>
+                    <p>Doanh thu: {formatVND(item.revenue)}</p>
                     <p>Đơn: {item.orders}</p>
                   </>
                 }

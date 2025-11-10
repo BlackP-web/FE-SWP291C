@@ -24,6 +24,7 @@ import {
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import OwnerLayout from "../OwnerLayout";
+import { formatVND } from "@/lib/formatCurrency";
 import { ListingService } from "@/service/listing.service";
 import { BrandService } from "@/service/brand.service";
 import { useAuth } from "@/hooks/useAuth";
@@ -246,7 +247,7 @@ export default function OwnerListingsPage() {
       title: "Giá",
       dataIndex: "price",
       key: "price",
-      render: (v: number) => `${v.toLocaleString()}₫`,
+      render: (v: number) => formatVND(v),
     },
     {
       title: "Trạng thái",
@@ -261,15 +262,29 @@ export default function OwnerListingsPage() {
           processing: "Lên hồ sơ",
           rejected: "Vi phạm",
         };
+        // monochrome / grayscale color mapping to match project theme
         const colorMap: Record<string, string> = {
-          active: "green",
-          sold: "volcano",
-          approved: "blue",
-          pending: "orange",
-          processing: "purple",
-          rejected: "red",
+          active: "#111827", // gray-900
+          sold: "#374151", // gray-700
+          approved: "#1f2937", // gray-800
+          pending: "#6b7280", // gray-500
+          processing: "#4b5563", // gray-600
+          rejected: "#9ca3af", // gray-400
         };
-        return <Tag color={colorMap[status]}>{statusMap[status]}</Tag>;
+        const bg = colorMap[status] ?? "#6b7280";
+        return (
+          <Tag
+            style={{
+              backgroundColor: bg,
+              color: "#fff",
+              fontWeight: 600,
+              borderRadius: 6,
+              padding: "0 8px",
+            }}
+          >
+            {statusMap[status]}
+          </Tag>
+        );
       },
     },
     {
@@ -309,19 +324,27 @@ export default function OwnerListingsPage() {
 
   return (
     <OwnerLayout>
-      <div>
+      <div className="p-6 bg-white rounded-lg shadow-sm">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-xl font-bold">Quản lý bài đăng</h1>
           <div className="flex items-center gap-2">
             {remainingPosts !== null && (
               <Tag
-                color={remainingPosts > 0 ? "green" : "red"}
                 className="font-semibold"
+                style={{
+                  backgroundColor: remainingPosts > 0 ? "#111827" : "#6b7280",
+                  color: "#fff",
+                  fontWeight: 600,
+                }}
               >
                 {remainingPosts} bài đăng còn lại
               </Tag>
             )}
-            <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
+            <Button
+              icon={<PlusOutlined />}
+              onClick={handleAdd}
+              className="bg-gray-900 text-white border-gray-900 hover:bg-gray-800"
+            >
               Thêm bài đăng
             </Button>
           </div>
@@ -334,6 +357,8 @@ export default function OwnerListingsPage() {
           loading={loading}
           pagination={{ pageSize: 10 }}
           scroll={{ x: 1200 }}
+          size="small"
+          tableLayout="fixed"
         />
 
         <Modal
