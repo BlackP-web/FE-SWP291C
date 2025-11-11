@@ -53,22 +53,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       path: "/admin/brands",
     },
     {
-      key: "/admin/orders",
-      icon: <FiShoppingCart />,
-      label: "Quản lý giao dịch",
-      path: "/admin/orders",
-    },
-    {
       key: "/admin/package",
       icon: <FiDollarSign />,
       label: "Quản lý gói",
       path: "/admin/packge",
-    },
-    {
-      key: "/admin/settings",
-      icon: <FiSettings />,
-      label: "Cài đặt & báo cáo",
-      path: "/admin/settings",
     },
     {
       key: "/",

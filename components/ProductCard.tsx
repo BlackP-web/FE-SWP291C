@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { FavoriteService } from "@/service/favorite.service";
 import { CartService } from "@/service/cart.service";
 import { message } from "antd";
-import { formatVND } from "@/lib/formatCurrency";
+import { formatVND } from '@/lib/formatCurrency'
 
 interface ProductCardProps {
   id: string;
@@ -24,7 +24,6 @@ interface ProductCardProps {
   type: "vehicle" | "battery";
   isVerified?: string;
   initialLiked?: boolean;
-  batteryPercentage?: number;
 }
 
 const ProductCard = ({
@@ -37,7 +36,6 @@ const ProductCard = ({
   price,
   image,
   batteryHealth,
-  batteryPercentage,
   condition,
   isVerified,
   initialLiked = false,
@@ -46,7 +44,7 @@ const ProductCard = ({
   const router = useRouter();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const formatPrice = (price: number) => formatVND(price);
+  const formatPrice = (price: number) => formatVND(price)
 
   const formatMileage = (mileage: number) =>
     new Intl.NumberFormat("vi-VN").format(mileage);
@@ -133,6 +131,7 @@ const ProductCard = ({
       message.error("Có lỗi xảy ra khi cập nhật yêu thích");
     }
   };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -143,7 +142,7 @@ const ProductCard = ({
       className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden group border border-gray-100"
     >
       {/* Image Container */}
-      <div className="relative aspect-[3/2] bg-gray-50 overflow-hidden">
+  <div className="relative aspect-[3/2] bg-gray-50 overflow-hidden">
         <img
           src={image}
           alt={title}
@@ -151,7 +150,7 @@ const ProductCard = ({
         />
 
         {/* Overlay gradient with shine effect */}
-        <div className="absolute inset-0 bg-black/20 opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
+  <div className="absolute inset-0 bg-black/20 opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
 
         {/* Shine effect on hover */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
@@ -161,20 +160,18 @@ const ProductCard = ({
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ delay: 0.2, type: "spring" }}
-          className={`absolute top-8 left-3 px-3 py-1 text-xs font-semibold rounded-full shadow backdrop-blur-sm flex items-center gap-2 ${getVerifiedColorClass(
-            isVerified
-          )}`}
+          className={`absolute top-4 left-3 px-3 py-1 text-xs font-semibold rounded-full shadow backdrop-blur-sm flex items-center gap-2 ${getVerifiedColorClass(isVerified)}`}
         >
-          {isVerified === "approved" && <Shield className="w-3.5 h-3.5" />}
-          <span className="font-semibold tracking-wide text-xs">
-            {isVerified === "sold"
-              ? "ĐÃ BÁN"
-              : isVerified === "approved"
-              ? "ĐÃ KIỂM ĐỊNH"
-              : isVerified === "active"
-              ? "CHƯA KIỂM ĐỊNH"
-              : "KHÔNG XÁC ĐỊNH"}
-          </span>
+            {isVerified === "approved" && <Shield className="w-3.5 h-3.5" />}
+            <span className="font-semibold tracking-wide text-xs">
+              {isVerified === "sold"
+                ? "ĐÃ BÁN"
+                : isVerified === "approved"
+                ? "ĐÃ KIỂM ĐỊNH"
+                : isVerified === "active"
+                ? "CHƯA KIỂM ĐỊNH"
+                : "KHÔNG XÁC ĐỊNH"}
+            </span>
         </motion.div>
 
         {/* Condition Badge - Bottom Left với màu sắc rực rỡ */}
@@ -185,13 +182,11 @@ const ProductCard = ({
           className="absolute bottom-3 left-3 px-3 py-1 text-xs font-medium rounded-full shadow-sm backdrop-blur-sm flex items-center gap-2 bg-gray-100 text-gray-900"
         >
           <Award className="w-3.5 h-3.5" />
-          <span className="font-medium text-xs">
-            {getConditionText(condition)}
-          </span>
+          <span className="font-medium text-xs">{getConditionText(condition)}</span>
         </motion.div>
 
         {/* Action Buttons - Top Right với màu gradient */}
-        <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+          <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
           <motion.button
             whileHover={{ scale: 1.2, rotate: 5 }}
             whileTap={{ scale: 0.9 }}
@@ -226,9 +221,9 @@ const ProductCard = ({
       </div>
 
       {/* Content */}
-      <div className="p-4 flex flex-col justify-between bg-white">
+  <div className="p-4 flex flex-col justify-between bg-white">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-1 line-clamp-1 transition-all">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1 line-clamp-1 transition-all">
             {title}
           </h3>
           <p className="text-xs text-gray-600 mb-3 font-medium">
@@ -264,9 +259,7 @@ const ProductCard = ({
                 <div className="text-xs text-gray-500 font-medium">
                   Dung lượng pin
                 </div>
-                <div className="font-semibold text-gray-800 text-sm">
-                  {batteryPercentage}%
-                </div>
+                <div className="font-semibold text-gray-800 text-sm">{batteryHealth}%</div>
               </div>
             </motion.div>
           </div>

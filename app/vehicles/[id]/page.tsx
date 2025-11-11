@@ -100,134 +100,56 @@ export default function VehicleDetailPage({
   // ⬇️ Dynamic Info Renderers
   const renderCarDetails = () => {
     const details = [
-      {
-        icon: <Car />,
-        label: "Biển số",
-        value: read("registrationNumber", "registrationNumber"),
-      },
-      {
-        icon: <ClipboardList />,
-        label: "Số chủ sở hữu",
-        value: read("ownerNumber", "ownerNumber"),
-      },
-      {
-        icon: <Zap />,
-        label: "Nhiên liệu",
-        value: read("fuelType", "fuelType"),
-      },
-      {
-        icon: <Settings />,
-        label: "Hộp số",
-        value: read("transmission", "transmission"),
-      },
+      { icon: <Car />, label: "Biển số", value: read("registrationNumber", "registrationNumber") },
+      { icon: <ClipboardList />, label: "Số chủ sở hữu", value: read("ownerNumber", "ownerNumber") },
+      { icon: <Zap />, label: "Nhiên liệu", value: read("fuelType", "fuelType") },
+      { icon: <Settings />, label: "Hộp số", value: read("transmission", "transmission") },
       { icon: <Droplets />, label: "Màu sắc", value: read("color", "color") },
-      {
-        icon: <Gauge />,
-        label: "Số km đã đi",
-        value: (() => {
+      { icon: <Gauge />, label: "Số km đã đi", value: (() => {
           const v = read("kmDriven", "kmDriven");
           return v != null ? `${v} km` : null;
-        })(),
-      },
-      {
-        icon: <Battery />,
-        label: "Dung lượng pin",
-        value: (() => {
+        })() },
+      { icon: <Battery />, label: "Dung lượng pin", value: (() => {
           const v = read("batteryCapacity", "batteryCapacity");
           return v != null ? `${v} kWh` : null;
-        })(),
-      },
-      {
-        icon: <Shield />,
-        label: "Bảo hiểm hết hạn",
-        value: formatDate(read("insuranceExpiry", "insuranceExpiry")),
-      },
-      {
-        icon: <FileText />,
-        label: "Đăng kiểm hết hạn",
-        value: formatDate(read("inspectionExpiry", "inspectionExpiry")),
-      },
-      {
-        icon: <CheckCircle />,
-        label: "Lịch sử tai nạn",
-        value: read("accidentHistory", "accidentHistory") || "Không có",
-      },
-      {
-        icon: <MapPin />,
-        label: "Khu vực",
-        value: read("location", "location"),
-      },
+        })() },
+      { icon: <Shield />, label: "Bảo hiểm hết hạn", value: formatDate(read("insuranceExpiry", "insuranceExpiry")) },
+      { icon: <FileText />, label: "Đăng kiểm hết hạn", value: formatDate(read("inspectionExpiry", "inspectionExpiry")) },
+      { icon: <CheckCircle />, label: "Lịch sử tai nạn", value: read("accidentHistory", "accidentHistory") || "Không có" },
+      { icon: <MapPin />, label: "Khu vực", value: read("location", "location") },
     ];
 
-    return details.map((detail, index) => <InfoRow key={index} {...detail} />);
+    return details.map((detail, index) => (
+      <InfoRow key={index} {...detail} />
+    ));
   };
 
   const renderBatteryDetails = () => {
     const details = [
-      {
-        icon: <Battery />,
-        label: "Thương hiệu",
-        value: read("brand", "brand"),
-      },
-      {
-        icon: <Zap />,
-        label: "Dung lượng",
-        value: (() => {
+      { icon: <Battery />, label: "Thương hiệu", value: read("brand", "brand") },
+      { icon: <Zap />, label: "Dung lượng", value: (() => {
           const v = read("capacity", "batteryCapacity");
           return v != null ? `${v} kWh` : null;
-        })(),
-      },
-      {
-        icon: <Gauge />,
-        label: "Điện áp",
-        value: (() => {
+        })() },
+      { icon: <Gauge />, label: "Điện áp", value: (() => {
           const v = read("voltage", "voltage");
           return v != null ? `${v} V` : null;
-        })(),
-      },
-      {
-        icon: <Droplets />,
-        label: "Số chu kỳ sạc/xả",
-        value: read("cyclesUsed", "cyclesUsed"),
-      },
-      {
-        icon: <Shield />,
-        label: "Tình trạng pin",
-        value: (() => {
+        })() },
+      { icon: <Droplets />, label: "Số chu kỳ sạc/xả", value: read("cyclesUsed", "cyclesUsed") },
+      { icon: <Shield />, label: "Tình trạng pin", value: (() => {
           const v = read("healthPercentage", "healthPercentage");
           return v != null ? `${v}%` : null;
-        })(),
-      },
-      {
-        icon: <ClipboardList />,
-        label: "Bảo hành",
-        value: read("warranty", "warranty"),
-      },
-      {
-        icon: <Calendar />,
-        label: "Ngày sản xuất",
-        value: formatDate(read("manufactureDate", "manufactureDate")),
-      },
-      {
-        icon: <FileText />,
-        label: "Số seri",
-        value: read("serialNumber", "serialNumber"),
-      },
-      {
-        icon: <MapPin />,
-        label: "Khu vực",
-        value: read("location", "location"),
-      },
-      {
-        icon: <Car />,
-        label: "Mẫu xe tương thích",
-        value: read("compatibleModels", "compatibleModels")?.length
-          ? read("compatibleModels", "compatibleModels").join(", ")
-          : "Không có",
-      },
+        })() },
+      { icon: <ClipboardList />, label: "Bảo hành", value: read("warranty", "warranty") },
+      { icon: <Calendar />, label: "Ngày sản xuất", value: formatDate(read("manufactureDate", "manufactureDate")) },
+      { icon: <FileText />, label: "Số seri", value: read("serialNumber", "serialNumber") },
+      { icon: <MapPin />, label: "Khu vực", value: read("location", "location") },
+      { icon: <Car />, label: "Mẫu xe tương thích", value: (read("compatibleModels", "compatibleModels")?.length ? read("compatibleModels", "compatibleModels").join(", ") : "Không có") },
     ];
 
-    return details.map((detail, index) => <InfoRow key={index} {...detail} />);
+    return details.map((detail, index) => (
+      <InfoRow key={index} {...detail} />
+    ));
   };
 
   return (
@@ -264,19 +186,9 @@ export default function VehicleDetailPage({
             animate={{ opacity: 1, y: 0 }}
             className="mb-6 flex items-center gap-2 text-sm text-gray-600"
           >
-            <span
-              className="cursor-pointer hover:text-blue-600 transition-colors"
-              onClick={() => router.push("/")}
-            >
-              Trang chủ
-            </span>
+            <span className="cursor-pointer hover:text-blue-600 transition-colors" onClick={() => router.push("/")}>Trang chủ</span>
             <span>/</span>
-            <span
-              className="cursor-pointer hover:text-blue-600 transition-colors"
-              onClick={() => router.push("/vehicles")}
-            >
-              Xe điện
-            </span>
+            <span className="cursor-pointer hover:text-blue-600 transition-colors" onClick={() => router.push("/vehicles")}>Xe điện</span>
             <span>/</span>
             <span className="text-gray-900 font-medium">{listing.title}</span>
           </motion.div>
@@ -306,7 +218,7 @@ export default function VehicleDetailPage({
                     }}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 cursor-zoom-in"
                   />
-
+                  
                   {/* Like Button */}
                   <motion.button
                     whileHover={{ scale: 1.1 }}
@@ -318,25 +230,21 @@ export default function VehicleDetailPage({
                         : "bg-white/90 text-gray-700 hover:bg-white"
                     }`}
                   >
-                    <Heart
-                      className={`w-6 h-6 ${isLiked ? "fill-current" : ""}`}
-                    />
+                    <Heart className={`w-6 h-6 ${isLiked ? "fill-current" : ""}`} />
                   </motion.button>
 
                   {/* Status Badge */}
                   <div className="absolute top-6 left-6">
                     <span
-                      className={`text-base font-bold px-4 py-2 rounded-full shadow-lg inline-block ${getStatusColorClass(
-                        listing.status
-                      )}`}
-                    >
-                      {getStatusLabel(listing.status)}
-                    </span>
+                              className={`text-base font-bold px-4 py-2 rounded-full shadow-lg inline-block ${getStatusColorClass(listing.status)}`}
+                            >
+                              {getStatusLabel(listing.status)}
+                            </span>
                   </div>
                 </div>
 
                 {/* Thumbnail Gallery */}
-                {listing.images?.length > 1 && (
+                  {listing.images?.length > 1 && (
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -373,11 +281,7 @@ export default function VehicleDetailPage({
               transition={{ duration: 0.6, delay: 0.2 }}
               className="lg:col-span-1"
             >
-              <PriceCard
-                listing={listing}
-                onCompare={() => setShowCompareModal(true)}
-                onContact={() => handleRequireLogin("mua ngay")}
-              />
+              <PriceCard listing={listing} onCompare={() => setShowCompareModal(true)} onContact={() => handleRequireLogin("mua ngay")} />
             </motion.div>
           </div>
 
@@ -388,61 +292,13 @@ export default function VehicleDetailPage({
             transition={{ duration: 0.6, delay: 0.4 }}
             className="mt-8"
           >
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/60">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                <FileText className="w-8 h-8 text-blue-600" />
-                Thông tin chi tiết
-              </h2>
-              <SpecsGrid listing={listing} />
-            </div>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-8"
-          >
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/60">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                <FileText className="w-8 h-8 text-blue-600" />
-                Miêu tả
-              </h2>
-
-              {/* Mô tả nội dung */}
-              <div className="text-gray-700 leading-relaxed text-base">
-                {listing?.description ? (
-                  <p className="whitespace-pre-line">{listing.description}</p>
-                ) : (
-                  <p className="italic text-gray-500">
-                    Chưa có mô tả cho dịch vụ này.
-                  </p>
-                )}
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/60">
+                <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                  <FileText className="w-8 h-8 text-blue-600" />
+                  Thông tin chi tiết
+                </h2>
+                <SpecsGrid listing={listing} />
               </div>
-            </div>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-8"
-          >
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/60">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                <FileText className="w-8 h-8 text-blue-600" />
-                Lịch sử tai nạn
-              </h2>
-
-              {/* Mô tả nội dung */}
-              <div className="text-gray-700 leading-relaxed text-base">
-                {listing?.carDetails?.accidentHistory ? (
-                  <p className="whitespace-pre-line">
-                    {listing?.carDetails?.accidentHistory}
-                  </p>
-                ) : (
-                  <p className="italic text-gray-500">Không có nội dung</p>
-                )}
-              </div>
-            </div>
           </motion.div>
         </div>
       </section>
@@ -483,9 +339,7 @@ const InfoRow = ({ icon, label, value }: any) => (
       <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white flex-shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-all shadow-lg">
         {icon}
       </div>
-      <span className="text-xs text-gray-500 font-semibold uppercase tracking-wider">
-        {label}
-      </span>
+      <span className="text-xs text-gray-500 font-semibold uppercase tracking-wider">{label}</span>
     </div>
     <div className="text-gray-900 font-bold text-lg pl-1">{value || "—"}</div>
   </motion.div>
