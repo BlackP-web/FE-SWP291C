@@ -6,6 +6,11 @@ export const PackageService = {
     return response.data;
   },
 
+  updatePackage: async (id: string, payload: any) => {
+    const response = await api.put(`/api/packages/${id}`, payload);
+    return response.data;
+  },
+
   getAllPackages: async () => {
     const response = await api.get("/api/packages");
     return response.data;

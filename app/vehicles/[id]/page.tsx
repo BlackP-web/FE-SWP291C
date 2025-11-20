@@ -420,30 +420,32 @@ export default function VehicleDetailPage({
               </div>
             </div>
           </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-8"
-          >
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/60">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                <FileText className="w-8 h-8 text-blue-600" />
-                Lịch sử tai nạn
-              </h2>
+          {listing?.type === "car" && (
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="mt-8"
+            >
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/60">
+                <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                  <FileText className="w-8 h-8 text-blue-600" />
+                  Lịch sử tai nạn
+                </h2>
 
-              {/* Mô tả nội dung */}
-              <div className="text-gray-700 leading-relaxed text-base">
-                {listing?.carDetails?.accidentHistory ? (
-                  <p className="whitespace-pre-line">
-                    {listing?.carDetails?.accidentHistory}
-                  </p>
-                ) : (
-                  <p className="italic text-gray-500">Không có nội dung</p>
-                )}
+                {/* Mô tả nội dung */}
+                <div className="text-gray-700 leading-relaxed text-base">
+                  {listing?.carDetails?.accidentHistory ? (
+                    <p className="whitespace-pre-line">
+                      {listing?.carDetails?.accidentHistory}
+                    </p>
+                  ) : (
+                    <p className="italic text-gray-500">Không có nội dung</p>
+                  )}
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          )}
         </div>
       </section>
 

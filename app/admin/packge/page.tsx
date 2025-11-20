@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Plus, Users, Tag, Clock, DollarSign } from "lucide-react";
+import { Plus, Users, Tag, Clock } from "lucide-react";
 import AdminLayout from "../AdminLayout";
 import { Button } from "antd";
 import AddPackageModal from "./AddPackageModal";
@@ -12,13 +12,14 @@ export default function PackageAdminPage() {
   const [packages, setPackages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingPackage, setEditingPackage] = useState<any>(null);
   const [selectedPackage, setSelectedPackage] = useState<any>(null);
 
   const fetchPackages = async () => {
     setLoading(true);
     try {
       const res = await PackageService.getAllPackages();
-      const packagesData = res.data || []; // lấy mảng data
+      const packagesData = res.data || [];
       const enriched = await Promise.all(
         packagesData.map(async (pkg: any) => {
           try {
@@ -67,62 +68,6 @@ export default function PackageAdminPage() {
           </p>
         </div>
 
-        {/* Stats Summary */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: 16,
-            marginBottom: 32,
-          }}
-        >
-          <div
-            style={{
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-              borderRadius: 12,
-              padding: 20,
-              color: "white",
-            }}
-          >
-            <div style={{ fontSize: 14, opacity: 0.9 }}>Tổng gói</div>
-            <div style={{ fontSize: 36, fontWeight: 700, marginTop: 8 }}>
-              {packages.length}
-            </div>
-          </div>
-          <div
-            style={{
-              background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-              borderRadius: 12,
-              padding: 20,
-              color: "white",
-            }}
-          >
-            <div style={{ fontSize: 14, opacity: 0.9 }}>Người dùng</div>
-            <div style={{ fontSize: 36, fontWeight: 700, marginTop: 8 }}>
-              {packages.reduce((sum, pkg) => sum + (pkg.userCount || 0), 0)}
-            </div>
-          </div>
-          <div
-            style={{
-              background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
-              borderRadius: 12,
-              padding: 20,
-              color: "white",
-            }}
-          >
-            <div style={{ fontSize: 14, opacity: 0.9 }}>Doanh thu ước tính</div>
-            <div style={{ fontSize: 28, fontWeight: 700, marginTop: 8 }}>
-              {packages
-                .reduce(
-                  (sum, pkg) => sum + (pkg.price || 0) * (pkg.userCount || 0),
-                  0
-                )
-                .toLocaleString("vi-VN")}
-              đ
-            </div>
-          </div>
-        </div>
-
         {/* Add Package Button */}
         <div
           style={{
@@ -132,7 +77,10 @@ export default function PackageAdminPage() {
           }}
         >
           <Button
-            onClick={() => setShowAddModal(true)}
+            onClick={() => {
+              setEditingPackage(null);
+              setShowAddModal(true);
+            }}
             type="primary"
             icon={<Plus className="w-4 h-4" />}
             size="large"
@@ -151,6 +99,7 @@ export default function PackageAdminPage() {
           </Button>
         </div>
 
+        {/* Package List */}
         {loading ? (
           <div style={{ textAlign: "center", padding: 60, color: "#94a3b8" }}>
             Đang tải dữ liệu...
@@ -198,7 +147,6 @@ export default function PackageAdminPage() {
                   }}
                   className="hover:shadow-xl hover:-translate-y-1"
                 >
-                  {/* Header with gradient */}
                   <div
                     style={{
                       background: gradient,
@@ -206,14 +154,7 @@ export default function PackageAdminPage() {
                       color: "white",
                     }}
                   >
-                    <h2
-                      style={{
-                        fontSize: 22,
-                        fontWeight: 700,
-                        margin: 0,
-                        marginBottom: 8,
-                      }}
-                    >
+                    <h2 style={{ fontSize: 22, fontWeight: 700, margin: 0 }}>
                       {pkg.name}
                     </h2>
                     <p
@@ -228,7 +169,6 @@ export default function PackageAdminPage() {
                     </p>
                   </div>
 
-                  {/* Pricing */}
                   <div
                     style={{
                       padding: "20px",
@@ -251,7 +191,6 @@ export default function PackageAdminPage() {
                     </div>
                   </div>
 
-                  {/* Features */}
                   <div style={{ padding: 20 }}>
                     <div
                       style={{
@@ -262,29 +201,9 @@ export default function PackageAdminPage() {
                         borderBottom: "1px solid #f1f5f9",
                       }}
                     >
-                      <div
-                        style={{
-                          width: 40,
-                          height: 40,
-                          borderRadius: 10,
-                          background:
-                            "linear-gradient(135deg, #fef3c7 0%, #fde047 100%)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Clock
-                          style={{ width: 20, height: 20, color: "#ca8a04" }}
-                        />
-                      </div>
+                      <Clock style={{ color: "#ca8a04" }} />
                       <div>
-                        <div
-                          style={{
-                            fontSize: 13,
-                            color: "#64748b",
-                          }}
-                        >
+                        <div style={{ fontSize: 13, color: "#64748b" }}>
                           Thời hạn
                         </div>
                         <div
@@ -307,29 +226,9 @@ export default function PackageAdminPage() {
                         padding: "12px 0",
                       }}
                     >
-                      <div
-                        style={{
-                          width: 40,
-                          height: 40,
-                          borderRadius: 10,
-                          background:
-                            "linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Users
-                          style={{ width: 20, height: 20, color: "#1d4ed8" }}
-                        />
-                      </div>
+                      <Users style={{ color: "#1d4ed8" }} />
                       <div>
-                        <div
-                          style={{
-                            fontSize: 13,
-                            color: "#64748b",
-                          }}
-                        >
+                        <div style={{ fontSize: 13, color: "#64748b" }}>
                           Người dùng
                         </div>
                         <div
@@ -359,6 +258,25 @@ export default function PackageAdminPage() {
                     >
                       Xem người dùng
                     </Button>
+
+                    <Button
+                      onClick={() => {
+                        setEditingPackage(pkg);
+                        setShowAddModal(true);
+                      }}
+                      size="large"
+                      style={{
+                        width: "100%",
+                        marginTop: 8,
+                        borderRadius: 8,
+                        height: 44,
+                        fontWeight: 600,
+                        borderColor: "#10b981",
+                        color: "#10b981",
+                      }}
+                    >
+                      Chỉnh sửa
+                    </Button>
                   </div>
                 </div>
               );
@@ -368,7 +286,11 @@ export default function PackageAdminPage() {
 
         {showAddModal && (
           <AddPackageModal
-            onClose={() => setShowAddModal(false)}
+            pkg={editingPackage}
+            onClose={() => {
+              setShowAddModal(false);
+              setEditingPackage(null);
+            }}
             onSuccess={fetchPackages}
           />
         )}

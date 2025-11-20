@@ -1,31 +1,51 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Form, Input, InputNumber, Button, message } from "antd";
 import { PackageService } from "@/service/package.service";
 
 interface AddPackageModalProps {
   onClose: () => void;
   onSuccess: () => void;
+  pkg?: any; // gói cần chỉnh sửa (nếu có)
 }
 
 export default function AddPackageModal({
   onClose,
   onSuccess,
+  pkg,
 }: AddPackageModalProps) {
   const [form] = Form.useForm();
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = useState(false);
+  const isEdit = !!pkg;
+
+  useEffect(() => {
+    if (isEdit) {
+      form.setFieldsValue(pkg);
+    } else {
+      form.resetFields();
+    }
+  }, [pkg, isEdit, form]);
 
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
       setLoading(true);
-      await PackageService.createPackage(values);
-      message.success("Tạo gói thành công!");
+
+      if (isEdit) {
+        await PackageService.updatePackage(pkg._id, values);
+        message.success("Cập nhật gói thành công!");
+      } else {
+        await PackageService.createPackage(values);
+        message.success("Tạo gói thành công!");
+      }
+
       onClose();
       onSuccess();
     } catch (err: any) {
-      if (!err.errorFields) message.error("Tạo gói thất bại!");
+      if (!err.errorFields) {
+        message.error(isEdit ? "Cập nhật thất bại!" : "Tạo gói thất bại!");
+      }
     } finally {
       setLoading(false);
     }
@@ -34,10 +54,10 @@ export default function AddPackageModal({
   return (
     <Modal
       open
-      title="Thêm gói dịch vụ"
+      title={isEdit ? "Chỉnh sửa gói dịch vụ" : "Thêm gói dịch vụ"}
       onCancel={onClose}
       onOk={handleSubmit}
-      okText="Lưu"
+      okText={isEdit ? "Lưu thay đổi" : "Lưu"}
       cancelText="Hủy"
       confirmLoading={loading}
       destroyOnClose
@@ -61,7 +81,7 @@ export default function AddPackageModal({
           name="key"
           rules={[{ required: true, message: "Vui lòng nhập mã gói!" }]}
         >
-          <Input placeholder="Ví dụ: BASIC, PREMIUM..." />
+          <Input placeholder="Ví dụ: BASIC, PREMIUM..." disabled={isEdit} />
         </Form.Item>
 
         <Form.Item label="Mô tả" name="description">

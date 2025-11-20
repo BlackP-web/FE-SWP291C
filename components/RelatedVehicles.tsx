@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { Heart, Eye, Gauge, Battery, Calendar } from "lucide-react";
 import { ListingService } from "@/service/listing.service";
-import { formatVND } from '@/lib/formatCurrency'
+import { formatVND } from "@/lib/formatCurrency";
+import { useRouter } from "next/navigation";
 
 interface Seller {
   _id: string;
@@ -42,7 +43,7 @@ interface RelatedVehiclesProps {
 
 const RelatedVehicles = ({ currentType, currentId }: RelatedVehiclesProps) => {
   const [listings, setListings] = useState<Listing[]>([]);
-
+  const router = useRouter();
   useEffect(() => {
     const fetchRelated = async () => {
       try {
@@ -59,7 +60,7 @@ const RelatedVehicles = ({ currentType, currentId }: RelatedVehiclesProps) => {
     fetchRelated();
   }, [currentType, currentId]);
 
-  const formatPrice = (price: number) => formatVND(price)
+  const formatPrice = (price: number) => formatVND(price);
 
   if (!listings.length) return null; // Không hiển thị nếu không có dữ liệu
 
@@ -77,6 +78,7 @@ const RelatedVehicles = ({ currentType, currentId }: RelatedVehiclesProps) => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               className="bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300"
+              onClick={() => router.push(`/vehicles/${item._id}`)}
             >
               {/* Image */}
               <div className="relative h-48 overflow-hidden bg-gray-100">

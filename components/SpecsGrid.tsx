@@ -10,54 +10,58 @@ import {
   Users,
 } from "lucide-react";
 
-// Read a field tolerantly from either nested carDetails/batteryDetails or from top-level listing.
+// ✅ Hàm đọc dữ liệu an toàn hơn
 const read = (listing: any, nestedKey: string, topKey?: string) => {
-  const cd = listing?.carDetails || listing?.batteryDetails || {};
-  // nestedKey might be like 'registrationNumber'
-  const nested = cd?.[nestedKey];
+  if (!listing) return null;
+  const car = listing?.carDetails || {};
+  const battery = listing?.batteryDetails || {};
+  const nested = car?.[nestedKey] ?? battery?.[nestedKey];
   const top = topKey ? listing?.[topKey] : listing?.[nestedKey];
   return nested ?? top ?? null;
 };
 
 export default function SpecsGrid({ listing }: { listing: any }) {
+  // ✅ fallback đảm bảo không lỗi khi listing chưa có type
+  const type = listing?.type || "";
+
   const details =
-    listing?.type === "car"
+    type === "car"
       ? [
           {
             icon: <Car />,
             label: "Biển số",
-            value: read(listing, "registrationNumber", "registrationNumber"),
+            value: read(listing, "registrationNumber"),
           },
           {
             icon: <ClipboardList />,
             label: "Số chủ sở hữu",
-            value: read(listing, "ownerNumber", "ownerNumber"),
+            value: read(listing, "ownerNumber"),
           },
           {
             icon: <Zap />,
             label: "Nhiên liệu",
-            value: read(listing, "fuelType", "fuelType"),
+            value: read(listing, "fuelType"),
           },
           {
             icon: <Settings />,
             label: "Hộp số",
-            value: read(listing, "transmission", "transmission"),
+            value: read(listing, "transmission"),
           },
           {
             icon: <Droplets />,
             label: "Màu sắc",
-            value: read(listing, "color", "color"),
+            value: read(listing, "color"),
           },
           {
             icon: <Users />,
             label: "Số ghế ngồi",
-            value: read(listing, "seats", "seats"),
+            value: read(listing, "seats"),
           },
           {
             icon: <Gauge />,
             label: "Số km đã đi",
             value: (() => {
-              const v = read(listing, "kmDriven", "kmDriven");
+              const v = read(listing, "kmDriven");
               return v != null ? `${v} km` : null;
             })(),
           },
@@ -66,7 +70,7 @@ export default function SpecsGrid({ listing }: { listing: any }) {
           {
             icon: <Zap />,
             label: "Thương hiệu",
-            value: read(listing, "brand", "brand"),
+            value: read(listing, "brand"),
           },
           {
             icon: <Zap />,
@@ -80,25 +84,24 @@ export default function SpecsGrid({ listing }: { listing: any }) {
             icon: <Gauge />,
             label: "Điện áp",
             value: (() => {
-              const v = read(listing, "voltage", "voltage");
+              const v = read(listing, "voltage");
               return v != null ? `${v} V` : null;
             })(),
           },
           {
             icon: <Droplets />,
-            label: "Số chu kỳ",
-            value: read(listing, "cyclesUsed", "cyclesUsed"),
+            label: "Số chu kỳ sạc/xả",
+            value: read(listing, "cyclesUsed"),
           },
           {
             icon: <ClipboardList />,
             label: "Bảo hành",
-            value: read(listing, "warranty", "warranty"),
+            value: read(listing, "warranty"),
           },
-
           {
             icon: <MapPin />,
             label: "Khu vực",
-            value: read(listing, "location", "location"),
+            value: read(listing, "location"),
           },
         ];
 
