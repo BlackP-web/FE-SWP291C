@@ -2,7 +2,12 @@
 
 import { ReactNode, useState, useEffect } from "react";
 import { Layout, Avatar, Dropdown } from "antd";
-import { FiFileText, FiShoppingCart, FiDollarSign } from "react-icons/fi";
+import {
+  FiFileText,
+  FiShoppingCart,
+  FiDollarSign,
+  FiLayers,
+} from "react-icons/fi";
 import { useAuth } from "@/hooks/useAuth";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -19,7 +24,12 @@ export default function OwnerLayout({ children }: OwnerLayoutProps) {
   const pathname = usePathname();
   const [selectedKey, setSelectedKey] = useState<string>("/owner");
   const menuItems = [
-    { key: "/owner", icon: <FiFileText />, label: "Bảng điều khiển", path: "/owner" },
+    {
+      key: "/owner",
+      icon: <FiFileText />,
+      label: "Bảng điều khiển",
+      path: "/owner",
+    },
     {
       key: "/owner/posts",
       icon: <FiFileText />,
@@ -33,9 +43,15 @@ export default function OwnerLayout({ children }: OwnerLayoutProps) {
       path: "/owner/orders",
     },
     {
-      key: "/owner/package",
+      key: "/owner/my-package",
       icon: <FiDollarSign />,
       label: "Gói của bạn",
+      path: "/owner/my-package",
+    },
+    {
+      key: "/owner/package",
+      icon: <FiLayers />,
+      label: "Các gói dịch vụ",
       path: "/owner/package",
     },
   ];
@@ -99,7 +115,9 @@ export default function OwnerLayout({ children }: OwnerLayoutProps) {
                 style={{ justifyContent: collapsed ? "center" : "flex-start" }}
               >
                 <div className="text-lg">{item.icon}</div>
-                {!collapsed && <span className="whitespace-nowrap">{item.label}</span>}
+                {!collapsed && (
+                  <span className="whitespace-nowrap">{item.label}</span>
+                )}
               </div>
             );
           })}
