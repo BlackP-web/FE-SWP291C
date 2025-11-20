@@ -72,7 +72,7 @@ export default function AdminListingsPage() {
   const loadListings = async () => {
     setLoading(true);
     try {
-      const data = await ListingService.getAllListings();
+      const data = await ListingService.getAllListingsStatus();
       const arr = Array.isArray(data) ? data : data?.listings ?? [];
       setListings(arr);
     } catch (err) {
@@ -596,7 +596,9 @@ export default function AdminListingsPage() {
                 </Descriptions.Item>
                 <Descriptions.Item label="Giá">
                   <Text strong style={{ color: "#10b981", fontSize: 16 }}>
-                    {currentListing.price ? formatVND(currentListing.price) : "-"}
+                    {currentListing.price
+                      ? formatVND(currentListing.price)
+                      : "-"}
                   </Text>
                 </Descriptions.Item>
                 {/* <Descriptions.Item label="Giá AI gợi ý">

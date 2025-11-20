@@ -10,6 +10,7 @@ import {
 } from "react-icons/fi";
 import { useAuth } from "@/hooks/useAuth";
 import { usePathname, useRouter } from "next/navigation";
+import NotificationBell from "@/components/Notification";
 
 const { Header, Sider, Content } = Layout;
 
@@ -135,6 +136,7 @@ export default function OwnerLayout({ children }: OwnerLayoutProps) {
             boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
           }}
         >
+          {user && <NotificationBell userId={user._id} />}
           <Dropdown menu={userMenu} placement="bottomRight">
             <div className="flex items-center cursor-pointer gap-2">
               <Avatar size="small" src={user?.avatar} />
