@@ -15,6 +15,7 @@ interface Listing {
   price?: number;
   images?: string[];
   status?: string;
+  carDetails: any;
 }
 
 type Filters = {
@@ -63,7 +64,8 @@ const VehiclesPage = () => {
             // brand
             if (f.brand) {
               const b = (item as any).brand?.name || (item as any).brand || "";
-              if (!b.toLowerCase().includes(String(f.brand).toLowerCase())) return false;
+              if (!b.toLowerCase().includes(String(f.brand).toLowerCase()))
+                return false;
             }
             // year
             if (f.year) {
@@ -71,7 +73,8 @@ const VehiclesPage = () => {
             }
             // condition
             if (f.condition) {
-              if (((item as any).condition || "") !== String(f.condition)) return false;
+              if (((item as any).condition || "") !== String(f.condition))
+                return false;
             }
             // batteryHealth range like '80-89' or '0-59'
             if (f.batteryHealth) {
@@ -120,13 +123,13 @@ const VehiclesPage = () => {
                 brand={item.brand?.name || ""}
                 model={"-"}
                 year={item.year || 0}
-                mileage={item.kmDriven || 0}
+                mileage={item.carDetails?.kmDriven || 0}
                 price={item.price || 0}
                 image={
                   item.images?.[0] ||
                   "https://images2.thanhnien.vn/528068263637045248/2024/5/7/edit-vf-3dynamic-opt-1original-wheel-1715080408626820177534.png"
                 }
-                batteryHealth={90}
+                batteryHealth={item.carDetails?.batteryPercentage || 90}
                 condition={"good"}
                 type={"vehicle"}
                 isVerified={item.status}

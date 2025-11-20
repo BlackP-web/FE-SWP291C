@@ -469,6 +469,14 @@ export default function OwnerListingsPage() {
                   </Col>
                   <Col span={12}>
                     <Form.Item
+                      name={["carDetails", "batteryPercentage"]}
+                      label="Số % pin hiện tại"
+                    >
+                      <InputNumber min={1} style={{ width: "100%" }} />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
                       name={["carDetails", "fuelType"]}
                       label="Loại nhiên liệu"
                     >
@@ -673,11 +681,11 @@ export default function OwnerListingsPage() {
             <Col span={24}>
               <Form.Item
                 name="contract"
-                label="Hợp đồng mua bán"
+                label="Bản kiểm định"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng tải lên hợp đồng mua bán",
+                    message: "Vui lòng tải lên bản kiểm định",
                   },
                 ]}
               >
@@ -701,7 +709,9 @@ export default function OwnerListingsPage() {
                   maxCount={1}
                 >
                   {!form.getFieldValue("contract") && (
-                    <Button icon={<UploadOutlined />}>Tải lên hợp đồng</Button>
+                    <Button icon={<UploadOutlined />}>
+                      Tải lên bản kiểm định
+                    </Button>
                   )}
                 </Upload>
               </Form.Item>
