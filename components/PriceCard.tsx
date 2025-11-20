@@ -53,7 +53,8 @@ export default function PriceCard({
               onClick={onContact}
               className="w-full px-4 py-3 border border-gray-300 bg-white text-gray-900 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-50"
             >
-              <FileText className="w-5 h-5 text-gray-700" /> Xem hợp đồng xe
+              <FileText className="w-5 h-5 text-gray-700" />
+              Kiểm định
             </button>
           </div>
         )}

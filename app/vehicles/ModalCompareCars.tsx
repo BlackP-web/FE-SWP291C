@@ -151,10 +151,7 @@ export default function ModalCompareCars({
                   {formatCurrency(comparison.priceDifference)}
                 </Tag>
               </p>
-              <p>
-                <b>Chênh lệch năm:</b>{" "}
-                <Tag color="purple">{comparison.yearDifference}</Tag>
-              </p>
+
               <p>
                 <b>Chênh lệch pin:</b>{" "}
                 <Tag color="orange">{comparison.batteryDifference}</Tag>
